@@ -1,17 +1,33 @@
 const mongoose = require('mongoose');
 
 const InvestmentTypeSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  description: { type: String, required: true, trim: true },
-  expense_ratio: { type: Number, required: true, min: 0 },
-  expected_annual_returns: { type: Number, required: true },
-  dividend_interest: { type: Number, required: true },
-  taxability: {
-    taxable: { type: Boolean, required: true },
-    tax_exempt: { type: Boolean, required: true }
-  },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
-}, { timestamps: true });
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    returnAmtOrPct: { type: String, enum: ['amount', 'percent'], required: true },
+    returnDistribution: {
+      type: { type: String, enum: ['fixed', 'normal', 'uniform', 'GBM'], required: true },
+      value: { type: Number }, // for 'fixed'
+      mean: { type: Number },  // for 'normal'
+      stdev: { type: Number }, // for 'normal'
+      lower: { type: Number }, // for 'uniform'
+      upper: { type: Number }, // for 'uniform'
+      mu: { type: Number },    // for 'GBM'
+      sigma: { type: Number }  // for 'GBM'
+    },
+    expenseRatio: { type: Number, required: true },
+    incomeAmtOrPct: { type: String, enum: ['amount', 'percent'], required: true },
+    incomeDistribution: {
+      type: { type: String, enum: ['fixed', 'normal', 'uniform', 'GBM'], required: true },
+      value: { type: Number }, // for 'fixed'
+      mean: { type: Number },  // for 'normal'
+      stdev: { type: Number }, // for 'normal'
+      lower: { type: Number }, // for 'uniform'
+      upper: { type: Number }, // for 'uniform'
+      mu: { type: Number },    // for 'GBM'
+      sigma: { type: Number }  // for 'GBM'
+    },
+    taxability: { type: Boolean, required: true }
+  }, { timestamps: true });
 
 const InvestmentType = mongoose.model('InvestmentType', InvestmentTypeSchema);
 module.exports = InvestmentType;
