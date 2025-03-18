@@ -54,3 +54,4 @@ initializeDB()
     });
 
 console.log('processing...');
+mongoose.connection.close();
