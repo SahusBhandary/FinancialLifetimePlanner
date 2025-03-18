@@ -9,9 +9,8 @@ const DistributionSchema = new Schema({
   stdev: { type: Number }, // for 'normal'
   lower: { type: Number }, // for 'uniform'
   upper: { type: Number }  // for 'uniform'
-});
+}, { _id: false }); 
 
-// Schema for start field
 const StartSchema = new Schema({
   type: { type: String, enum: ['fixed', 'normal', 'uniform', 'startWith', 'startAfter'], required: true },
   value: { type: Number }, // for 'fixed', 'normal', 'uniform'
@@ -20,7 +19,7 @@ const StartSchema = new Schema({
   lower: { type: Number }, // for 'uniform'
   upper: { type: Number }, // for 'uniform'
   eventSeries: { type: String } // for 'startWith' and 'startAfter'
-});
+}, { _id: false });
 
 // Schema for event series
 const EventSeriesSchema = new Schema({

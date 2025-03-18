@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const ScenarioSchema = new mongoose.Schema({
     name: { type: String, required: true },
     maritalStatus: { type: String, enum: ['couple', 'individual'], required: true },
-    birthYears: [{ type: Number, required: true }], // Array with length 1 or 2
+    birthYears: [{ type: Number, required: true }], // array with length 1 or 2
     lifeExpectancy: [{
       type: { type: String, enum: ['fixed', 'normal', 'uniform', 'GBM'], required: true },
       value: { type: Number }, // for 'fixed'
