@@ -124,6 +124,36 @@ async function initializeDB() {
       await NJ.save()
       // end
 
+      // ADD CT TAX DATA TO DATABASE 
+      // start
+      let ConnecticutSingleIncomeTaxBrackets = [
+        {rate: 2, lower: 0, upper: 10000},
+        {rate: 4.5, lower: 10000, upper: 50000, fixedAmount: 200},
+        {rate: 5.5, lower: 50000, upper: 100000, fixedAmount: 2000},
+        {rate: 6, lower: 100000, upper: 200000, fixedAmount: 4750},
+        {rate: 6.5, lower: 200000, upper: 250000, fixedAmount: 10750},
+        {rate: 6.9, lower: 250000, upper: 500000, fixedAmount: 14000},
+        {rate: 6.99, lower: 500000, upper: "infinity", fixedAmount: 31250},
+      ]
+      let ConnecticutMarriedIncomeTaxBrackets = [
+        {rate: 2, lower: 0, upper: 20000},
+        {rate: 4.5, lower: 20000, upper: 100000, fixedAmount: 400},
+        {rate: 5.5, lower: 100000, upper: 200000, fixedAmount: 4000},
+        {rate: 6, lower: 200000, upper: 400000, fixedAmount: 9500},
+        {rate: 6.5, lower: 400000, upper: 500000, fixedAmount: 21500},
+        {rate: 6.9, lower: 500000, upper: 1000000, fixedAmount: 28000},
+        {rate: 6.99, lower: 1000000, upper: "infinity", fixedAmount: 62500},
+      ]
+      ConnecticutSingleIncomeTaxBracketsObjects = await TaxBracketModel.insertMany(ConnecticutSingleIncomeTaxBrackets)
+      ConnecticutMarriedIncomeTaxBracketsObjects = await TaxBracketModel.insertMany(ConnecticutMarriedIncomeTaxBrackets)
+      const CT = new StateTaxModel({
+        state: "CT",
+        singleIncomeTaxBrackets: ConnecticutSingleIncomeTaxBracketsObjects.map(b => b._id),
+        marriedIncomeTaxBrackets: ConnecticutMarriedIncomeTaxBracketsObjects.map(b => b._id)
+      })
+      await CT.save()
+      // end
+
 
   
       console.log("Federal tax saved..");
