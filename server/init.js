@@ -29,7 +29,8 @@ function createUser(userObj) {
         name: userObj.name,
         email: userObj.email,
         age: userObj.age,
-        stateOfResidence: userObj.stateOfResidence
+        stateOfResidence: userObj.stateOfResidence,
+        googleID: userObj.googleID
     });
     return newUser.save();
 }
@@ -39,7 +40,8 @@ async function initializeDB() {
         name: "meshane",
         email: "meshane.peiris@stonybrook.edu",
         age: 9,
-        stateOfResidence: "New York"
+        stateOfResidence: "New York",
+        googleID: "123-456-789"
     }
     let user1Ref = await createUser(user1)
 }

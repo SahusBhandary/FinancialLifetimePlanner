@@ -15,13 +15,17 @@ const UserSchema = new mongoose.Schema({
   },
   age: {
     type: Number,
-    required: true,
+    required: false,
     min: 0
   },
   stateOfResidence: {
     type: String,
-    required: true,
+    required: false,
     trim: true
+  },
+  googleID: {
+    type: String,
+    required: true,
   }
 },
 );
