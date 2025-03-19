@@ -68,4 +68,6 @@ initializeDB()
         }
     });
 
-console.log('Initializing data..');
+
+console.log('processing...');
+mongoose.connection.close();
