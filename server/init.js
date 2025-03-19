@@ -25,18 +25,23 @@ function createUser(userObj) {
 
 async function initializeDB() {
     try {
+
+      // Gather data from tax bracket scrape
       const brackets = await getTaxData();
       const singleTaxBrackets = brackets.singleTaxBracket;
       const marriedTaxBrackets = brackets.marriedTaxBracket;
       const singleTaxObjects = await TaxBracketModel.insertMany(singleTaxBrackets);
       const marriedTaxObjects = await TaxBracketModel.insertMany(marriedTaxBrackets);
   
+      // Gather data from tax deductions scrape
       const taxdeductiondata = await getTaxDeductionData();
       
+      // Gather data from capital tax scrape
       const capitaltaxdata = await getCapitalTaxData();
       const singleCapitalTaxObjects = await TaxBracketModel.insertMany(capitaltaxdata.singleCapitalTax)
       const marriedCapitalTaxObjects = await TaxBracketModel.insertMany(capitaltaxdata.marriedCapitalTax)
 
+      // Create federal tax model using previous scrape data
       const federalTax = new FederalTaxModel({
         federalIncomeTaxBrackets: {
           single: singleTaxObjects.map(b => b._id),
@@ -54,6 +59,8 @@ async function initializeDB() {
   
       await federalTax.save();  
 
+      // ADD NY TAX DATA TO DATABASE 
+      // start
       let NewYorkSingleIncomeTaxBrackets = [
         {rate: 4, lower: 0, upper: 8500},
         {rate: 4.5, lower: 8500, upper: 11700, fixedAmount: 340},
@@ -65,7 +72,6 @@ async function initializeDB() {
         {rate: 10.3, lower: 5000000, upper: 25000000, fixedAmount: 449929},
         {rate: 10.9, lower: 25000000, upper: "infinity", fixedAmount: 2509929},
       ]
-
       let NewYorkMarriedIncomeTaxBrackets = [
         {rate: 4, lower: 0, upper: 17150},
         {rate: 4.5, lower: 17150, upper: 23600, fixedAmount: 686},
@@ -77,17 +83,46 @@ async function initializeDB() {
         {rate: 10.3, lower: 5000000, upper: 25000000, fixedAmount: 418263},
         {rate: 10.9, lower: 25000000, upper: "infinity", fixedAmount: 2478263},
       ]
-
       NewYorkSingleIncomeTaxBracketsObjects = await TaxBracketModel.insertMany(NewYorkSingleIncomeTaxBrackets)
       NewYorkMarriedIncomeTaxBracketsObjects = await TaxBracketModel.insertMany(NewYorkMarriedIncomeTaxBrackets)
- 
       const NY = new StateTaxModel({
-        state: "New York",
+        state: "NY",
         singleIncomeTaxBrackets: NewYorkSingleIncomeTaxBracketsObjects.map(b => b._id),
         marriedIncomeTaxBrackets: NewYorkMarriedIncomeTaxBracketsObjects.map(b => b._id)
       })
-
       await NY.save()
+      // end
+
+      // ADD NJ TAX DATA TO DATABASE 
+      // start
+      let NewJerseySingleIncomeTaxBrackets = [
+        {rate: 1.4, lower: 0, upper: 20000},
+        {rate: 1.75, lower: 20000, upper: 35000, fixedAmount: 280},
+        {rate: 3.5, lower: 35000, upper: 40000, fixedAmount: 542.5},
+        {rate: 5.525, lower: 40000, upper: 75000, fixedAmount: 717.5},
+        {rate: 6.37, lower: 75000, upper: 500000, fixedAmount: 2651.25},
+        {rate: 8.97, lower: 500000, upper: 1000000, fixedAmount: 29723.75},
+        {rate: 10.75, lower: 1000000, upper: "infinity", fixedAmount: 74573.75},
+      ]
+      let NewJerseykMarriedIncomeTaxBrackets = [
+        {rate: 1.4, lower: 0, upper: 20000},
+        {rate: 1.75, lower: 20000, upper: 50000, fixedAmount: 280},
+        {rate: 2.45, lower: 50000, upper: 70000, fixedAmount: 805},
+        {rate: 3.5, lower: 70000, upper: 80000, fixedAmount: 1295.5},
+        {rate: 5.525, lower: 80000, upper: 150000, fixedAmount: 1644.5},
+        {rate: 6.37, lower: 150000, upper: 500000, fixedAmount: 5512.5},
+        {rate: 8.97, lower: 500000, upper: 1000000, fixedAmount: 27807.5},
+        {rate: 10.75, lower: 1000000, upper: "infinity", fixedAmount: 72657.5},
+      ]
+      NewJerseySingleIncomeTaxBracketsObjects = await TaxBracketModel.insertMany(NewJerseySingleIncomeTaxBrackets)
+      NewJerseyMarriedIncomeTaxBracketsObjects = await TaxBracketModel.insertMany(NewJerseykMarriedIncomeTaxBrackets)
+      const NJ = new StateTaxModel({
+        state: "NJ",
+        singleIncomeTaxBrackets: NewJerseySingleIncomeTaxBracketsObjects.map(b => b._id),
+        marriedIncomeTaxBrackets: NewJerseyMarriedIncomeTaxBracketsObjects.map(b => b._id)
+      })
+      await NJ.save()
+      // end
 
 
   
