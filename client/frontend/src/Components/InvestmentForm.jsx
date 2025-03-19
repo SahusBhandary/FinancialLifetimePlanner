@@ -74,14 +74,64 @@ const InvestmentForm = (props) => {
   }
 
   const handleSubmission = () =>{
+    let returnAmtOrPct = annualReturnOption;
 
-    // const form = {
-    //   name: name,
-    //   description: description,
-    //   returnAmtOrPct:  
-    // }
+    if (annualReturnOption === "normalDistribution")
+      returnAmtOrPct = sampleStatusReturn;
+
+    let type = annualReturnOption === "normalDistribution" ? "normal" : "fixed"
+
+    let returnDistribution = {
+      type: type,
+    };
+
+    if (type === "fixed"){   // thi smeans that it is either percent or amount, this means we need to push a value
+      let value = null;
+      annualReturnOption === "percent" ? value = percentReturnAmount/100 : value = fixedReturnAmount
+      returnDistribution['value'] = value;
+    }
+    else{
+      returnDistribution['mean'] = returnMean;
+      returnDistribution['deviation'] = returnDeviation;
+    }
+      
+    let incomeAmtOrPct = annualIncomeOption;
+    if (annualIncomeOption === "normalDistribution")
+        incomeAmtOrPct = sampleStatusIncome
+    
+    type = annualIncomeOption === "normalDistribution" ? "normal" : "fixed"
+
+    let incomeDistribution = {
+      type: type
+    }
+
+    if (type === "fixed"){
+      let value = null;
+      annualIncomeOption === "percent" ? value = percentIncomeAmount/100 : value = fixedIncomeAmount
+      incomeDistribution['value'] = value;
+    }
+    else{
+      incomeDistribution['mean'] = incomeMean;
+      incomeDistribution['deviation'] = incomeDeviation;
+    }
+
+    if (returnAmtOrPct === "fixed") returnAmtOrPct = "amount";
+    if (incomeAmtOrPct === "fixed") returnAmtOrPct = "amount";
+
+    const form = {
+      name: name,
+      description: description,
+      returnAmtOrPct: returnAmtOrPct,
+      returnDistribution: returnDistribution,
+      expenseRatio: expenseRatio/100,
+      incomeAmtOrPct: incomeAmtOrPct,
+      incomeDistribution: incomeDistribution,
+      taxability: isTaxable
+    }
+
+    console.log(form);
   
-    // axios.post('http://localhost:8000/submitInvestmentType', )
+    // axios.post('http://localhost:8000/submitInvestmentType', {form: form})
   }
 
 

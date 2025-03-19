@@ -22,7 +22,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true
-  }
+  },
+  investmentTypes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'InvestmentType' }],
+  events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'EventSeries' }],
 },
 );
 
