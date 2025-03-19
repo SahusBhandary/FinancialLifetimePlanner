@@ -56,12 +56,12 @@ investments:
   - investmentType: tax-exempt bonds
     value: 2000
     taxStatus: non-retirement
-    id: tax-exempt bonds
+    id: tax-exempt bonds        
 
   - investmentType: S&P 500
     value: 10000
     taxStatus: pre-tax
-    id: S&P 500 pre-tax
+    id: S&P 500 pre-tax        
     
   - investmentType: S&P 500
     value: 2000
