@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 const TaxBracketSchema = new mongoose.Schema({
-  rate: { type: Number, required: true },
+  rate: { type: mongoose.Schema.Types.Mixed, required: true },
   lower: { type: Number, required: true },
-  upper: { type: mongoose.Schema.Types.Mixed, required: true }  // Allows both Number and String
+  upper: { type: mongoose.Schema.Types.Mixed, required: true },
+  fixedAmount: { type: Number }, 
 });
 
 const TaxBracket = mongoose.model('TaxBracket', TaxBracketSchema);
