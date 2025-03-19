@@ -2,12 +2,11 @@ import AssetAllocationForm from '../Components/AssetAllocationForm.jsx';
 import Navbar from '../Components/Navbar.jsx'
 import NormalDistributionForm from '../Components/NormalDistributionForm.jsx';
 import UniformDistributionForm from '../Components/UniformDistributionForm.jsx';
+import InvestmentForm from '../Components/InvestmentForm.jsx';
 import { useState } from 'react';
 
 const Planning = (props) => {
-
-  const [annualReturnOption, setAnnualReturnOption] = useState("");
-  const [annualIncomeOption, setAnnualIncomeOption] = useState("");
+  
   const [startYearOption, setStartYearOption]  = useState("");
   const [durationOption, setDurationOption]  = useState("");
   const [eventType, setEventType] = useState("");
@@ -18,103 +17,7 @@ const Planning = (props) => {
     <>
     <Navbar/>
 
-    {/* Investment Type Section */}
-    <div>
-      <h1>Investment Type</h1>
-
-      {/* Name Form */}
-      <div>
-        <span>Name</span>
-        <input type="text"></input>
-      </div>
-
-      {/* Description Form */}
-      <div>
-        <span>Description</span>
-        <input type="text"></input>
-      </div>
-
-      {/* Expected Annual Return Form*/}
-      <div>
-        <span>Expected Annual Return</span>   
-        <select onChange={(e) => setAnnualReturnOption(e.target.value)}>
-        <option value="">Select an option</option>
-        <option value="fixed">Fixed</option>
-        <option value="percent">Percent Change</option>
-        <option value="normalDistribution">Normal Distribution</option>
-        </select>
-        {annualReturnOption === "fixed" && 
-        <div>
-          <span>Enter Fixed Amount</span>
-          <input type="text"></input>
-        </div>
-        }
-        {annualReturnOption === "percent" &&
-        <div>
-          <span>Enter Percent Change</span>
-          <input type="text"></input>
-        </div>
-        }
-        {annualReturnOption === "normalDistribution" &&
-        <NormalDistributionForm/>
-        }
-      </div>
-      
-      {/* Expense Ratio Form*/}
-      <div>
-        <span>Expense Ratio</span>
-        <input type="text"></input>
-      </div>  
-      
-      {/* Expected Annual Income Form*/}
-      <div>
-        <span>Expected Annual Income</span>    
-        <select onChange={(e) => setAnnualIncomeOption(e.target.value)}>
-        <option value="">Select an option</option>
-        <option value="fixed">Fixed</option>
-        <option value="percent">Percent Change</option>
-        <option value="normalDistribution">Normal Distribution</option>
-        </select>
-        {annualIncomeOption === "fixed" && 
-        <div>
-          <span>Enter Fixed Amount</span>
-          <input type="text"></input>
-        </div>
-        }
-        {annualIncomeOption === "percent" && 
-        <div>
-          <span>Enter Percent Change</span>
-          <input type="text"></input>
-        </div>
-        }
-        {annualIncomeOption === "normalDistribution" &&
-        <NormalDistributionForm/>
-        }
-      </div>
-
-
-      {/* Taxability Form*/}
-      <div>
-        <span>Taxability</span>
-        <form style={{ display: "inline-block"}}>
-          <label>
-            <input type="radio" name="taxStatus" value="taxable"></input>
-            Taxable
-          </label>
-          <label>
-            <input type="radio" name="taxStatus" value="taxExempt"></input>
-            Tax Exempt
-          </label>
-        </form>
-      </div>
-
-    </div>
-    
-
-
-
-
-
+    <InvestmentForm/>
 
 
 
