@@ -9,12 +9,15 @@ let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+}));
 app.use(express.json());
 const server = app.listen(8000, () => {console.log("Server listening on port 8000...");});
-const authRoutes = require('./routes/auth');
-const session = require('express-session');
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
+const authRoutes = require('./routes/auth');
 
 process.on('SIGINT', async () => {
     try {
@@ -27,24 +30,8 @@ process.on('SIGINT', async () => {
     }
 });
 
-// Cookie Configuration
-app.use(
-    session({
-        secret: process.env.SESSION_KEY,
-        resave: false,
-        saveUninitialized: false,
-        cookie: { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 }, 
-    })
-);
-
-// Get Session Data From Server
-app.get("/session", (req, res) => {
-    res.json(req.session);
-});
-
 //Init Passport and Setup
 app.use(passport.initialize());
-app.use(passport.session());
 
 // Routes
 app.use('/auth', authRoutes);
