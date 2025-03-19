@@ -1,23 +1,10 @@
-/* server/init.JSON
-** You must write a script that will create documents in your database according
-** to the datamodel you have defined for the application.  Remember that you 
-** must at least initialize an admin user account whose credentials are derived
-** from command-line arguments passed to this script. But, you should also add
-** some communities, posts, comments, and link-flairs to fill your application
-** some initial content.  You can use the initializeDB.js script as inspiration, 
-** but you cannot just copy and paste it--you script has to do more to handle
-** users.
-*/
-
-// initializeDB.js - Will add initial application data to MongoDB database
-// Run this script to test your schema
-// Start the mongoDB service as a background process before running the script
-// Pass URL of your mongoDB instance as first argument
-// (e.g., mongodb://127.0.0.1:27017/fake_so)
-
 const mongoose = require('mongoose');
 const UserModel = require('./models/User');
-
+const TaxBracketModel = require('./models/TaxBracket');
+const FederalTaxModel = require('./models/FederalTax');
+const getTaxData = require('./scrape_taxbrackets');
+const getTaxDeductionData = require('./scrape_taxdeductions');
+const getCapitalTaxData = require('./scrape_capitaltax')
 
 let mongoDB = 'mongodb://127.0.0.1:27017/flp';
 mongoose.connect(mongoDB);
@@ -35,14 +22,42 @@ function createUser(userObj) {
 }
 
 async function initializeDB() {
-    const user1 = {
-        name: "meshane",
-        email: "meshane.peiris@stonybrook.edu",
-        age: 9,
-        stateOfResidence: "New York"
+    try {
+      const brackets = await getTaxData();
+      const singleTaxBrackets = brackets.singleTaxBracket;
+      const marriedTaxBrackets = brackets.marriedTaxBracket;
+      const singleTaxObjects = await TaxBracketModel.insertMany(singleTaxBrackets);
+      const marriedTaxObjects = await TaxBracketModel.insertMany(marriedTaxBrackets);
+  
+      const taxdeductiondata = await getTaxDeductionData();
+      
+      const capitaltaxdata = await getCapitalTaxData();
+      const singleCapitalTaxObjects = await TaxBracketModel.insertMany(capitaltaxdata.singleCapitalTax)
+      const marriedCapitalTaxObjects = await TaxBracketModel.insertMany(capitaltaxdata.marriedCapitalTax)
+
+      const federalTax = new FederalTaxModel({
+        federalIncomeTaxBrackets: {
+          single: singleTaxObjects.map(b => b._id),
+          married: marriedTaxObjects.map(b => b._id),
+        },
+        standardDeductions: {
+          single: taxdeductiondata.singleTaxDeductions.deduction.replace(/[^0-9]/g, ''),
+          married: taxdeductiondata.marriedTaxDeductions.deduction.replace(/[^0-9]/g, ''),
+        },
+        capitalGainsTaxRates: {
+          single: singleCapitalTaxObjects.map(b => b._id),
+          married:marriedCapitalTaxObjects.map(b => b._id),
+        }
+      });
+  
+      await federalTax.save();  
+  
+      console.log("Federal tax saved..");
+    } catch (error) {
+      console.error("Error initializing db", error);
     }
-    let user1Ref = await createUser(user1)
-}
+  }
+  
 
 initializeDB()
     .catch((err) => {
@@ -52,6 +67,7 @@ initializeDB()
             db.close();
         }
     });
+
 
 console.log('processing...');
 mongoose.connection.close();
