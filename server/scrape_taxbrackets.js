@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 
+
 const url = 'https://www.irs.gov/filing/federal-income-tax-rates-and-brackets'
 
 function parseTaxBrackets(input) {
@@ -32,13 +33,14 @@ async function getTaxData() {
         const taxData = $("tbody>tr>td").text()
         singleTaxBracket = parseTaxBrackets(taxData)[0];
         marriedTaxBracket = parseTaxBrackets(taxData)[1];
-        console.log(singleTaxBracket);
-        console.log(marriedTaxBracket);
+        return { singleTaxBracket, marriedTaxBracket }
+
     } catch (error) {
         console.error(error)
     }
 }
 
-getTaxData();
+module.exports = getTaxData;
+
 
 

@@ -24,13 +24,12 @@ async function getTaxDeductionData() {
         const taxData = $('table[summary="Table 10-1.Standard Deduction Chart for Most People*"]>tbody>tr>td').text();
         const singleTaxDeductions = parseTaxDeductions(taxData)[0];
         const marriedTaxDeductions = parseTaxDeductions(taxData)[1];
-        console.log(singleTaxDeductions);
-        console.log(marriedTaxDeductions);
+        return { singleTaxDeductions, marriedTaxDeductions }
     } catch (error) {
         console.error(error)
     }
 }
 
-getTaxDeductionData();
+module.exports = getTaxDeductionData;
 
 

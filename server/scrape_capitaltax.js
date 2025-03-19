@@ -17,19 +17,19 @@ function parseCapitalTaxData(text) {
     if (singleMatch) {
         const singleCapitalGains = [];
         singleCapitalGains.push({
-            minIncome: 0,
-            maxIncome: parseInt(singleMatch[1].replace(/,/g, '')),
-            taxRate: '0%',
+            lower: 0,
+            upper: parseInt(singleMatch[1].replace(/,/g, '')),
+            rate: 0,
         })
         singleCapitalGains.push({
-            minIncome: parseInt(singleMatch[1].replace(/,/g, '')),
-            maxIncome: parseInt(singleMatch[2].replace(/,/g, '')),
-            taxRate: '15%',
+            lower: parseInt(singleMatch[1].replace(/,/g, '')),
+            upper: parseInt(singleMatch[2].replace(/,/g, '')),
+            rate: 15,
         })
         singleCapitalGains.push({
-            minIncome: parseInt(singleMatch[2].replace(/,/g, '')),
-            maxIncome: 'infinity',
-            taxRate: '20%',
+            lower: parseInt(singleMatch[2].replace(/,/g, '')),
+            upper: 'infinity',
+            rate: 20,
         })
         taxData.push(singleCapitalGains);
     }
@@ -37,19 +37,19 @@ function parseCapitalTaxData(text) {
     if (marriedJointlyMatch) {
         const marriedCapitalGains = [];
         marriedCapitalGains.push({
-            minIncome: 0,
-            maxIncome: parseInt(marriedJointlyMatch[1].replace(/,/g, '')),
-            taxRate: '0%',
+            lower: 0,
+            upper: parseInt(marriedJointlyMatch[1].replace(/,/g, '')),
+            rate: 0,
         })
         marriedCapitalGains.push({
-            minIncome: parseInt(marriedJointlyMatch[1].replace(/,/g, '')),
-            maxIncome: parseInt(marriedJointlyMatch[2].replace(/,/g, '')),
-            taxRate: '15%',
+            lower: parseInt(marriedJointlyMatch[1].replace(/,/g, '')),
+            upper: parseInt(marriedJointlyMatch[2].replace(/,/g, '')),
+            rate: 15,
         });
         marriedCapitalGains.push({
-            minIncome: parseInt(marriedJointlyMatch[2].replace(/,/g, '')),
-            maxIncome: 'infinity',
-            taxRate: '20%',
+            lower: parseInt(marriedJointlyMatch[2].replace(/,/g, '')),
+            upper: 'infinity',
+            rate: 20,
         });
         taxData.push(marriedCapitalGains);
     }
@@ -73,16 +73,16 @@ async function getCapitalTaxData() {
 
         const string = prevParagraph.text() +  capitalTaxData.text() + secondPrevParagraph.text() + secondCapitalTaxData.text() + nextParagraph.text();
 
-        console.log(parseCapitalTaxData(string)[0]);
-        console.log(parseCapitalTaxData(string)[1])
+        const singleCapitalTax = parseCapitalTaxData(string)[0];
+        const marriedCapitalTax = parseCapitalTaxData(string)[1];
 
-
+        return { singleCapitalTax, marriedCapitalTax }
 
     } catch (error) {
         console.error(error)
     }
 }
 
-getCapitalTaxData();
+module.exports = getCapitalTaxData;
 
 
