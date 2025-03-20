@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 //Generate JWT for Auth
 const generateToken = (user) => {
-    return jwt.sign({ id: user._id, googleID: user.googleID, email: user.email}, process.env.JWT_SECRET);
+    return jwt.sign({ googleID: user.googleID }, process.env.JWT_SECRET);
 };
 
 //Initiate Google OAuth
