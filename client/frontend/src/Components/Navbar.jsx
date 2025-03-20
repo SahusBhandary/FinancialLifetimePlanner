@@ -1,32 +1,9 @@
 import { Link } from "react-router-dom"
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { jwtDecode } from 'jwt-decode'
-const Navbar = (props) => {
-  const [user, setUser] = useState("")
-  useEffect(() => {
-    const fetchUser = async () => {
-      try{
-        const tokenResponse = await axios.get('http://localhost:8000/auth/getUserCookie', {
-          withCredentials: true,
-        });
-        console.log(tokenResponse);
-        
+import { useContext } from "react";
+import { StoreContext } from "../store/Store";
 
-        if (tokenResponse?.data){
-          const user = jwtDecode(tokenResponse.data);
-          if (user != ""){
-            setUser(user);
-          }
-        }
-      }
-      catch(error){
-        console.error("Error Fetching User's ID: ", error);
-      }
-    }
-    fetchUser();
-  }, [])
-  console.log(user);
+const Navbar = (props) => {
+  const { user } = useContext(StoreContext);
   return (
     <nav className="navbar">
         <div className="logo">
