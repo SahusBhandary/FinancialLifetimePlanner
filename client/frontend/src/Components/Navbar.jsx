@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom"
+import { useContext } from "react";
+import { StoreContext } from "../store/Store";
 
 const Navbar = (props) => {
+  const { user } = useContext(StoreContext);
   return (
     <nav className="navbar">
         <div className="logo">
@@ -11,8 +14,8 @@ const Navbar = (props) => {
         <ul className="nav-links">
           <li><Link to="/planning">Planning</Link></li>
           <li><Link to="/profile">Profile</Link></li>
-          <li><Link to="/login">Login</Link></li>
-        </ul> 
+          <li>{!user ? <Link to="/login">Login</Link> : <Link to="/logout">Logout</Link>}</li>
+        </ul>
     </nav>
   )
 }

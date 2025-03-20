@@ -18,7 +18,8 @@ function createUser(userObj) {
         name: userObj.name,
         email: userObj.email,
         age: userObj.age,
-        stateOfResidence: userObj.stateOfResidence
+        stateOfResidence: userObj.stateOfResidence,
+        googleID: userObj.googleID
     });
     return newUser.save();
 }

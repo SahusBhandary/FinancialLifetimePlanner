@@ -15,16 +15,23 @@ const UserSchema = new mongoose.Schema({
   },
   age: {
     type: Number,
-    required: true,
+    required: false,
     min: 0
   },
   stateOfResidence: {
     type: String,
-    required: true,
+    required: false,
     trim: true
   },
+<<<<<<< HEAD
+  googleID: {
+    type: String,
+    required: true,
+  }
+=======
   investmentTypes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'InvestmentType' }],
   events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'EventSeries' }],
+>>>>>>> development
 },
 );
 
