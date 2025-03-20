@@ -22,7 +22,9 @@ app.post("/submitInvestmentType", async (req, res) => {
     try {
         const form = req.body.form;
 
-        console.log(form)
+        const user = req.body.user;
+
+        // in this line of code, 
         const existingType = await InvestmentTypeModel.findOne({ name: form.name });
 
         if (existingType) {
