@@ -9,17 +9,8 @@ const Planning = (props) => {
   return(
     <>
     <Navbar/>
-
     <InvestmentForm/>
-
-
     <EventForm/>
-
-
-
-
-    
-
     <ScenerioForm/>
     </>
   )

@@ -1,8 +1,11 @@
 import { useState } from 'react'; 
 import NormalDistributionForm from "./NormalDistributionForm";
 import axios from 'axios'
+import { useContext } from "react";
+import { StoreContext } from "../store/Store";
 
 const InvestmentForm = (props) => {
+  const { user } = useContext(StoreContext);
   const [annualReturnOption, setAnnualReturnOption] = useState("");
   const [annualIncomeOption, setAnnualIncomeOption] = useState("");
 
@@ -130,7 +133,7 @@ const InvestmentForm = (props) => {
       taxability: isTaxable
     }
   
-    axios.post('http://localhost:8000/submitInvestmentType', {form: form})
+    axios.post('http://localhost:8000/submitInvestmentType', {form: form, user: user})
   }
 
 
