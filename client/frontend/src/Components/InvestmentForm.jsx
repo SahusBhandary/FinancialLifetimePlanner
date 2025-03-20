@@ -1,5 +1,6 @@
 import { useState } from 'react'; 
 import NormalDistributionForm from "./NormalDistributionForm";
+import axios from 'axios'
 
 const InvestmentForm = (props) => {
   const [annualReturnOption, setAnnualReturnOption] = useState("");
@@ -123,15 +124,13 @@ const InvestmentForm = (props) => {
       description: description,
       returnAmtOrPct: returnAmtOrPct,
       returnDistribution: returnDistribution,
-      expenseRatio: expenseRatio/100,
+      expenseRatio: expenseRatio,
       incomeAmtOrPct: incomeAmtOrPct,
       incomeDistribution: incomeDistribution,
       taxability: isTaxable
     }
-
-    console.log(form);
   
-    // axios.post('http://localhost:8000/submitInvestmentType', {form: form})
+    axios.post('http://localhost:8000/submitInvestmentType', {form: form})
   }
 
 

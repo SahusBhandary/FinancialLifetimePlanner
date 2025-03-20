@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const InvestmentTypeSchema = new mongoose.Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
-    returnAmtOrPct: { type: String, enum: ['amount', 'percent'], required: true },
+    returnAmtOrPct: { type: String, required: true },
     returnDistribution: {
-      type: { type: String, enum: ['fixed', 'normal', 'uniform', 'GBM'], required: true },
+      type: { type: String, required: true },
       value: { type: Number }, // for 'fixed'
       mean: { type: Number },  // for 'normal'
       stdev: { type: Number }, // for 'normal'
@@ -15,9 +15,9 @@ const InvestmentTypeSchema = new mongoose.Schema({
       sigma: { type: Number }  // for 'GBM'
     },
     expenseRatio: { type: Number, required: true },
-    incomeAmtOrPct: { type: String, enum: ['amount', 'percent'], required: true },
+    incomeAmtOrPct: { type: String, required: true },
     incomeDistribution: {
-      type: { type: String, enum: ['fixed', 'normal', 'uniform', 'GBM'], required: true },
+      type: { type: String, required: true },
       value: { type: Number }, // for 'fixed'
       mean: { type: Number },  // for 'normal'
       stdev: { type: Number }, // for 'normal'
