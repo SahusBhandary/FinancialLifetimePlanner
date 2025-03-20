@@ -4,7 +4,9 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('./passport');
 const cookieParser = require('cookie-parser')
+
 const InvestmentTypeModel = require('./models/InvestmentType')
+const UserModel = require('./models/User')
 
 mongoose.connect('mongodb://127.0.0.1:27017/flp');
 let db = mongoose.connection;
@@ -20,26 +22,36 @@ app.use(cookieParser());
 
 app.post("/submitInvestmentType", async (req, res) => {
     try {
-        const form = req.body.form;
+        const { form, user } = req.body;
 
-        const user = req.body.user;
+        const existingUser = await UserModel.findOne({ googleID: user.googleID }).populate('investmentTypes');
 
-        // in this line of code, 
-        const existingType = await InvestmentTypeModel.findOne({ name: form.name });
+        const hasInvestmentType = existingUser.investmentTypes.some(type => type.name === form.name);
 
-        if (existingType) {
-            return res.status(400).send({ message: "Investment type already exists.." });
+        if (hasInvestmentType) {
+            return res.status(400).send({ message: "Investment type already exists for this user." });
         }
 
-        const newInvestmentType = new InvestmentTypeModel(form);
-        await newInvestmentType.save();
+        let existingType = await InvestmentTypeModel.findOne({ name: form.name });
 
-        res.send({ message: "Investment type successfully added.." });
+        if (!existingType) {
+            existingType = new InvestmentTypeModel(form);
+            await existingType.save();
+        }
+
+        existingUser.investmentTypes.push(existingType._id);
+        await existingUser.save();
+
+        res.send({ message: "Investment type successfully added to user." });
+
     } catch (error) {
         console.error("Error submitting investment type.", error);
         res.status(500).send({ message: "Error submitting investment type" });
     }
 });
+
+app.post
+
 
 
 const server = app.listen(8000, () => {console.log("Server listening on port 8000...");});

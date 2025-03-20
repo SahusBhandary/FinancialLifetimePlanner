@@ -2,9 +2,11 @@ import { useState } from 'react';
 import NormalDistributionForm from './NormalDistributionForm.jsx';
 import UniformDistributionForm from './UniformDistributionForm.jsx';
 import AssetAllocationForm from "./AssetAllocationForm.jsx"
+import { useContext } from "react";
+import { StoreContext } from "../store/Store";
 
 const EventForm = (props) => {
-  
+    const { user } = useContext(StoreContext)
     const [startYearOption, setStartYearOption]  = useState("");
     const [durationOption, setDurationOption]  = useState("");
     const [eventType, setEventType] = useState("");
@@ -217,7 +219,7 @@ const EventForm = (props) => {
 
                     {(assetAllocationType === "fixed" || assetAllocationType === "glidePath") &&
                     <div>
-                    <AssetAllocationForm assetAllocationType={assetAllocationType} investmentCount={5}/>     
+                    <AssetAllocationForm assetAllocationType={assetAllocationType} investmentCount={user.investmentTypes.length}/>     
                     </div>
                     }
                 </div>
