@@ -23,15 +23,12 @@ const UserSchema = new mongoose.Schema({
     required: false,
     trim: true
   },
-<<<<<<< HEAD
   googleID: {
     type: String,
     required: true,
-  }
-=======
+  },
   investmentTypes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'InvestmentType' }],
   events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'EventSeries' }],
->>>>>>> development
 },
 );
 

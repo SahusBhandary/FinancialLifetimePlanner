@@ -1,7 +1,7 @@
 import { useState } from 'react'; 
-import NormalDistributionForm from '../Components/NormalDistributionForm.jsx';
-import UniformDistributionForm from '../Components/UniformDistributionForm.jsx';
-import AssetAllocationForm from "../Components/AssetAllocationForm.jsx"
+import NormalDistributionForm from './NormalDistributionForm.jsx';
+import UniformDistributionForm from './UniformDistributionForm.jsx';
+import AssetAllocationForm from "./AssetAllocationForm.jsx"
 
 const EventForm = (props) => {
   
