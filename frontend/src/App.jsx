@@ -5,6 +5,7 @@ import Login from "./Pages/Login"
 import Planning from "./Pages/Planning"
 import Profile from "./Pages/Profile"
 import Simulation from "./Pages/Simulation"
+import Logout from "./Pages/Logout"
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/planning" element={<Planning/>}/>
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/simulation" element={<Simulation/>}/>
+        <Route path="/logout" element={<Logout/>}/>
       </Routes>
     </Router>
   );
