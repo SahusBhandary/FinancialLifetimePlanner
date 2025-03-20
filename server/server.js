@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 require('./passport');
+const cookieParser = require('cookie-parser')
 
 mongoose.connect('mongodb://127.0.0.1:27017/flp');
 let db = mongoose.connection;
@@ -14,6 +15,7 @@ app.use(cors({
     credentials: true,
 }));
 app.use(express.json());
+app.use(cookieParser());
 const server = app.listen(8000, () => {console.log("Server listening on port 8000...");});
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
