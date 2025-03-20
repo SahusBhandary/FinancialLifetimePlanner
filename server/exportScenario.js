@@ -2,13 +2,10 @@ const yaml = require('js-yaml');
 const mongoose = require('mongoose');
 
 const Scenario = require('./models/Scenario'); 
-const InvestmentType = require('./models/InvestmentType'); 
-const Investment = require('./models/Investment');
-const EventSeries = require('./models/EventSeries'); 
 
 
 
-// Function to export scenario into YAML string
+// function to export scenario into YAML string
 async function exportScenarioToYAML(scenarioId) {
   try {
     console.log('Fetching scenario with ID:', scenarioId);
@@ -18,12 +15,12 @@ async function exportScenarioToYAML(scenarioId) {
       throw new Error('Invalid ObjectId');
     }
 
-    // Fetch scenario with populated references
+    // populate fields in the scenario
     const scenario = await Scenario.findById(scenarioId)
       .populate('investmentTypes')
       .populate({
         path: 'investments',
-        populate: { path: 'investmentType' }, // Populate investmentType in investments
+        populate: { path: 'investmentType' }, 
       })
       .populate('eventSeries')
       .exec();
@@ -34,7 +31,7 @@ async function exportScenarioToYAML(scenarioId) {
 
     console.log('Scenario found:', scenario);
 
-    // Convert mongoose documents to plain objects
+    // convert mongoose documents to plain objects
     const scenarioObject = scenario.toObject({ virtuals: true });
     scenarioObject.investmentTypes = scenario.investmentTypes.map((it) => it.toObject({ virtuals: true }));
     scenarioObject.investments = scenario.investments.map((inv) => inv.toObject({ virtuals: true }));
@@ -112,7 +109,7 @@ async function exportScenarioToYAML(scenarioId) {
 
     let yamlString = yaml.dump(yamlData, { noRefs: true, flowLevel: 3, indent: 2 });
 
-    // Add new lines between object references
+    // new lines between references for formatting
     yamlString = yamlString
       .replace(/\ninvestmentTypes:/g, '\n\ninvestmentTypes:') 
       .replace(/\ninvestments:/g, '\n\ninvestments:') 

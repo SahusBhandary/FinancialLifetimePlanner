@@ -7,21 +7,21 @@ import "../css/profile.css";
 
 const Profile = () => {
   const { user } = useContext(StoreContext);
-  const [scenarios, setScenarios] = useState([]); // State to store fetched scenarios
+  const [scenarios, setScenarios] = useState([]); // state to store fetched scenarios
 
   // Fetch scenarios when the user changes
   useEffect(() => {
     const fetchScenarios = async () => {
       if (user?.scenarios?.length > 0) {
         try {
-          // Fetch scenario data for each scenario ID
+          // fetch scenario data for each scenario ID
           const scenarioData = await Promise.all(
             user.scenarios.map(async (scenarioId) => {
               const response = await axios.get(`http://localhost:8000/getScenario/${scenarioId}`);
               return response.data;
             })
           );
-          setScenarios(scenarioData); // Set the fetched scenarios in state
+          setScenarios(scenarioData); // set the fetched scenarios in state
         } catch (error) {
           console.error("Error fetching scenarios:", error);
         }
@@ -34,17 +34,17 @@ const Profile = () => {
   const handleExportScenario = async (scenarioId) => {
     try {
       const response = await axios.get(`http://localhost:8000/export-scenario/${scenarioId}`, {
-        responseType: 'blob', // Ensure the response is treated as a binary file
+        responseType: 'blob', 
       });
 
-      // Create a download link for the YAML file
+      // create a download link for the YAML file
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `scenario-${scenarioId}.yaml`); // Set the file name
+      link.setAttribute('download', `scenario-${scenarioId}.yaml`); // set the file name
       document.body.appendChild(link);
-      link.click(); // Trigger the download
-      link.remove(); // Clean up
+      link.click(); // trigger download
+      link.remove(); 
     } catch (error) {
       console.error('Error exporting scenario:', error);
       alert('Failed to export scenario.');
