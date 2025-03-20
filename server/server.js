@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 
 const InvestmentTypeModel = require('./models/InvestmentType')
 const UserModel = require('./models/User')
+const EventSeriesModel = require('./models/EventSeries')
 
 mongoose.connect('mongodb://127.0.0.1:27017/flp');
 let db = mongoose.connection;
@@ -50,7 +51,37 @@ app.post("/submitInvestmentType", async (req, res) => {
     }
 });
 
-app.post
+app.post("/getInvestments", async (req, res) => {
+    try {
+        const { investmentIds } = req.body;
+
+        const investments = await InvestmentTypeModel.find({
+            _id: { $in: investmentIds }
+        });
+
+        res.status(200).send(investments);
+
+    } catch (error) {
+        console.error("Error retrieving investments.", error);
+        res.status(500).send({ message: "Error retrieving investments." });
+    }
+});
+
+app.post("/getEvents", async (req, res) => {
+    try {
+        const { eventIds } = req.body;
+
+        const events = await EventSeriesModel.find({
+            _id: { $in: eventIds }
+        });
+
+        res.status(200).send(events);
+
+    } catch (error) {
+        console.error("Error retrieving events.", error);
+        res.status(500).send({ message: "Error retrieving events." });
+    }
+});
 
 
 

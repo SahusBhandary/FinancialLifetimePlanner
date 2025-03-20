@@ -25,7 +25,6 @@ const InvestmentForm = (props) => {
   const [isTaxable, setIsTaxable] = useState(false);
 
   const [error, setError] = useState([]);
-  console.log(user);
   
   
 
@@ -135,8 +134,8 @@ const InvestmentForm = (props) => {
       incomeDistribution: incomeDistribution,
       taxability: isTaxable
     }
-  
     axios.post('http://localhost:8000/submitInvestmentType', {form: form, user: user})
+    window.location.reload()
   }
 
 
