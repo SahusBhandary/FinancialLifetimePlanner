@@ -1,4 +1,3 @@
-const fs = require('fs');
 const yaml = require('js-yaml');
 const mongoose = require('mongoose');
 
@@ -7,29 +6,19 @@ const InvestmentType = require('./models/InvestmentType');
 const Investment = require('./models/Investment');
 const EventSeries = require('./models/EventSeries'); 
 
-// connect to MongoDB (FOR TESTING PURPOSES)
-mongoose.connect('mongodb://localhost:27017/flp');
 
-mongoose.connection.on('connected', () => {
-  console.log('Connected to MongoDB');
-});
 
-mongoose.connection.on('error', (err) => {
-  console.error('MongoDB connection error:', err);
-});
-
-// Ffunction to export scenario into YAML file
-async function exportScenarioToYAML(scenarioId, outputFilePath) {
+// Function to export scenario into YAML string
+async function exportScenarioToYAML(scenarioId) {
   try {
     console.log('Fetching scenario with ID:', scenarioId);
 
-    // validate ObjectId
+    // Validate ObjectId
     if (!mongoose.isValidObjectId(scenarioId)) {
-      console.error('Invalid ObjectId:', scenarioId);
-      return;
+      throw new Error('Invalid ObjectId');
     }
 
-    // fetch scenario with populated references
+    // Fetch scenario with populated references
     const scenario = await Scenario.findById(scenarioId)
       .populate('investmentTypes')
       .populate({
@@ -40,19 +29,18 @@ async function exportScenarioToYAML(scenarioId, outputFilePath) {
       .exec();
 
     if (!scenario) {
-      console.error('Scenario not found in the database');
-      return;
+      throw new Error('Scenario not found in the database');
     }
 
     console.log('Scenario found:', scenario);
 
-    // convert mongoose documents to plain objects
+    // Convert mongoose documents to plain objects
     const scenarioObject = scenario.toObject({ virtuals: true });
     scenarioObject.investmentTypes = scenario.investmentTypes.map((it) => it.toObject({ virtuals: true }));
     scenarioObject.investments = scenario.investments.map((inv) => inv.toObject({ virtuals: true }));
     scenarioObject.eventSeries = scenario.eventSeries.map((es) => es.toObject({ virtuals: true }));
 
-    // transform scenario into yaml
+    // Transform scenario into YAML
     const yamlData = {
       name: scenarioObject.name,
       maritalStatus: scenarioObject.maritalStatus,
@@ -129,21 +117,13 @@ async function exportScenarioToYAML(scenarioId, outputFilePath) {
       .replace(/\ninvestmentTypes:/g, '\n\ninvestmentTypes:') 
       .replace(/\ninvestments:/g, '\n\ninvestments:') 
       .replace(/\neventSeries:/g, '\n\neventSeries:') 
-      .replace(/\ninflationAssumption:/g, '\n\ninflationAssumption:') 
-     
+      .replace(/\ninflationAssumption:/g, '\n\ninflationAssumption:');
 
-    // Write the YAML data to a file
-    fs.writeFileSync(outputFilePath, yamlString);
-    console.log(`Scenario exported to ${outputFilePath}`);
+    return yamlString; //returns a yaml string
   } catch (error) {
     console.error('Error exporting scenario:', error);
-  } finally {
-    // Close the MongoDB connection
-    mongoose.connection.close();
+    throw error; 
   }
 }
 
-// TESTING USE
-const scenarioId = '67d8d970b763d79683907f16'; // replace with the actual scenario _id
-const outputFilePath = 'scenario-export-test2.yaml'; // replace with the desired output file path
-exportScenarioToYAML(scenarioId, outputFilePath);
+module.exports = exportScenarioToYAML;
