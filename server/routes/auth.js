@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 //Generate JWT for Auth
 const generateToken = (user) => {
-    return jwt.sign({ id: user._id, googleID: user.googleID, email: user.email}, process.env.JWT_SECRET);
+    return jwt.sign({ googleID: user.googleID }, process.env.JWT_SECRET);
 };
 
 //Initiate Google OAuth
@@ -22,6 +22,16 @@ router.get('/getUserCookie', async(req,res) => {
         return res.status(401).send('No token found');
     }
     res.status(200).send(token);
+})
+
+router.get('/logout', async(req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: true, // Use true only in HTTPS
+        sameSite: 'none', // Adjust based on your CORS policy
+    });
+
+    res.status(200).json({ message: 'Logged out successfully' });
 })
 
 // Callback route for Google to redirect

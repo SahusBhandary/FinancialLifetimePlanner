@@ -44,6 +44,7 @@ const server = app.listen(8000, () => {console.log("Server listening on port 800
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const authRoutes = require('./routes/auth');
+const User = require('./models/User');
 
 process.on('SIGINT', async () => {
     try {
@@ -62,6 +63,20 @@ app.use(passport.initialize());
 // Routes
 app.use('/auth', authRoutes);
 
-// use http://localhost:8000/google/callback
+// Fetch User
+app.get('/getUser/:id', async (req, res) => {
+    const googleID = req.params.id;
+
+    try{
+        const user = await User.findOne( {googleID: googleID} )
+        if (!user){
+            res.status(401).send("User Not Found");
+        }
+        res.status(200).send(user)
+    }
+    catch(err){
+        console.error(err)
+    }
+})
 
 module.exports = app;

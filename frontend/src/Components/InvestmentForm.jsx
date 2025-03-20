@@ -24,6 +24,9 @@ const InvestmentForm = (props) => {
   const [isTaxable, setIsTaxable] = useState(null);
 
   const [error, setError] = useState([]);
+  console.log(user);
+  
+  
 
   const checkFields = () => {
     setError([]);
