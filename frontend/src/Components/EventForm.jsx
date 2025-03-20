@@ -1,9 +1,11 @@
-import { useState } from 'react'; 
+import { useState, useContext } from 'react'; 
 import NormalDistributionForm from './NormalDistributionForm.jsx';
 import UniformDistributionForm from './UniformDistributionForm.jsx';
 import AssetAllocationForm from "./AssetAllocationForm.jsx"
+import { StoreContext } from "../store/Store";
 
 const EventForm = (props) => {
+    const { user } = useContext(StoreContext)
   
     const [startYearOption, setStartYearOption]  = useState("");
     const [durationOption, setDurationOption]  = useState("");
@@ -11,6 +13,11 @@ const EventForm = (props) => {
     const [eventAnnualIncomeOption, setEventAnnualIncomeOption] = useState("");
     const [assetAllocationType ,setAssetAllocationType] = useState("");
 
+
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    
+    console.log(user);
 
     return (
        <>
@@ -105,7 +112,9 @@ const EventForm = (props) => {
             <UniformDistributionForm/>
             }
         </div>
+        
 
+        {/* Type of Event Section, 4 Cases: Income, Expense, Invest, Rebalance */}
         <div>
             <span>Event Type</span>
             <select onChange={(e) => setEventType(e.target.value)}>
@@ -116,6 +125,8 @@ const EventForm = (props) => {
             <option value="rebalance">Rebalance</option>
             </select>
 
+
+            {/* Income & Expense Case */}
             { (eventType === "income" || eventType ==="expense") &&
             <div>
                 <div>
@@ -205,6 +216,7 @@ const EventForm = (props) => {
             </div>
             }
 
+            {/* Invest Case */}
             { eventType === "invest" &&
             <div>
                 <div>
@@ -228,12 +240,14 @@ const EventForm = (props) => {
             </div>
             }
 
+            {/* Rebalance Case */}
             { eventType === "rebalance" &&
             <div>
                 <AssetAllocationForm assetAllocationType={"rebalance"}/>
             </div>
             }
 
+            <button>Submit</button>
 
         </div>
 
