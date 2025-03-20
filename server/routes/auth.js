@@ -24,6 +24,16 @@ router.get('/getUserCookie', async(req,res) => {
     res.status(200).send(token);
 })
 
+router.get('/logout', async(req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: true, // Use true only in HTTPS
+        sameSite: 'none', // Adjust based on your CORS policy
+    });
+
+    res.status(200).json({ message: 'Logged out successfully' });
+})
+
 // Callback route for Google to redirect
 router.get('/google/callback', passport.authenticate('google', {failureRedirect: 'http://localhost:3000/#/login', session: false }), (req, res) => {
     if (!req.user){
