@@ -8,14 +8,13 @@ import axios from 'axios'
 
 const EventForm = (props) => {
     const { user } = useContext(StoreContext);
-    const [investments, setInvestments] = useState([]); // user's investment types
-    const [listOfInvestments, setListOfInvestments] = useState([]); // user's investments
-    const [events, setEvents] = useState([]); //  user's events
+    const [investments, setInvestments] = useState([]); // User's investment types
+    const [listOfInvestments, setListOfInvestments] = useState([]); // User's investments
+    const [events, setEvents] = useState([]); //  User's events
 
     const [startYearOption, setStartYearOption]  = useState("");
     const [durationOption, setDurationOption]  = useState("");
     const [eventType, setEventType] = useState("");
-    // const [eventAnnualIncomeOption, setEventAnnualIncomeOption] = useState("");
     const [assetAllocationType ,setAssetAllocationType] = useState("");
 
     const [name, setName] = useState("");
@@ -71,6 +70,13 @@ const EventForm = (props) => {
     const [glidePathAllocationBefore, setGlidePathAllocationBefore] = useState();
     const [glidePathAllocationAfter, setGlidePathAllocationAfter] = useState();
     const [maxCash, setMaxCash] = useState("");
+
+    // Rebalance Use States
+    const [taxStatusReblanaceOption, setTaxStatusRebalanceOption] = useState("");
+    const [assetAllocationDataNonRetirement, setAssetAllocationDataNonRetirement] = useState();
+    const [assetAllocationDataPreTax, setAssetAllocationDataPreTax] = useState();
+    const [assetAllocationDataAfterTax, setAssetAllocationAfterTax]  = useState();
+
     useEffect(() => {
         if (!user) {
             return
@@ -126,9 +132,23 @@ const EventForm = (props) => {
         setAssetAllocationData(Array(listOfInvestments.filter(investment => investment.taxStatus !== "pre-tax").length).fill(""));
         setGlidePathAllocationBefore(Array(listOfInvestments.filter(investment => investment.taxStatus !== "pre-tax").length).fill(""))
         setGlidePathAllocationAfter(Array(listOfInvestments.filter(investment => investment.taxStatus !== "pre-tax").length).fill(""))
+        setAssetAllocationDataNonRetirement(Array(listOfInvestments.filter(investment => investment.taxStatus === "non-retirement").length).fill(""))
+        setAssetAllocationDataPreTax(Array(listOfInvestments.filter(investment => investment.taxStatus === "pre-tax").length).fill(""))
+        setAssetAllocationAfterTax(Array(listOfInvestments.filter(investment => investment.taxStatus === "after-tax").length).fill(""))
     }, [user, listOfInvestments.filter(investment => investment.taxStatus !== "pre-tax").length]);
+    
+    // A function that formats asset allocation from [{cash non-retirement: 0.5}, {SP500 non-retirement: 0.5}] --> {cash non-retirement: 0.5, SP500 non-retirement: 0.5}
+    const assetAllocationFormatting = (assetAllocationArray) => {
+        const formattedAllocation = assetAllocationArray.reduce((acc, obj) => {
+            const [key, value] = Object.entries(obj)[0]; 
+            if (value !== "") {  
+                acc[key] = Number(value); 
+            }
+            return acc;
+        }, {});
 
-
+        return formattedAllocation
+    };
     const checkFields = () => {
         
 
@@ -140,6 +160,7 @@ const EventForm = (props) => {
             type: startYearOption,
         }
 
+        // Start Year data formatting based on the option selected.
         switch (startYearOption){
             case 'fixed':
                 start['value'] = fixedStartYear
@@ -164,6 +185,7 @@ const EventForm = (props) => {
             type: durationOption
         }
 
+        // Duration data formatting based on the option selected.
         switch (durationOption) {
             case 'fixed':
                 duration['value'] = fixedDuration;
@@ -187,6 +209,7 @@ const EventForm = (props) => {
 
         }
 
+        // Data formatting based on the event type selected - Income, Expense, Invest, Rebalance
         switch (eventType) {
             case 'income':
                 let changeAmtOrPctIncome = annualChangeIncomeOption;
@@ -262,32 +285,14 @@ const EventForm = (props) => {
                 break;
             case 'invest':
                 if (assetAllocationType === "fixed"){
-                    const formattedData = assetAllocationData.reduce((acc, obj) => {
-                        const [key, value] = Object.entries(obj)[0];
-                        if (value !== "") {  
-                            acc[key] = Number(value); 
-                        }
-                        return acc;
-                    }, {});
+                    const formattedData = assetAllocationFormatting(assetAllocationData);
                     event['assetAllocation'] = formattedData;
                     event['maxCash'] = maxCash;
                     event['glidePath'] = false;
                 }
                 else{
-                    const formattedAllocation1 = glidePathAllocationBefore.reduce((acc, obj) => {
-                        const [key, value] = Object.entries(obj)[0]; // Extract key-value pair
-                        if (value !== "") {  // Ignore empty values
-                            acc[key] = Number(value); // Convert to number
-                        }
-                        return acc;
-                    }, {});
-                    const formattedAllocation2 = glidePathAllocationAfter.reduce((acc, obj) => {
-                        const [key, value] = Object.entries(obj)[0]; // Extract key-value pair
-                        if (value !== "") {  // Ignore empty values
-                            acc[key] = Number(value); // Convert to number
-                        }
-                        return acc;
-                    }, {});
+                    const formattedAllocation1 = assetAllocationFormatting(glidePathAllocationBefore);
+                    const formattedAllocation2 = assetAllocationFormatting(glidePathAllocationAfter)
                     event['assetAllocation'] = formattedAllocation1
                     event['assetAllocation2'] = formattedAllocation2;
                     event['maxCash'] = maxCash;
@@ -295,18 +300,20 @@ const EventForm = (props) => {
                 }
                 break;
             case 'rebalance':
+                if (taxStatusReblanaceOption === "pre-tax")
+                    event['assetAllocation'] = assetAllocationFormatting(assetAllocationDataPreTax)
+                else if (taxStatusReblanaceOption === "after-tax")
+                    event['assetAllocation'] = assetAllocationFormatting(assetAllocationDataAfterTax)
+                else
+                    event['assetAllocation'] = assetAllocationFormatting(assetAllocationDataNonRetirement);
                 break;
         }
 
         console.log(event);
         const response = await axios.post('http://localhost:8000/submitEvent', {user: user, event: event});
         window.location.reload();
-        
     }
-
-
-
-
+    
     return (
        <>
        {/* Events Section */}
@@ -461,6 +468,7 @@ const EventForm = (props) => {
                     <option value="uniform">Uniform Distribution</option>
                 </select>
 
+                {/* Different Options for Annual Change  */}
                 {annualChangeIncomeOption === "amount" &&
                 <div>
                     <span>Enter Fixed Amount</span>
@@ -575,7 +583,8 @@ const EventForm = (props) => {
                     <option value="normal">Normal Distribution</option>
                     <option value="uniform">Uniform Distribution</option>
                 </select>
-
+                
+                {/* Different Options for Annual Change for Expense */}
                 {annualChangeExpenseOption === "amount" &&
                 <div>
                     <span>Enter Fixed Amount</span>
@@ -673,7 +682,8 @@ const EventForm = (props) => {
                 <button onClick={() => checkFields()}>Submit</button>
             </div>
             }
-
+            
+            {/* Invest Case */}
             { eventType === "invest" &&
             <div>
                 <div>
@@ -684,6 +694,7 @@ const EventForm = (props) => {
                     <option value="glidePath">Glide Path</option>
                     </select>
 
+                    {/* Invest - Fixed Allocation Case */}
                     {(assetAllocationType === "fixed") &&
                     <div>
                         {listOfInvestments.filter(inv => inv.taxStatus !== "pre-tax").map((investment, index) => {
@@ -701,23 +712,10 @@ const EventForm = (props) => {
                                     </label>
                                 </div>);
                         })}
-                        <button onClick={(e) => {
-                            
-                            console.log(assetAllocationData)
-                            const formattedData = assetAllocationData.reduce((acc, obj) => {
-                                const [key, value] = Object.entries(obj)[0]; // Extract key-value pair
-                                if (value !== "") {  // Ignore empty values
-                                    acc[key] = Number(value); // Convert to number
-                                }
-                                return acc;
-                            }, {});
-
-
-                            console.log(formattedData);
-                            }}>Save</button>
                     </div>
                     }
 
+                    {/* Invest - Glide Path Case */}
                     {assetAllocationType === "glidePath" &&
                     <div>
                         {listOfInvestments.filter(inv => inv.taxStatus !== "pre-tax").map((investment, index) => {
@@ -735,9 +733,6 @@ const EventForm = (props) => {
                                         glidePathAllocationAfter[index] = investmentIDFormat}} type="text" placeholder="Percent Allocation After"></input>
                             </div>);
                         })}
-                        <button onClick={(e) => {
-                            
-                            }}>Save</button>
                     </div>
                     }
                 </div>
@@ -749,18 +744,81 @@ const EventForm = (props) => {
             </div>
             }
 
+            {/* Rebalance Case */}
             { eventType === "rebalance" &&
             <div>
-                
+                <div>
+                    <span>Select your tax status account</span>
+                    <select onChange={(e) => setTaxStatusRebalanceOption(e.target.value)}>
+                        <option value="">Select an option</option>
+                        <option value="non-retirement">Non-Retirement</option>
+                        <option value="pre-tax">Pre-Tax</option>
+                        <option value="after-tax">After-Tax</option>
+                    </select>
+
+                    {/* Rebalance - Non-Retirement Case */}
+                    {taxStatusReblanaceOption === "non-retirement" &&
+                        <div>
+                            {listOfInvestments.filter(inv => inv.taxStatus === "non-retirement").map((investment, index) => {
+                            return (<div>
+                                <div>{investment.id}</div>
+                                    <label>
+                                    <input onChange={(e) => {
+                                        let investmentIDFormat = {
+                                            [investment.id] : e.target.value
+                                        };
+                                        assetAllocationDataNonRetirement[index] = investmentIDFormat;
+                                    }}type="text" placeholder="Percent Allocation"></input>
+                                    </label>
+                                </div>);
+                            })}
+                        </div>
+                    }
+
+                    {/* Rebalance - Pre-Tax Case */}
+                    {taxStatusReblanaceOption === "pre-tax" &&
+                        <div>
+                            {listOfInvestments.filter(inv => inv.taxStatus === "pre-tax").map((investment, index) => {
+                            return (<div>
+                                <div>{investment.id}</div>
+                                    <label>
+                                    <input onChange={(e) => {
+                                        let investmentIDFormat = {
+                                            [investment.id] : e.target.value
+                                        };
+                                        assetAllocationDataPreTax[index] = investmentIDFormat;
+                                    }}type="text" placeholder="Percent Allocation"></input>
+                                    </label>
+                                </div>);
+                            })}
+                        </div>
+                    }   
+
+                    {/* Rebalance After-Tax Case */}
+                    {taxStatusReblanaceOption === "after-tax" &&
+                        <div>
+                            {listOfInvestments.filter(inv => inv.taxStatus === "after-tax").map((investment, index) => {
+                            return (<div>
+                                <div>{investment.id}</div>
+                                    <label>
+                                    <input onChange={(e) => {
+                                        let investmentIDFormat = {
+                                            [investment.id] : e.target.value
+                                        };
+                                        assetAllocationDataAfterTax[index] = investmentIDFormat;
+                                    }}type="text" placeholder="Percent Allocation"></input>
+                                    </label>
+                                </div>);
+                            })}
+                        </div>
+                    }
+                </div>
+
                 <button onClick={() => checkFields()}>Submit</button>
             </div>   
             }
-
-
         </div>
-
         </div>
-       
        </>
     
     )
