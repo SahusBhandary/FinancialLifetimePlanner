@@ -55,10 +55,12 @@ app.post("/getInvestments", async (req, res) => {
     try {
         const { investmentIds } = req.body;
 
+
         const investments = await InvestmentTypeModel.find({
             _id: { $in: investmentIds }
         });
 
+        console.log(investments);
         res.status(200).send(investments);
 
     } catch (error) {

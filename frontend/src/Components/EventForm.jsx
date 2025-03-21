@@ -1,17 +1,250 @@
-import { useState } from 'react'; 
+import { useState, useEffect } from 'react'; 
 import NormalDistributionForm from './NormalDistributionForm.jsx';
 import UniformDistributionForm from './UniformDistributionForm.jsx';
 import AssetAllocationForm from "./AssetAllocationForm.jsx"
 import { useContext } from "react";
 import { StoreContext } from "../store/Store";
+import axios from 'axios'
 
 const EventForm = (props) => {
-    const { user } = useContext(StoreContext)
+    const { user } = useContext(StoreContext);
+    const [investments, setInvestments] = useState([]); // investment types
+    const [events, setEvents] = useState([]);
+
     const [startYearOption, setStartYearOption]  = useState("");
     const [durationOption, setDurationOption]  = useState("");
     const [eventType, setEventType] = useState("");
-    const [eventAnnualIncomeOption, setEventAnnualIncomeOption] = useState("");
+    // const [eventAnnualIncomeOption, setEventAnnualIncomeOption] = useState("");
     const [assetAllocationType ,setAssetAllocationType] = useState("");
+
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+
+    // Start Year Use States
+    const [fixedStartYear, setFixedStartYear] = useState("");
+    const [startYearMean, setStartYearMean] = useState("");
+    const [startYearDeviation, setStartYearDeviation] = useState("");
+    const [startYearUpper, setStartYearUpper] = useState("");
+    const [startYearLower, setStartYearLower] = useState("");
+    const [startYearEventName, setStartYearEventName] = useState("");
+    const [endYearEventName, setEndYearEventName] = useState("");
+
+    // Duration Use States
+    const [fixedDuration, setFixedDuration] = useState("");
+    const [durationMean, setDurationMean] = useState("");
+    const [durationDeviation, setDurationDeviation] = useState("");
+    const [durationUpper, setDurationUpper] = useState("");
+    const [durationLower, setDurationLower] = useState("");
+
+
+    // Income Use States
+    const [annualChangeIncomeOption, setAnnualChangeIncomeOption] = useState("");
+    const [sampleStatusAnnualChangeIncome, setSampleStatusAnnualChangeIncome] = useState("")
+    const [initialAmountIncome, setInitialAmountIncome] = useState("");
+    const [fixedAnnualChangeIncome, setFixedAnnualChangeIncome] = useState("");
+    const [percentAnnualChangeIncome, setPercentAnnualChangeIncome] = useState("");
+    const [incomeMean, setIncomeMean] = useState("");
+    const [incomeDeviation, setIncomeDeviation] = useState(""); 
+    const [incomeUpper, setIncomeUpper] = useState("");
+    const [incomeLower, setIncomeLower] = useState("");
+    const [incomeInflationFlag, setIncomeInflationFlag] = useState("");
+    const [incomePercent, setIncomePercent] = useState("");
+    const [socialSecurityFlag, setSocialSecurityFlag] = useState("");
+
+    // Expense Use States
+    const [annualChangeExpenseOption, setAnnualChangeExpenseOption] = useState("");
+    const [sampleStatusAnnualChangeExpense, setSampleStatusAnnualChangeExpense] = useState("")
+    const [initialAmountExpense, setInitialAmountExpense] = useState("");
+    const [fixedAnnualChangeExpense, setFixedAnnualChangeExpense] = useState(""); 
+    const [percentAnnualChangeExpense, setPercentAnnualChangeExpense] = useState("");
+    const [expenseMean, setExpenseMean] = useState("");
+    const [expenseDeviation, setExpenseDeviation] = useState("");
+    const [expenseUpper, setExpenseUpper] = useState("");
+    const [expenseLower, setExpenseLower] = useState("");
+    const [expenseInflationFlag, setExpenseInflationFlag] = useState("");
+    const [expensePercent, setExpensePercent] = useState("")
+    const [discretionaryFlag, setDiscretionaryFlag] = useState("");
+
+
+
+
+    useEffect(() => {
+        if (!user) {
+            return
+        }
+        const fetchInvestments = async () => {
+            if (user.investmentTypes.length > 0) {
+                try {
+                    const response = await axios.post('http://localhost:8000/getInvestments', {
+                        investmentIds: user.investmentTypes
+                    });
+
+                    setInvestments(response.data); 
+                } catch (error) {
+                    console.error("Error fetching investment details:", error);
+                }
+            } 
+        };
+
+        const fetchEvents = async () => {
+            if (user.events.length > 0) {
+                try {
+                    const response = await axios.post('http://localhost:8000/getEvents', {
+                        eventIds: user.events
+                    });
+
+                    setEvents(response.data); 
+                } catch (error) {
+                    console.error("Error fetching event details:", error);
+                }
+            }
+        };
+
+        fetchEvents();
+        fetchInvestments();
+    }, [user]);
+
+    const checkFields = () => {
+
+
+        handleSubmission();
+    }
+    const handleSubmission = () => {
+                
+        let start = {
+            type: startYearOption,
+        }
+
+        switch (startYearOption){
+            case 'fixed':
+                start['value'] = fixedStartYear
+                break;
+            case 'normal':
+                start['mean'] = startYearMean;
+                start['stdev'] = startYearDeviation;
+                break;
+            case 'uniform':
+                start['lower'] = startYearLower;
+                start['upper'] = startYearUpper;
+                break;
+            case 'startWith':
+                start['eventSeries']  = startYearEventName;
+                break;
+            case 'endWith':
+                start['eventSeries'] = endYearEventName;
+                break;
+        }
+
+        let duration = {
+            type: durationOption
+        }
+
+        switch (durationOption) {
+            case 'fixed':
+                duration['value'] = fixedDuration;
+                break;
+            case 'normal':
+                duration['mean'] = durationMean;
+                duration['stdev'] = durationDeviation;
+                break;
+            case 'uniform':
+                duration['lower'] = durationLower;
+                duration['upper'] = durationUpper;
+                break;
+        }
+
+        let event = {
+            name: name,
+            description: description,
+            start: start,
+            duration: duration,
+            type: eventType,
+
+        }
+
+        switch (eventType) {
+            case 'income':
+                let changeAmtOrPctIncome = annualChangeIncomeOption;
+                if (annualChangeIncomeOption === "normal" || annualChangeIncomeOption === "uniform")
+                    changeAmtOrPctIncome = sampleStatusAnnualChangeIncome;
+
+                let typeIncome = ((annualChangeIncomeOption === "amount" || annualChangeIncomeOption === "percent") ? "fixed" : null)
+
+                if (typeIncome === null)
+                    typeIncome = ((annualChangeIncomeOption === "normal") ? "normal" : "uniform")
+                
+                let changeDistributionIncome = {
+                    type: typeIncome
+                }
+                switch (annualChangeIncomeOption) {
+                    case 'amount':
+                        changeDistributionIncome['value'] = fixedAnnualChangeIncome
+                        break;
+                    case 'percent':
+                        changeDistributionIncome['value'] = percentAnnualChangeIncome
+                        break;
+                    case 'normal':
+                        changeDistributionIncome['mean'] = incomeMean
+                        changeDistributionIncome['stdev'] = incomeDeviation
+                        break;
+                    case 'uniform':
+                        changeDistributionIncome['lower'] = incomeLower
+                        changeDistributionIncome['upper'] = incomeUpper
+                        break;
+                }
+                event['initialAmount'] = initialAmountIncome
+                event['changeAmtOrPct'] = changeAmtOrPctIncome;
+                event['inflationAdjusted'] = incomeInflationFlag;
+                event['userFraction'] = incomePercent;
+                event['socialSecurity'] = socialSecurityFlag;
+                break;
+            case 'expense':
+                let changeAmtOrPctExpense = annualChangeExpenseOption;
+                if (annualChangeExpenseOption === "normal" || annualChangeExpenseOption === "uniform")
+                    changeAmtOrPctExpense = sampleStatusAnnualChangeExpense
+                
+                let typeExpense = ((annualChangeExpenseOption === "amount" || annualChangeExpenseOption === "percent") ? "fixed" : null)
+                if (typeExpense === null)
+                    typeExpense = ((annualChangeExpenseOption === "normal") ? "normal" : "uniform");
+
+                let changeDistributionExpense = {
+                    type: typeExpense,
+                }
+                
+                switch (annualChangeExpenseOption) {
+                    case 'amount':
+                        changeDistributionExpense['value'] = fixedAnnualChangeExpense
+                        break;
+                    case 'percent':
+                        changeDistributionExpense['value'] = percentAnnualChangeExpense;
+                        break;
+                    case 'normal':
+                        changeDistributionExpense['mean'] = expenseMean;
+                        changeDistributionExpense['stdev'] = expenseDeviation;
+                        break;
+                    case 'uniform':
+                        changeDistributionExpense['lower'] = expenseLower;
+                        changeDistributionExpense['upper'] = expenseUpper;
+                        break;
+                }
+                event['initialAmount'] = initialAmountExpense;
+                event['changeAmtOrPct'] = changeAmtOrPctExpense;
+                event['changeDistribution'] = changeDistributionExpense;
+                event['inflationAdjusted'] = expenseInflationFlag;
+                event['userFraction'] = expensePercent;
+                event['discretionary'] = discretionaryFlag;
+                break;
+            case 'invest':
+                
+                break;
+            case 'rebalance':
+                break;
+        }
+
+        console.log(event);
+    }
+
+
 
 
     return (
@@ -23,13 +256,13 @@ const EventForm = (props) => {
         {/* Name Form */}
         <div>
             <span>Name</span>
-            <input type="text"></input>
+            <input onChange={(e) => setName(e.target.value)} type="text"></input>
         </div>
         
         {/* Description Form */}
         <div>
             <span>Description</span>
-            <input type="text"></input>
+            <input onChange={(e) => setDescription(e.target.value)} type="text"></input>
         </div>
         
         {/* Start Year Form */}
@@ -38,46 +271,59 @@ const EventForm = (props) => {
             <select onChange={(e) => setStartYearOption(e.target.value)}>
             <option value="">Select an option</option>
             <option value="fixed">Fixed</option>
-            <option value="normalDistribution">Normal Distribution</option>
-            <option value="uniformDistribution">Uniform Distribution</option>
-            <option value="startYearEvent"> Start Year of Specified Event Series </option>
-            <option value="endYearEvent"> End Year of Specified Event Series </option>
+            <option value="normal">Normal Distribution</option>
+            <option value="uniform">Uniform Distribution</option>
+            <option value="startWith"> Start Year of Specified Event Series </option>
+            <option value="endWith"> End Year of Specified Event Series </option>
             </select>
 
             {/* Start Year Different Options */}
             {startYearOption === "fixed" && 
             <div>
             <span>Enter Start Year</span>
-            <input type="text"></input>
+            <input onChange={(e) => setFixedStartYear(e.target.value)}type="text"></input>
             </div>
             }
 
-            {startYearOption === "normalDistribution" && 
-            <NormalDistributionForm/>
-            }
-
-            {startYearOption === "uniformDistribution" && 
-            <UniformDistributionForm/>
-            }
-
-            {startYearOption === "startYearEvent" && 
+            {startYearOption === "normal" && 
             <div>
+                <div>
+                <span>Mean</span>
+                <input onChange={(e) => setStartYearMean(e.target.value)}type="text"></input>
+                </div>
+                <div>
+                <span>Standard Deviation</span>
+                <input onChange={(e) => setStartYearDeviation(e.target.value)} type="text"></input>
+                </div>
+            </div>
+            }
+
+            {startYearOption === "uniform" && 
+            <div>
+                <div>
+                <span>Upper Bound</span>
+                <input onChange={(e) => setStartYearUpper(e.target.value)} type="text"></input>
+                </div>
+                <div>
+                <span>Lower Bound</span>
+                <input onChange={(e) => setStartYearLower(e.target.value)}type="text"></input>
+                </div>
+            </div>
+            }
+
+            {startYearOption === "startWith" && 
             <div>
                 <span>Name of Event</span>
-                <input type="text"></input>
-            </div>
-            </div>
+                <input onChange={(e) => setStartYearEventName(e.target.value)}  type="text"></input>
+             </div>
             }
 
-            {startYearOption === "endYearEvent" && 
-            <div>
+            {startYearOption === "endWith" && 
             <div>
                 <span>Name of Event</span>
-                <input type="text"></input>
-            </div>
+                <input onChange={(e) => setEndYearEventName(e.target.value)} type="text"></input>
             </div>
             }
-
         </div>
 
 
@@ -87,27 +333,47 @@ const EventForm = (props) => {
             <select onChange={(e) => setDurationOption(e.target.value)}>
             <option value="">Select an option</option>
             <option value="fixed">Fixed</option>
-            <option value="normalDistribution">Normal Distribution</option>
-            <option value="uniformDistribution">Uniform Distribution</option>
+            <option value="normal">Normal Distribution</option>
+            <option value="uniform">Uniform Distribution</option>
             </select>
 
             {/* Duration Different Options */}
             {durationOption === "fixed" &&
             <div>
             <span>Enter Duration</span>
-            <input type="text"></input>
+            <input onChange={(e) => setFixedDuration(e.target.value)} type="text"></input>
             </div>
             }
 
-            {durationOption === "normalDistribution" &&
-            <NormalDistributionForm/>
+            {durationOption === "normal" &&
+            <div>
+                <div>
+                <span>Mean</span>
+                <input onChange={(e) => setDurationMean(e.target.value)}type="text"></input>
+                </div>
+                <div>
+                <span>Standard Deviation</span>
+                <input onChange={(e) => setDurationDeviation(e.target.value)}type="text"></input>
+                </div>
+            </div>
             }
 
-            {durationOption === "uniformDistribution" &&
-            <UniformDistributionForm/>
+            {durationOption === "uniform" &&
+            <div>
+                <div>
+                <span>Upper Bound</span>
+                <input onChange={(e) => setDurationUpper(e.target.value)}type="text"></input>
+                </div>
+                <div>
+                <span>Lower Bound</span>
+                <input onChange={(e) => setDurationLower(e.target.value)}type="text"></input>
+                </div>
+            </div>
             }
         </div>
+        
 
+        {/* Event Type Section: Income, Expense, Invest, Rebalance */}
         <div>
             <span>Event Type</span>
             <select onChange={(e) => setEventType(e.target.value)}>
@@ -118,39 +384,80 @@ const EventForm = (props) => {
             <option value="rebalance">Rebalance</option>
             </select>
 
-            { (eventType === "income" || eventType ==="expense") &&
+            {/* Income Case */}
+            { eventType === "income" &&
             <div>
                 <div>
                 <span>Initial Amount</span>
-                <input type="text"></input>
+                <input onChange={(e) => setInitialAmountIncome(e.target.value)} type="text"></input>
                 </div>
                 <div>
                 <span>Expected Annual Change</span>
-                <select onChange={(e) => setEventAnnualIncomeOption(e.target.value)}>
+                <select onChange={(e) => setAnnualChangeIncomeOption(e.target.value)}>
                     <option value="">Select an option</option>
-                    <option value="fixed">Fixed</option>
+                    <option value="amount">Fixed</option>
                     <option value="percent">Percent Change</option>
-                    <option value="normalDistribution">Normal Distribution</option>
-                    <option value="uniformDistribution">Uniform Distribution</option>
+                    <option value="normal">Normal Distribution</option>
+                    <option value="uniform">Uniform Distribution</option>
                 </select>
 
-                {eventAnnualIncomeOption === "fixed" &&
+                {annualChangeIncomeOption === "amount" &&
                 <div>
                     <span>Enter Fixed Amount</span>
-                    <input type="text"></input>
+                    <input onChange={(e) => setFixedAnnualChangeIncome(e.target.value)} type="text"></input>
                 </div>
                 }
-                {eventAnnualIncomeOption === "percent" &&
+                {annualChangeIncomeOption === "percent" &&
                 <div>
                     <span>Enter Percent Change</span>
-                    <input type="text"></input>
+                    <input onChange={(e) => setPercentAnnualChangeIncome(e.target.value)} type="text"></input>
                 </div>
                 }
-                {eventAnnualIncomeOption === "normalDistribution" &&
-                <NormalDistributionForm/>
+                {annualChangeIncomeOption === "normal" &&
+                <div>
+                 <div>
+                   <span>Mean</span>
+                   <input onChange={(e) => setIncomeMean(e.target.value)}type="text"></input>
+                   </div>
+                   <div>
+                   <span>Standard Deviation</span>
+                   <input onChange={(e) => setIncomeDeviation(e.target.value)} type="text"></input>
+                 </div>
+                 <form style={{ display: "inline-block"}}>
+                        <span> Sample a fixed or percent </span>
+                        <label>
+                        <input type="radio" name="sampleStatusReturn" value="fixed" onChange={() => setSampleStatusAnnualChangeIncome("amount")}></input>
+                        Fixed Amount
+                        </label>
+                        <label>
+                        <input type="radio" name="sampleStatusReturn" value="percent" onChange={() => setSampleStatusAnnualChangeIncome("percent")}></input>
+                        Percent
+                        </label>
+                    </form>
+                </div>
                 }
-                {eventAnnualIncomeOption === "uniformDistribution" &&
-                <UniformDistributionForm/>
+                {annualChangeIncomeOption === "uniform" &&
+                <div>
+                    <div>
+                    <span>Upper Bound</span>
+                    <input onChange={(e) => setIncomeUpper(e.target.value)}type="text"></input>
+                    </div>
+                    <div>
+                    <span>Lower Bound</span>
+                    <input onChange={(e) => setIncomeLower(e.target.value)} type="text"></input>
+                    </div>
+                    <form style={{ display: "inline-block"}}>
+                        <span> Sample a fixed or percent </span>
+                        <label>
+                        <input type="radio" name="sampleStatusReturn" value="fixed" onChange={() => setSampleStatusAnnualChangeIncome("amount")}></input>
+                        Fixed Amount
+                        </label>
+                        <label>
+                        <input type="radio" name="sampleStatusReturn" value="percent" onChange={() => setSampleStatusAnnualChangeIncome("percent")}></input>
+                        Percent
+                        </label>
+                    </form>
+                </div>
                 }
                 </div>
 
@@ -158,11 +465,11 @@ const EventForm = (props) => {
                 <span>Inflation Adjusted</span>
                 <form style={{ display: "inline-block"}}>
                     <label>
-                    <input type="radio" name="inflationFlag" value="inflationTrue"></input>
+                    <input type="radio" name="inflationFlagIncome" value="inflationTrue"onChange={(e) => setIncomeInflationFlag(true)}></input>
                     Yes
                     </label>
                     <label>
-                    <input type="radio" name="inflationFlag" value="inflationFalse"></input>
+                    <input type="radio" name="inflationFlagIncome" value="inflationFalse" onChange={(e) => setIncomeInflationFlag(false)}></input>
                     No
                     </label>
                 </form>
@@ -170,40 +477,140 @@ const EventForm = (props) => {
 
                 <div>
                 <span>Percent Associated With User</span>
-                <input type="text"></input>
+                <input onChange={(e) => setIncomePercent(e.target.value)} type="text"></input>
                 </div>
                 
-                {eventType === "income" &&
                 <div>
                 <span>Is this income Social Security?</span>
                 <form style={{ display: "inline-block"}}>
                     <label>
-                    <input type="radio" name="socialSecurityFlag" value="socialSecurityTrue"></input>
+                    <input type="radio" name="socialSecurityFlag" value="socialSecurityTrue" onChange={(e) => setSocialSecurityFlag(false)}></input>
                     Yes
                     </label>
                     <label>
-                    <input type="radio" name="socialSecurityFlag" value="socialSecurityFalse"></input>
+                    <input type="radio" name="socialSecurityFlag" value="socialSecurityFalse" onChange={(e) => setSocialSecurityFlag(false)}></input>
                     No
                     </label>
                 </form>
                 </div>
-                }
+                <button onClick={() => checkFields()}>Submit</button>
+            </div>
+            }
+            
+            {/* Expense Case */}
+            {eventType ==="expense" &&
+            <div>
 
-                {eventType === "expense" &&
+                <div>
+                <span>Initial Amount</span>
+                <input onChange={(e)=> setInitialAmountExpense(e.target.value)}type="text"></input>
+                </div>
+
+                <div>
+                <span>Expected Annual Change</span>
+                <select onChange={(e) => setAnnualChangeExpenseOption(e.target.value)}>
+                    <option value="">Select an option</option>
+                    <option value="amount">Fixed</option>
+                    <option value="percent">Percent Change</option>
+                    <option value="normal">Normal Distribution</option>
+                    <option value="uniform">Uniform Distribution</option>
+                </select>
+
+                {annualChangeExpenseOption === "amount" &&
+                <div>
+                    <span>Enter Fixed Amount</span>
+                    <input onChange={(e) => setFixedAnnualChangeExpense(e.target.value)} type="text"></input>
+                </div>
+                }
+                {annualChangeExpenseOption === "percent" &&
+                <div>
+                    <span>Enter Percent Change</span>
+                    <input onChange={(e) => setPercentAnnualChangeExpense(e.target.value)} type="text"></input>
+                </div>
+                }
+                {annualChangeExpenseOption === "normal" &&
+                <div>
+                    <div>
+                    <span>Mean</span>
+                    <input onChange={(e) => setExpenseMean(e.target.value)}type="text"></input>
+                    </div>
+                    <div>
+                    <span>Standard Deviation</span>
+                    <input onChange={(e) => setExpenseDeviation(e.target.value)} type="text"></input>
+                    </div>
+                    <form style={{ display: "inline-block"}}>
+                        <span> Sample a fixed or percent </span>
+                        <label>
+                        <input type="radio" name="sampleStatusReturn" value="fixed" onChange={() => setSampleStatusAnnualChangeExpense("amount")}></input>
+                        Fixed Amount
+                        </label>
+                        <label>
+                        <input type="radio" name="sampleStatusReturn" value="percent" onChange={() => setSampleStatusAnnualChangeExpense("percent")}></input>
+                        Percent
+                        </label>
+                    </form>
+                </div>
+                }
+                {annualChangeExpenseOption === "uniform" &&
+                <div>
+                    <div>
+                    <span>Upper Bound</span>
+                    <input onChange={(e) => setExpenseUpper(e.target.value)}type="text"></input>
+                    </div>
+                    <div>
+                    <span>Lower Bound</span>
+                    <input onChange={(e) => setExpenseLower(e.target.value)}type="text"></input>
+                    </div>
+
+                    <form style={{ display: "inline-block"}}>
+                        <span> Sample a fixed or percent </span>
+                        <label>
+                        <input type="radio" name="sampleStatusReturn" value="fixed" onChange={() => setSampleStatusAnnualChangeExpense("amount")}></input>
+                        Fixed Amount
+                        </label>
+                        <label>
+                        <input type="radio" name="sampleStatusReturn" value="percent" onChange={() => setSampleStatusAnnualChangeExpense("percent")}></input>
+                        Percent
+                        </label>
+                    </form>
+                </div>
+                }
+                </div>
+
+                <div>
+                <span>Inflation Adjusted</span>
+                <form style={{ display: "inline-block"}}>
+                    <label>
+                    <input type="radio" name="inflationFlagExpense" value="inflationTrue" onChange={(e) => setExpenseInflationFlag(true)}></input>
+                    Yes
+                    </label>
+                    <label>
+                    <input type="radio" name="inflationFlagExpense" value="inflationFalse" onChange={(e) => setExpenseInflationFlag(false)}></input>
+                    No
+                    </label>
+                </form>
+                </div>
+
+                <div>
+                <span>Percent Associated With User</span>
+                <input onChange={(e) => setExpensePercent(e.target.value)} type="text"></input>
+                </div>
+
                 <div>
                 <span>Is the expense discretionary?</span>
                 <form style={{ display: "inline-block"}}>
                     <label>
-                    <input type="radio" name="discretionaryFlag" value="discretionaryFalse"></input>
+                    <input onChange={(e) => setDiscretionaryFlag(true)} type="radio" name="discretionaryFlag" value="discretionaryFalse"></input>
                     Yes
                     </label>
                     <label>
-                    <input type="radio" name="discretionaryFlag" value="discretionaryTrue"></input>
+                    <input onChange={(e) => setDiscretionaryFlag(false)} type="radio" name="discretionaryFlag" value="discretionaryTrue"></input>
                     No
                     </label>
                 </form>
                 </div>
-                }
+
+                <button onClick={() => checkFields()}>Submit</button>
             </div>
             }
 
@@ -217,9 +624,57 @@ const EventForm = (props) => {
                     <option value="glidePath">Glide Path</option>
                     </select>
 
-                    {(assetAllocationType === "fixed" || assetAllocationType === "glidePath") &&
+                    {(assetAllocationType === "fixed") &&
                     <div>
-                    <AssetAllocationForm assetAllocationType={assetAllocationType} investmentCount={user.investmentTypes.length}/>     
+
+                        {investments.map((investment) => {
+                            console.log(investment);
+                            return (<div>
+                                <div>{investment.name}</div>
+                                    <input type="text" placeholder="Percent Allocation"></input>
+                                    <div>
+                                    <label>
+                                        <input type="radio" name={investment._id} value="nonretirement" />
+                                        Non-retirement
+                                    </label>
+                                    <label>
+                                        <input type="radio" name={investment._id} value="pretax" />
+                                        Pre-tax
+                                    </label>
+                                    <label>
+                                        <input type="radio" name={investment._id} value="aftertax" />
+                                        After-tax
+                                    </label>
+                                </div>
+                            </div>);
+                        })}
+                    </div>
+                    }
+
+                    {assetAllocationType === "glidePath" &&
+                    <div>
+                        {investments.map((investment) => {
+                            console.log(investment);
+                            return (<div>
+                                <div>{investment.name}</div>
+                                    <input type="text" placeholder="Percent Allocation Before"></input>
+                                    <input type="text" placeholder="Percent Allocation After"></input>
+                                    <div>
+                                    <label>
+                                        <input type="radio" name={investment._id} value="nonretirement" />
+                                        Non-retirement
+                                    </label>
+                                    <label>
+                                        <input type="radio" name={investment._id} value="pretax" />
+                                        Pre-tax
+                                    </label>
+                                    <label>
+                                        <input type="radio" name={investment._id} value="aftertax" />
+                                        After-tax
+                                    </label>
+                                </div>
+                            </div>);
+                        })}
                     </div>
                     }
                 </div>
@@ -227,13 +682,15 @@ const EventForm = (props) => {
                 <span>Max Cash</span>
                 <input type="text"></input>
                 </div>
+                <button onClick={() => checkFields()}>Submit</button>
             </div>
             }
 
             { eventType === "rebalance" &&
             <div>
-                <AssetAllocationForm assetAllocationType={"rebalance"}/>
-            </div>
+                
+                <button onClick={() => checkFields()}>Submit</button>
+            </div>   
             }
 
 
@@ -242,9 +699,6 @@ const EventForm = (props) => {
         </div>
        
        </>
-
-
-
     
     )
 }
