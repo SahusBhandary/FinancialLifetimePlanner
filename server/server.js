@@ -148,9 +148,6 @@ app.post("/submitEvent", async (req, res) => {
         userObj.events.push(eventObj._id);
         userObj.save();
 
-        console.log(eventObj);
-        console.log(userObj);
-
         res.status(200).send({message: "Event submitted successfully!"});
 
     } catch (error) {

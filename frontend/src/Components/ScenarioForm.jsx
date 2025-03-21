@@ -39,10 +39,17 @@ const ScenerioForm = (props) => {
     const [expenseWithdrawlInvestmentsCount, setExpenseWithdrawlInvestmentsCount] = useState(0);
     const [RMDInvestments, setRMDInvestments] = useState(0);
     const [listofinvestments, setListOfInvestments] = useState([])
-
+    const [selectedExpensesOrder, setSelectedExpensesOrder] = useState([]);
     const [selectedInvestmentsOrder, setSelectedInvestmentsOrder] = useState([]);
     const [selectedRMDInvestmentsOrder, setSelectedRMDInvestmentsOrder] = useState([]);
     const [rothInvestments, setRothInvestments] = useState([]);
+
+    const [selectedInvestments, setSelectedInvestments] = useState([]);
+    const [selectedInvestmentTypes, setSelectedInvestmentTypes] = useState([]);
+    const [selectedEvents, setSelectedEvents] = useState([]);
+
+    
+    
     
     useEffect(() => {
         if (!user) {
@@ -100,16 +107,40 @@ const ScenerioForm = (props) => {
         fetchEvents();
         setSelectedInvestmentsOrder(Array(expenseWithdrawlInvestmentsCount).fill(listofinvestments.length === 0 ? "" : listofinvestments[0].id));
         setSelectedRMDInvestmentsOrder(Array(RMDInvestments).fill(listofinvestments.length === 0 ? "" : listofinvestments.filter((investment) => investment.taxStatus === 'pre-tax')[0].id));
+        setSelectedExpensesOrder(Array(expenseCount).fill(events.length === 0 ? "" : events.filter((event) => event.discretionary === true)[0].name));
 
-    }, [user, expenseWithdrawlInvestmentsCount, RMDInvestments]); 
+    }, [user, expenseWithdrawlInvestmentsCount, RMDInvestments, expenseCount]); 
 
     const handleCheckboxChange = (id) => {
         setRothInvestments((prev) =>
             prev.includes(id)
-                ? prev.filter((item) => item !== id)  // Remove if already selected
-                : [...prev, id]                        // Add if not selected
+                ? prev.filter((item) => item !== id) 
+                : [...prev, id]                      
         );
     };
+    
+    const handleInvestmentTypeCheckbox = (investmentType) => {
+        setSelectedInvestmentTypes((prev) =>
+            prev.includes(investmentType._id)
+                ? prev.filter((item) => item !== investmentType._id) 
+                : [...prev, investmentType._id]                      
+        );
+    }
+    const handleEventCheckbox = (event) => {
+        setSelectedEvents((prev) =>
+            prev.includes(event._id)
+                ? prev.filter((item) => item !== event._id) 
+                : [...prev, event._id]                      
+        );
+    }
+
+    const handleInvestmentCheckbox = (investment) => {
+        setSelectedInvestments((prev) =>
+            prev.includes(investment._id)
+                ? prev.filter((item) => item !== investment._id) 
+                : [...prev, investment._id]                      
+        );
+    }
 
     const handleSubmit = async () => {
         try {
@@ -154,9 +185,9 @@ const ScenerioForm = (props) => {
                         stdev: Number(userLifeExpectancyDeviation)
                     }
                 ],
-                investmentTypes: investments.map((investmentType) => investmentType._id),
-                investments: listofinvestments.map((investment) => investment._id),
-                eventSeries: events.map((event) => event._id),
+                investmentTypes: selectedInvestmentTypes,
+                investments: selectedInvestments,
+                eventSeries: selectedEvents,
                 inflationAssumption: inflationAssumption === "fixed" ? 
                 {
                     type: inflationAssumption,
@@ -175,20 +206,17 @@ const ScenerioForm = (props) => {
                     upper: Number(uniformUpper)
                 },
                 afterTaxContributionLimit: Number(limitOnAnnualContributions),
-                spendingStrategy: [],
+                spendingStrategy: selectedExpensesOrder.map((name) => events.find((event) => event.name === name)._id),
                 expenseWithdrawalStrategy: selectedInvestmentsOrder.map((id) => listofinvestments.find((investment) => investment.id === id)._id),
                 RMDStrategy: selectedRMDInvestmentsOrder.map((id) => listofinvestments.find((investment) => investment.id === id)._id),
-                RothConversionOpt: rothConversionStrategy,
-                RothConversionStart: rothConversionStartYear,
-                RothConversionEnd: rothConversionEndYear,
+                RothConversionOpt: rothConversionStrategy === "yes" ? true : false,
+                RothConversionStart: Number(rothConversionStartYear),
+                RothConversionEnd: Number(rothConversionEndYear),
                 RothConversionStrategy: rothInvestments.map((id) => listofinvestments.find((investment) => investment.id === id)._id),
                 sharingSettings: sharingSettings,
-                financialGoal: financialGoal,
+                financialGoal: Number(financialGoal),
                 residenceState: stateOfResidence,
             }
-
-            console.log(scenerio)
-           
             
         } catch (error) {
             console.error("Error submitting scenerio:", error);
@@ -316,8 +344,8 @@ const ScenerioForm = (props) => {
                     <ul>
                         {investments.map((investment) => (
                             <div>
-                                <li key={investment._id}>{investment.name}</li>
-                                <button>add to scenerio</button>
+                                <label><input onChange={() => handleInvestmentTypeCheckbox(investment)} type="checkbox" />{investment.name}</label>
+                                
                             </div>
                         ))}
                     </ul>
@@ -332,8 +360,22 @@ const ScenerioForm = (props) => {
                     <ul>
                         {events.map((event) => (
                             <div>
-                            <li key={event._id}>{event.name}</li>
-                            <button>add to scenerio</button>
+                                <label><input onChange={() => handleEventCheckbox(event)}type="checkbox" />{event.name}</label>
+                            </div>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No events found.</p>
+                )}
+            </div>
+
+            <div>
+                <span>Investments:</span>
+                {listofinvestments.length > 0 ? (
+                    <ul>
+                        {listofinvestments.map((investment) => (
+                            <div>
+                                <label><input onChange={() => handleInvestmentCheckbox(investment)}type="checkbox" />{investment.id}</label>
                             </div>
                         ))}
                     </ul>
@@ -401,11 +443,10 @@ const ScenerioForm = (props) => {
                     {Array.from({ length: expenseCount }, (_, i) => (
                         <div>
                             <h3>{i + 1}</h3>
-                            <select>
-                                (<option>expense 1</option>
-                                <option>expense 2</option>
-                                <option>expense 3</option>
-                                <option>expense 4</option>)
+                            <select onChange={(e) => selectedExpensesOrder[i] = e.target.value}>
+                                {events.filter((event) => event.discretionary === true && selectedEvents.includes(event._id)).map((event) => (
+                                    <option>{event.name}</option>
+                                ))}
                             </select>
                         </div>
                     
@@ -428,7 +469,7 @@ const ScenerioForm = (props) => {
                         <div>
                             <h3>{i + 1}</h3>
                             <select onChange={(e) => selectedInvestmentsOrder[i] = e.target.value}>
-                                {listofinvestments.map((investment) => (
+                                {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment) => (
                                     <option>{investment.id}</option>
                                 ))}
                             </select>
@@ -453,7 +494,7 @@ const ScenerioForm = (props) => {
                         <div>
                             <h3>{i + 1}</h3>
                             <select onChange={(e) => selectedRMDInvestmentsOrder[i] = e.target.value}>
-                                {listofinvestments.map((investment, index) => (
+                                {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
                                     investment.taxStatus === 'pre-tax' && (
                                         <option key={index}>{investment.id}</option>
                                     )
@@ -461,9 +502,6 @@ const ScenerioForm = (props) => {
                             </select>
                         </div>
                     ))}
-                    {RMDInvestments > 0 && 
-                        <button>save</button>
-                    }
                 </ul>
             </div>
 
@@ -488,7 +526,7 @@ const ScenerioForm = (props) => {
                 <div>
                 <span>Investments:</span>
                 <br></br>
-                {listofinvestments.map((investment, index) => (
+                {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
                     investment.taxStatus === 'pre-tax' && (
                         <div>
                         <label key={index}><input type="checkbox" onChange={() => handleCheckboxChange(investment.id)}/>{investment.id}</label>
