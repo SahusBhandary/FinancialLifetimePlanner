@@ -5,7 +5,7 @@ import "../css/profile.css";
 
 const Profile = () => {
   const { user } = useContext(StoreContext);
-
+  
   // Fake scenario info for demo
   const scenarios = [
     { name: "Retirement Plan", goal: "$1,000,000" },

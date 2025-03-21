@@ -8,6 +8,8 @@ const cookieParser = require('cookie-parser')
 const InvestmentTypeModel = require('./models/InvestmentType')
 const UserModel = require('./models/User')
 const EventSeriesModel = require('./models/EventSeries')
+const InvestmentModel = require('./models/Investment')
+
 
 mongoose.connect('mongodb://127.0.0.1:27017/flp');
 let db = mongoose.connection;
@@ -51,11 +53,59 @@ app.post("/submitInvestmentType", async (req, res) => {
     }
 });
 
+app.post("/submitInvestment", async (req, res) => {
+    try {
+        const { investmentTypeName, taxStatus, initialValue, user } = req.body;
+
+        const existingUser = await UserModel.findOne({ googleID: user.googleID })
+
+        const investmentTypeObj = await InvestmentTypeModel.findOne({name: investmentTypeName})
+
+        let id = investmentTypeName + ' ' + taxStatus;
+        const inv = {
+            investmentType: investmentTypeObj,
+            value: initialValue,
+            taxStatus: taxStatus,
+            id: id
+        }
+
+        
+        let newInvestment = new InvestmentModel(inv)
+        await newInvestment.save()
+
+        existingUser.investments.push(newInvestment._id);
+        existingUser.save()
+        
+        res.send({message: "Investment successfully added to database."})
+
+    } catch (error) {
+        console.error("Error adding investment.", error);
+        res.status(500).send({ message: "Error adding investment." });
+    }
+});
+
+
 app.post("/getInvestments", async (req, res) => {
     try {
         const { investmentIds } = req.body;
 
         const investments = await InvestmentTypeModel.find({
+            _id: { $in: investmentIds }
+        });
+
+        res.status(200).send(investments);
+
+    } catch (error) {
+        console.error("Error retrieving investments.", error);
+        res.status(500).send({ message: "Error retrieving investments." });
+    }
+});
+
+app.post("/getInvestmentList", async (req, res) => {
+    try {
+        const { investmentIds } = req.body;
+
+        const investments = await InvestmentModel.find({
             _id: { $in: investmentIds }
         });
 
