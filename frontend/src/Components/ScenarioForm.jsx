@@ -89,6 +89,7 @@ const ScenerioForm = (props) => {
                 }
             }
         };
+        
 
         fetchInvestmentType();
         fetchInvestments();

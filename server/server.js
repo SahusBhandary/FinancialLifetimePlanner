@@ -23,6 +23,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+
 app.post("/submitInvestmentType", async (req, res) => {
     try {
         const { form, user } = req.body;
@@ -93,8 +94,7 @@ app.post("/getInvestments", async (req, res) => {
         const investments = await InvestmentTypeModel.find({
             _id: { $in: investmentIds }
         });
-
-        console.log(investments);
+        
         res.status(200).send(investments);
 
     } catch (error) {
@@ -134,6 +134,30 @@ app.post("/getEvents", async (req, res) => {
         res.status(500).send({ message: "Error retrieving events." });
     }
 });
+
+app.post("/submitEvent", async (req, res) => {
+    try {
+        const { user, event } = req.body;
+
+        const eventObj = new EventSeriesModel(event);
+        await eventObj.save();
+        const userObj = await UserModel.findOne({
+            googleID: user.googleID
+        })
+
+        userObj.events.push(eventObj._id);
+        userObj.save();
+
+        console.log(eventObj);
+        console.log(userObj);
+
+        res.status(200).send({message: "Event submitted successfully!"});
+
+    } catch (error) {
+        console.error("Error retrieving events.", error);
+        res.status(500).send({ message: "Error retrieving events." });
+    }
+})
 
 
 

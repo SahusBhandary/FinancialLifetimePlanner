@@ -8,8 +8,9 @@ import axios from 'axios'
 
 const EventForm = (props) => {
     const { user } = useContext(StoreContext);
-    const [investments, setInvestments] = useState([]); // investment types
-    const [events, setEvents] = useState([]);
+    const [investments, setInvestments] = useState([]); // user's investment types
+    const [listOfInvestments, setListOfInvestments] = useState([]); // user's investments
+    const [events, setEvents] = useState([]); //  user's events
 
     const [startYearOption, setStartYearOption]  = useState("");
     const [durationOption, setDurationOption]  = useState("");
@@ -64,15 +65,17 @@ const EventForm = (props) => {
     const [expenseInflationFlag, setExpenseInflationFlag] = useState("");
     const [expensePercent, setExpensePercent] = useState("")
     const [discretionaryFlag, setDiscretionaryFlag] = useState("");
-
-
-
-
+    
+    // Invest Use States
+    const [assetAllocationData, setAssetAllocationData] = useState();
+    const [glidePathAllocationBefore, setGlidePathAllocationBefore] = useState();
+    const [glidePathAllocationAfter, setGlidePathAllocationAfter] = useState();
+    const [maxCash, setMaxCash] = useState("");
     useEffect(() => {
         if (!user) {
             return
         }
-        const fetchInvestments = async () => {
+        const fetchInvestmentType = async () => {
             if (user.investmentTypes.length > 0) {
                 try {
                     const response = await axios.post('http://localhost:8000/getInvestments', {
@@ -99,17 +102,39 @@ const EventForm = (props) => {
                 }
             }
         };
+        const fetchInvestments = async () => {
+            if (user.investments.length > 0) {
+                try {
+                    const response = await axios.post('http://localhost:8000/getInvestmentList', {
+                        investmentIds: user.investments
+                    });
+                    
+                    setListOfInvestments(response.data); 
+                    for (let i = 0; i < response.data.length; i++) {
+                        listOfInvestments[i] = response.data[i]
+                    }
+                    
+                } catch (error) {
+                    console.error("Error fetching investment details:", error);
+                }
+            }
+        };
 
+        fetchInvestmentType();
         fetchEvents();
         fetchInvestments();
-    }, [user]);
+        setAssetAllocationData(Array(listOfInvestments.filter(investment => investment.taxStatus !== "pre-tax").length).fill(""));
+        setGlidePathAllocationBefore(Array(listOfInvestments.filter(investment => investment.taxStatus !== "pre-tax").length).fill(""))
+        setGlidePathAllocationAfter(Array(listOfInvestments.filter(investment => investment.taxStatus !== "pre-tax").length).fill(""))
+    }, [user, listOfInvestments.filter(investment => investment.taxStatus !== "pre-tax").length]);
+
 
     const checkFields = () => {
-
+        
 
         handleSubmission();
     }
-    const handleSubmission = () => {
+    const handleSubmission = async () => {
                 
         let start = {
             type: startYearOption,
@@ -194,6 +219,7 @@ const EventForm = (props) => {
                 }
                 event['initialAmount'] = initialAmountIncome
                 event['changeAmtOrPct'] = changeAmtOrPctIncome;
+                event['changeDistribution'] = changeDistributionIncome;
                 event['inflationAdjusted'] = incomeInflationFlag;
                 event['userFraction'] = incomePercent;
                 event['socialSecurity'] = socialSecurityFlag;
@@ -235,13 +261,47 @@ const EventForm = (props) => {
                 event['discretionary'] = discretionaryFlag;
                 break;
             case 'invest':
-                
+                if (assetAllocationType === "fixed"){
+                    const formattedData = assetAllocationData.reduce((acc, obj) => {
+                        const [key, value] = Object.entries(obj)[0];
+                        if (value !== "") {  
+                            acc[key] = Number(value); 
+                        }
+                        return acc;
+                    }, {});
+                    event['assetAllocation'] = formattedData;
+                    event['maxCash'] = maxCash;
+                    event['glidePath'] = false;
+                }
+                else{
+                    const formattedAllocation1 = glidePathAllocationBefore.reduce((acc, obj) => {
+                        const [key, value] = Object.entries(obj)[0]; // Extract key-value pair
+                        if (value !== "") {  // Ignore empty values
+                            acc[key] = Number(value); // Convert to number
+                        }
+                        return acc;
+                    }, {});
+                    const formattedAllocation2 = glidePathAllocationAfter.reduce((acc, obj) => {
+                        const [key, value] = Object.entries(obj)[0]; // Extract key-value pair
+                        if (value !== "") {  // Ignore empty values
+                            acc[key] = Number(value); // Convert to number
+                        }
+                        return acc;
+                    }, {});
+                    event['assetAllocation'] = formattedAllocation1
+                    event['assetAllocation2'] = formattedAllocation2;
+                    event['maxCash'] = maxCash;
+                    event['glidePath'] = true;
+                }
                 break;
             case 'rebalance':
                 break;
         }
 
         console.log(event);
+        const response = await axios.post('http://localhost:8000/submitEvent', {user: user, event: event});
+        window.location.reload();
+        
     }
 
 
@@ -626,61 +686,64 @@ const EventForm = (props) => {
 
                     {(assetAllocationType === "fixed") &&
                     <div>
-
-                        {investments.map((investment) => {
-                            console.log(investment);
+                        {listOfInvestments.filter(inv => inv.taxStatus !== "pre-tax").map((investment, index) => {
+                            console.log(index);
                             return (<div>
-                                <div>{investment.name}</div>
-                                    <input type="text" placeholder="Percent Allocation"></input>
-                                    <div>
+                                <div>{investment.id}</div>
                                     <label>
-                                        <input type="radio" name={investment._id} value="nonretirement" />
-                                        Non-retirement
+                                    <input onChange={(e) => {
+                                        let investmentIDFormat = {
+                                            [investment.id] : e.target.value
+                                        };
+                                        assetAllocationData[index] = investmentIDFormat;
+                                        
+                                    }}type="text" placeholder="Percent Allocation"></input>
                                     </label>
-                                    <label>
-                                        <input type="radio" name={investment._id} value="pretax" />
-                                        Pre-tax
-                                    </label>
-                                    <label>
-                                        <input type="radio" name={investment._id} value="aftertax" />
-                                        After-tax
-                                    </label>
-                                </div>
-                            </div>);
+                                </div>);
                         })}
+                        <button onClick={(e) => {
+                            
+                            console.log(assetAllocationData)
+                            const formattedData = assetAllocationData.reduce((acc, obj) => {
+                                const [key, value] = Object.entries(obj)[0]; // Extract key-value pair
+                                if (value !== "") {  // Ignore empty values
+                                    acc[key] = Number(value); // Convert to number
+                                }
+                                return acc;
+                            }, {});
+
+
+                            console.log(formattedData);
+                            }}>Save</button>
                     </div>
                     }
 
                     {assetAllocationType === "glidePath" &&
                     <div>
-                        {investments.map((investment) => {
-                            console.log(investment);
+                        {listOfInvestments.filter(inv => inv.taxStatus !== "pre-tax").map((investment, index) => {
                             return (<div>
-                                <div>{investment.name}</div>
-                                    <input type="text" placeholder="Percent Allocation Before"></input>
-                                    <input type="text" placeholder="Percent Allocation After"></input>
-                                    <div>
-                                    <label>
-                                        <input type="radio" name={investment._id} value="nonretirement" />
-                                        Non-retirement
-                                    </label>
-                                    <label>
-                                        <input type="radio" name={investment._id} value="pretax" />
-                                        Pre-tax
-                                    </label>
-                                    <label>
-                                        <input type="radio" name={investment._id} value="aftertax" />
-                                        After-tax
-                                    </label>
-                                </div>
+                                <div>{investment.id}</div>
+                                    <input onChange={(e) => {
+                                        let investmentIDFormat = {
+                                            [investment.id] : e.target.value
+                                        };
+                                        glidePathAllocationBefore[index] = investmentIDFormat}} type="text" placeholder="Percent Allocation Before"></input>
+                                    <input onChange={(e) => {
+                                        let investmentIDFormat = {
+                                            [investment.id] : e.target.value
+                                        };
+                                        glidePathAllocationAfter[index] = investmentIDFormat}} type="text" placeholder="Percent Allocation After"></input>
                             </div>);
                         })}
+                        <button onClick={(e) => {
+                            
+                            }}>Save</button>
                     </div>
                     }
                 </div>
                 <div>
                 <span>Max Cash</span>
-                <input type="text"></input>
+                <input onChange={(e) => setMaxCash(e.target.value)}type="text"></input>
                 </div>
                 <button onClick={() => checkFields()}>Submit</button>
             </div>
