@@ -1,5 +1,4 @@
 import { useState } from 'react'; 
-import NormalDistributionForm from "./NormalDistributionForm";
 import axios from 'axios'
 import { useContext } from "react";
 import { StoreContext } from "../store/Store";
@@ -11,18 +10,18 @@ const InvestmentForm = (props) => {
 
   const [name, setName]  = useState("");
   const [description, setDescription]  = useState("");
-  const [fixedReturnAmount, setFixedReturnAmount]  = useState();
+  const [fixedReturnAmount, setFixedReturnAmount]  = useState("");
   const [percentReturnAmount, setPercentReturnAmount]  = useState("");
   const [returnMean, setReturnMean] = useState("");
   const [returnDeviation, setReturnDeviation] = useState("");
-  const [sampleStatusReturn, setSampleStatusReturn] = useState();
+  const [sampleStatusReturn, setSampleStatusReturn] = useState(null);
   const [expenseRatio, setExpenseRatio] = useState("");
   const [fixedIncomeAmount, setFixedIncomeAmount]  = useState("");
   const [percentIncomeAmount, setPercentIncomeAmount] = useState("");
   const [incomeMean, setIncomeMean] = useState("");
   const [incomeDeviation, setIncomeDeivation] = useState("");
-  const [sampleStatusIncome, setSampleStatusIncome] = useState();
-  const [isTaxable, setIsTaxable] = useState(false);
+  const [sampleStatusIncome, setSampleStatusIncome] = useState(null);
+  const [isTaxable, setIsTaxable] = useState(null);
 
   const [error, setError] = useState([]);
   
@@ -30,53 +29,47 @@ const InvestmentForm = (props) => {
 
   const checkFields = () => {
     setError([]);
-    if (isNaN(fixedReturnAmount))
-      error.push("Fixed Amount for Expected Annual Return must be a number.");
-    else
-      error.push("");
 
-    if (isNaN(percentReturnAmount) || percentReturnAmount > 100 || percentReturnAmount < 0 )
-      error.push("Percent Change for Expected Annual Return must be a percentage value between 0% and 100%.")
-    else
-      error.push("");
+    let newErrors = [];
+    newErrors.push(name.length === 0 ? "Investment name is required": "");    
+    newErrors.push(description.length === 0 ? "Description is required." : "");
 
-    if (isNaN(returnMean))
-      error.push("Mean needs to be a number value.");
-    else
-      error.push("");
+    // Error handling for expected annual return section
+    newErrors.push(fixedReturnAmount.length === 0  && annualReturnOption === "fixed" ? "Please enter a value for fixed return" : "");
+    newErrors.push(isNaN(fixedReturnAmount) && annualReturnOption === "fixed" ? "Fixed Amount for Expected Annual Return must be a number." : "");
+    newErrors.push(percentReturnAmount.length === 0 && annualReturnOption === "percent" ? "Please enter a value for percent return" : "");
+    newErrors.push((isNaN(percentReturnAmount) || percentReturnAmount > 100 || percentReturnAmount < 0)  && annualReturnOption === "percent" ? "Percent Change for Expected Annual Return must be a percentage value between 0% and 100%.": "");
+    newErrors.push(returnMean.length === 0 && annualReturnOption === "normalDistribution" ? "Please enter a value for mean" : ""); 
+    newErrors.push(isNaN(returnMean) && annualReturnOption === "normalDistribution"? "Mean needs to be a number value." : "");
+    newErrors.push(returnDeviation.length === 0 && annualReturnOption === "normalDistribution" ? "Please enter a value for standard deviation" : ""); 
+    newErrors.push(isNaN(returnDeviation) && annualReturnOption === "normalDistribution" ? "Standard Deviation needs to be a number value." : "");
+    newErrors.push(sampleStatusReturn === null && annualReturnOption === "normalDistribution" ? "Please choose fixed amount or percent sampling" : "");
 
-    if (isNaN(returnDeviation))
-      error.push("Standard Deviation needs to be a number value.");
-    else
-      error.push("");
+    newErrors.push(isNaN(expenseRatio) || expenseRatio > 100 || expenseRatio < 0? "Expense ratio must be a percentage value between 0% and 100%.": "");
 
-    if (isNaN(expenseRatio) || expenseRatio > 100 || expenseRatio < 0 )
-      error.push("Expense ratio must be a percentage value between 0% and 100%.")
-    else
-      error.push("");
+    // Error handling for expected annual income section
+    newErrors.push(fixedIncomeAmount.length === 0 && annualIncomeOption === "fixed" ? "Please enter a value for fixed return": "");
+    newErrors.push(isNaN(fixedIncomeAmount) && annualIncomeOption === "fixed" ? "Fixed Amount for Expected Annual Income must be a number." : "");
+    newErrors.push(percentIncomeAmount.length === 0 && annualIncomeOption === "percent" ? "Please enter a value for percent return" : "");
+    newErrors.push((isNaN(percentIncomeAmount) || percentIncomeAmount > 100 || percentIncomeAmount < 0) && annualIncomeOption === "percent" ? "Percent Change for Expected Annual Income must be a percentage value between 0% and 100%." : "");
+    newErrors.push(incomeMean.length === 0 && annualIncomeOption === "normalDistribution" ? "Please enter a value for mean" : "")
+    newErrors.push(isNaN(incomeMean) && annualIncomeOption === "normalDistribution" ? "Mean needs to be a number value." : "");
+    newErrors.push(incomeDeviation.length === 0 && annualIncomeOption === "normalDistribution" ? "Please enter a value for standard deviation" : "");
+    newErrors.push(isNaN(incomeDeviation) && annualIncomeOption === "normalDistribution" ? "Standard Deviation needs to be a number value." : "");
+    newErrors.push(sampleStatusIncome === null && annualIncomeOption === "normalDistribution" ? "Please choose fixed amount or percent sampling" : "");
 
-    if (isNaN(fixedIncomeAmount))
-      error.push("Fixed Amount for Expected Annual Income must be a number.");
-    else
-      error.push("");
+    newErrors.push(isTaxable === null ? "Taxability status is required." : "");
 
-    if (isNaN(percentIncomeAmount) || percentIncomeAmount > 100 || percentIncomeAmount < 0 )
-      error.push("Percent Change for Expected Annual Income must be a percentage value between 0% and 100%.")
-    else
-      error.push("");
+    let errorFlag = false;
+    for (let i = 0 ; i < newErrors.length; i++){
+      if (newErrors[i] !== "")
+        errorFlag = true;
+    }
 
-    if (isNaN(incomeMean))
-      error.push("Mean needs to be a number value.");
-    else
-      error.push("");
+    setError(newErrors);
 
-    if (isNaN(incomeDeviation))
-      error.push("Standard Deviation needs to be a number value.");
-    else
-      error.push("");
-
-
-    handleSubmission();
+    if (errorFlag === false)
+      handleSubmission();
   }
 
   const handleSubmission = () =>{
@@ -91,7 +84,7 @@ const InvestmentForm = (props) => {
       type: type,
     };
 
-    if (type === "fixed"){   // thi smeans that it is either percent or amount, this means we need to push a value
+    if (type === "fixed"){  
       let value = null;
       annualReturnOption === "percent" ? value = percentReturnAmount/100 : value = fixedReturnAmount
       returnDistribution['value'] = value;
@@ -149,18 +142,23 @@ const InvestmentForm = (props) => {
       <div>
         <span>Name</span>
         <input type="text" onChange={(e) => setName(e.target.value)} ></input>
+        {error[0] !== "" && <div>{error[0]}</div>}
       </div>
 
       {/* Description Form */}
       <div>
         <span>Description</span>
         <input type="text" onChange={(e) => setDescription(e.target.value)}></input>
+        {error[1] !== "" && <div>{error[1]}</div>}
       </div>
 
       {/* Expected Annual Return Form*/}
       <div>
         <span>Expected Annual Return</span>   
-        <select onChange={(e) => setAnnualReturnOption(e.target.value)}>
+        <select onChange={(e) => {
+          setAnnualReturnOption(e.target.value)
+          setError([]);
+        }}>
         <option value="">Select an option</option>
         <option value="fixed">Fixed</option>
         <option value="percent">Percent Change</option>
@@ -204,18 +202,23 @@ const InvestmentForm = (props) => {
           </div>
         </div>
         }
+        {error.map((error, i) =>  i >= 2 && i <= 10 && error !== "" ? <div key={i}>{error}</div> : null) }
       </div>
       
       {/* Expense Ratio Form*/}
       <div>
         <span>Expense Ratio</span>
         <input type="text" onChange={(e) => setExpenseRatio(e.target.value)}></input>
+        {error[11] !== "" && <div>{error[11]}</div>}
       </div>  
       
       {/* Expected Annual Income Form*/}
       <div>
         <span>Expected Annual Income</span>    
-        <select onChange={(e) => setAnnualIncomeOption(e.target.value)}>
+        <select onChange={(e) => {
+          setAnnualIncomeOption(e.target.value)
+          setError([]);
+          }}>
         <option value="">Select an option</option>
         <option value="fixed">Fixed</option>
         <option value="percent">Percent Change</option>
@@ -259,6 +262,7 @@ const InvestmentForm = (props) => {
           </div>
         </div>
         }
+        {error.map((error, i) =>  i >= 12 && i <= 20 && error !== "" ? <div key={i}>{error}</div> : null) }
       </div>
 
 
@@ -275,6 +279,8 @@ const InvestmentForm = (props) => {
             Tax Exempt
           </label>
         </form>
+
+        {error[21] !== "" && <div>{error[21]}</div>}
       </div>
 
     </div>

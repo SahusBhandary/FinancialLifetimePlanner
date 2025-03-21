@@ -12,6 +12,7 @@ const EventForm = (props) => {
     const [listOfInvestments, setListOfInvestments] = useState([]); // User's investments
     const [events, setEvents] = useState([]); //  User's events
 
+
     const [startYearOption, setStartYearOption]  = useState("");
     const [durationOption, setDurationOption]  = useState("");
     const [eventType, setEventType] = useState("");
@@ -314,6 +315,7 @@ const EventForm = (props) => {
         window.location.reload();
     }
     
+
     return (
        <>
        {/* Events Section */}
@@ -453,6 +455,7 @@ const EventForm = (props) => {
 
             {/* Income Case */}
             { eventType === "income" &&
+
             <div>
                 <div>
                 <span>Initial Amount</span>
@@ -683,6 +686,7 @@ const EventForm = (props) => {
             </div>
             }
             
+
             {/* Invest Case */}
             { eventType === "invest" &&
             <div>
@@ -756,6 +760,7 @@ const EventForm = (props) => {
                         <option value="after-tax">After-Tax</option>
                     </select>
 
+
                     {/* Rebalance - Non-Retirement Case */}
                     {taxStatusReblanaceOption === "non-retirement" &&
                         <div>
@@ -774,6 +779,7 @@ const EventForm = (props) => {
                             })}
                         </div>
                     }
+
 
                     {/* Rebalance - Pre-Tax Case */}
                     {taxStatusReblanaceOption === "pre-tax" &&

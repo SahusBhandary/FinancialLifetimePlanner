@@ -30,6 +30,7 @@ const UserSchema = new mongoose.Schema({
   investmentTypes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'InvestmentType' }],
   events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'EventSeries' }],
   investments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Investment' }]
+  scenarios: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Scenario' }]
 },
 );
 

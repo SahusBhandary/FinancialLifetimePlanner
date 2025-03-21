@@ -9,6 +9,15 @@ const InvestmentTypeModel = require('./models/InvestmentType')
 const UserModel = require('./models/User')
 const EventSeriesModel = require('./models/EventSeries')
 const InvestmentModel = require('./models/Investment')
+const ScenarioModel = require('./models/Scenario')
+
+
+//stuff for importing/exporting
+const fs = require('fs');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); 
+const importScenarioFromYAML = require('./importScenario');
+const exportScenarioToYAML= require('./exportScenario'); 
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/flp');
@@ -53,6 +62,7 @@ app.post("/submitInvestmentType", async (req, res) => {
         res.status(500).send({ message: "Error submitting investment type" });
     }
 });
+
 
 app.post("/submitInvestment", async (req, res) => {
     try {
@@ -157,6 +167,73 @@ app.post("/submitEvent", async (req, res) => {
 })
 
 
+app.post('/import-scenario', upload.single('scenarioFile'), async (req, res) => {
+    try {
+      const { userId } = req.body; // get user id from the request
+  
+      // validate the user id
+      if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+  
+      // check if a file was uploaded
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+  
+      // read the file content
+      const filePath = req.file.path;
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+  
+      // log the file content (for testing)
+      console.log('Uploaded file content:', fileContent);
+  
+      // import scenario from the yaml
+      const scenario = await importScenarioFromYAML(fileContent, userId);
+  
+      res.status(201).json({ message: 'Scenario imported successfully', scenario });
+    } catch (error) {
+      console.error('Error importing scenario:', error);
+      res.status(500).json({ error: 'Failed to import scenario', details: error.message });
+    } finally {
+      // delete the file we dont need it anymore
+      if (req.file) {
+        fs.unlinkSync(req.file.path);
+      }
+    }
+  });
+
+  app.get('/getScenario/:scenarioId', async (req, res) => {
+    try {
+      const scenario = await ScenarioModel.findById(req.params.scenarioId);
+      if (!scenario) {
+        return res.status(404).json({ error: 'Scenario not found' });
+      }
+      res.status(200).json(scenario);
+    } catch (error) {
+      console.error('Error fetching scenario:', error);
+      res.status(500).json({ error: 'Failed to fetch scenario' });
+    }
+  });
+
+  app.get('/export-scenario/:scenarioId', async (req, res) => {
+    try {
+      const { scenarioId } = req.params;
+  
+      // Export the scenario to YAML
+      const yamlString = await exportScenarioToYAML(scenarioId);
+  
+      // Set headers for file download
+      res.setHeader('Content-Type', 'application/yaml');
+      res.setHeader('Content-Disposition', `attachment; filename="scenario-${scenarioId}.yaml"`);
+  
+      // Send the YAML string as the response
+      res.send(yamlString);
+    } catch (error) {
+      console.error('Error exporting scenario:', error);
+      res.status(500).json({ error: 'Failed to export scenario' });
+    }
+  });
 
 const server = app.listen(8000, () => {console.log("Server listening on port 8000...");});
 const passport = require('passport');
