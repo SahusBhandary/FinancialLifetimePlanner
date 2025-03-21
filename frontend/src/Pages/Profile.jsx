@@ -7,6 +7,7 @@ import "../css/profile.css";
 
 const Profile = () => {
   const { user } = useContext(StoreContext);
+
   const [scenarios, setScenarios] = useState([]); // state to store fetched scenarios
 
   // Fetch scenarios when the user changes
