@@ -248,7 +248,7 @@ const InvestmentForm = (props) => {
             <form style={{ display: "inline-block"}}>
               <span> Sample a fixed or percent </span>
               <label>
-                <input type="radio" name="sampleStatusIncome" value="fixed" onChange={() => setSampleStatusIncome("percent")}></input>
+                <input type="radio" name="sampleStatusIncome" value="fixed" onChange={() => setSampleStatusIncome("fixed")}></input>
                 Fixed Amount
               </label>
               <label>
