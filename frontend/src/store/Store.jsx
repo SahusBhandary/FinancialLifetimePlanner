@@ -14,14 +14,14 @@ export const StoreContextProvider = ({ children }) => {
                 withCredentials: true,
             });
 
-            if (tokenResponse?.data) {
-                const cookie = jwtDecode(tokenResponse.data);
-                const userResponse = await axios.get(`http://localhost:8000/getUser/${cookie.googleID}`);
-                const user = userResponse.data;
-
-                if (user) {
-                    setUser(user);
-                }
+            if (tokenResponse?.data){
+              const cookie = jwtDecode(tokenResponse.data);
+              const userResponse = await axios.get(`http://localhost:8000/getUser/${cookie.googleID}`);
+              const user = userResponse.data;
+              
+              if (user != ""){
+                setUser(user);
+              }
             }
         } catch (error) {
             console.error("Error Fetching User's ID: ", error);
