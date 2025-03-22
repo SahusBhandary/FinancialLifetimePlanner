@@ -24,7 +24,6 @@ const InvestmentForm = (props) => {
   const [isTaxable, setIsTaxable] = useState(null);
 
   const [error, setError] = useState([]);
-  console.log(user);
   
   
 
@@ -128,8 +127,8 @@ const InvestmentForm = (props) => {
       incomeDistribution: incomeDistribution,
       taxability: isTaxable
     }
-  
     axios.post('http://localhost:8000/submitInvestmentType', {form: form, user: user})
+    window.location.reload()
   }
 
 
@@ -252,7 +251,7 @@ const InvestmentForm = (props) => {
             <form style={{ display: "inline-block"}}>
               <span> Sample a fixed or percent </span>
               <label>
-                <input type="radio" name="sampleStatusIncome" value="fixed" onChange={() => setSampleStatusIncome("percent")}></input>
+                <input type="radio" name="sampleStatusIncome" value="fixed" onChange={() => setSampleStatusIncome("fixed")}></input>
                 Fixed Amount
               </label>
               <label>
