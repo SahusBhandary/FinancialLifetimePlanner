@@ -15,9 +15,7 @@ export const StoreContextProvider = ({ children }) => {
             const tokenResponse = await axios.get('http://localhost:8000/auth/getUserCookie', {
               withCredentials: true,
             });
-            console.log(tokenResponse);
-            
-    
+
             if (tokenResponse?.data){
               const cookie = jwtDecode(tokenResponse.data);
               const userResponse = await axios.get(`http://localhost:8000/getUser/${cookie.googleID}`);

@@ -2,6 +2,9 @@ import { useState } from 'react';
 import axios from 'axios'
 import { useContext } from "react";
 import { StoreContext } from "../store/Store";
+import TextField from '@mui/material/TextField';
+import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel, FormLabel } from '@mui/material';
+
 
 const InvestmentForm = (props) => {
   const { user } = useContext(StoreContext);
@@ -19,14 +22,11 @@ const InvestmentForm = (props) => {
   const [fixedIncomeAmount, setFixedIncomeAmount]  = useState("");
   const [percentIncomeAmount, setPercentIncomeAmount] = useState("");
   const [incomeMean, setIncomeMean] = useState("");
-  const [incomeDeviation, setIncomeDeivation] = useState("");
+  const [incomeDeviation, setIncomeDeviation] = useState("");
   const [sampleStatusIncome, setSampleStatusIncome] = useState(null);
-  const [isTaxable, setIsTaxable] = useState(null);
+  const [isTaxable, setIsTaxable] = useState("");
 
   const [error, setError] = useState([]);
-  console.log(user);
-  
-  
 
   const checkFields = () => {
     setError([]);
@@ -126,7 +126,7 @@ const InvestmentForm = (props) => {
       expenseRatio: expenseRatio,
       incomeAmtOrPct: incomeAmtOrPct,
       incomeDistribution: incomeDistribution,
-      taxability: isTaxable
+      taxability: isTaxable === "taxable" ? true : false
     }
   
     axios.post('http://localhost:8000/submitInvestmentType', {form: form, user: user})
@@ -135,131 +135,294 @@ const InvestmentForm = (props) => {
 
   return (
     <div>
-       {/* Investment Type Section */}
-    <div>
-      <h1>Investment Type</h1>
-
-      {/* Name Form */}
-      <div>
-        <span>Name</span>
-        <input type="text" onChange={(e) => setName(e.target.value)} ></input>
-        {error[0] !== "" && <div>{error[0]}</div>}
+    {/* Investment Type Section */}
+    <div className="form-div" style={{display: 'flex', alignContent: 'center', flexDirection: 'column', marginLeft: '150px', marginRight: '150px', marginTop: '30px'}}>
+        <div>
+          <h1 className='form-title'>Investment Type</h1>
+        </div>
+        {/* Name Form */}
+        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+          <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Name</div>
+          <TextField 
+            label="Name"
+            onChange={(e) => setName(e.target.value)}
+            variant="outlined"
+            size="small"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+              },
+              width: '40%'
+            }}
+          />
+          {error[0] !== "" && <div>{error[0]}</div>}
       </div>
-
+    
       {/* Description Form */}
-      <div>
-        <span>Description</span>
-        <input type="text" onChange={(e) => setDescription(e.target.value)}></input>
-        {error[1] !== "" && <div>{error[1]}</div>}
+      <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Description</div>
+          <TextField 
+            label="Description"
+            onChange={(e) => setDescription(e.target.value)}
+            variant="outlined"
+            size="small"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+              },
+              width: '60%'
+            }}
+          />
+          {error[1] !== "" && <div>{error[1]}</div>}
       </div>
 
       {/* Expected Annual Return Form*/}
       <div>
-        <span>Expected Annual Return</span>   
-        <select onChange={(e) => {
-          setAnnualReturnOption(e.target.value)
-          setError([]);
-        }}>
-        <option value="">Select an option</option>
-        <option value="fixed">Fixed</option>
-        <option value="percent">Percent Change</option>
-        <option value="normalDistribution">Normal Distribution</option>
-        </select>
-        {annualReturnOption === "fixed" && 
-        <div>
-          <span>Enter Fixed Amount</span>
-          <input type="text" onChange={(e) => setFixedReturnAmount(e.target.value)}></input>
+        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+          <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Expected Annual Return</div>
+          <FormControl fullWidth size="small" sx={{flex: 1}}>
+            <InputLabel>Select an Option</InputLabel>
+            <Select 
+              onChange={(e) => {
+              setAnnualReturnOption(e.target.value)
+              setError([]);}}
+              value={annualReturnOption}
+              label="Select Option"
+            >
+            <MenuItem value="fixed">Fixed</MenuItem>
+            <MenuItem value="percent">Percent Change</MenuItem>
+            <MenuItem value="normalDistribution">Normal Distribution</MenuItem>  
+            </Select>
+          </FormControl>
         </div>
+        {annualReturnOption === "fixed" && 
+          <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+            <div style={{display: 'flex', flex: 1, flexDirection: 'column'}}>
+              <div className='form-text' >Enter Fixed Amount</div>
+              <div className='form-text' >(Annual Return)</div>
+            </div>
+            <TextField 
+              label="Fixed Amount"
+              onChange={(e) => setFixedReturnAmount(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
+            />
+          </div>
         }
         {annualReturnOption === "percent" &&
-        <div>
-          <span>Enter Percent Change</span>
-          <input type="text" onChange={(e) => setPercentReturnAmount(e.target.value)}></input>
-        </div>
+          <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+            <div style={{display: 'flex', flex: 1, flexDirection: 'column'}}>
+              <div className='form-text' >Enter Percent Change</div>
+              <div className='form-text' >(Annual Return)</div>
+            </div>
+            <TextField 
+              label="Percent Change"
+              onChange={(e) => setPercentReturnAmount(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
+            />
+          </div>
         }
         {annualReturnOption === "normalDistribution" &&
-        <div>
           <div>
-            <span>Mean</span>
-            <input type="text" onChange={(e) => setReturnMean(e.target.value)}></input>
+            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+            <div style={{display: 'flex', flex: 1, flexDirection: 'column'}}>
+              <div className='form-text' >Mean</div>
+              <div className='form-text' >(Annual Return)</div>
             </div>
-            <div>
-            <span>Standard Deviation</span>
-            <input type="text" onChange={(e) => setReturnDeviation(e.target.value)}></input>
+            <TextField 
+              label="Mean"
+              onChange={(e) => setReturnMean(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
+            />
           </div>
-
           <div>
-            <form style={{ display: "inline-block"}}>
-                <span> Sample a fixed or percent </span>
-                <label>
-                  <input type="radio" name="sampleStatusReturn" value="fixed" onChange={() => setSampleStatusReturn("fixed")}></input>
-                  Fixed Amount
-                </label>
-                <label>
-                  <input type="radio" name="sampleStatusReturn" value="percent" onChange={() => setSampleStatusReturn("percent")}></input>
-                  Percent
-                </label>
-              </form>
+            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+            <div style={{display: 'flex', flex: 1, flexDirection: 'column'}}>
+              <div className='form-text' >Standard Deviation</div>
+              <div className='form-text' >(Annual Return)</div>
+            </div>
+            <TextField 
+              label="Standard Deviation"
+              onChange={(e) => setReturnDeviation(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
+            />
+          </div>
+          </div>
+          <div>
+            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+              <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Sample a Fixed Amount or Percent</div>
+              <FormControl>
+                <RadioGroup
+                  row
+                  name="fixedPercent"
+                  value={sampleStatusReturn}
+                  onChange={(e) => setSampleStatusReturn(e.target.value)}
+                >
+                  <FormControlLabel value="fixed" control={<Radio />} label="Fixed"/>
+                  <FormControlLabel value="percent" control={<Radio />} label="Percent"/>
+                </RadioGroup>
+              </FormControl>
+            </div>
           </div>
         </div>
         }
         {error.map((error, i) =>  i >= 2 && i <= 10 && error !== "" ? <div key={i}>{error}</div> : null) }
       </div>
-      
       {/* Expense Ratio Form*/}
       <div>
-        <span>Expense Ratio</span>
-        <input type="text" onChange={(e) => setExpenseRatio(e.target.value)}></input>
-        {error[11] !== "" && <div>{error[11]}</div>}
+        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+          <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Expense Ratio</div>
+            <TextField 
+              label="Expense Ratio"
+              onChange={(e) => setExpenseRatio(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
+            />
+            {error[11] !== "" && <div>{error[11]}</div>}
+        </div>
       </div>  
       
       {/* Expected Annual Income Form*/}
       <div>
-        <span>Expected Annual Income</span>    
-        <select onChange={(e) => {
-          setAnnualIncomeOption(e.target.value)
-          setError([]);
-          }}>
-        <option value="">Select an option</option>
-        <option value="fixed">Fixed</option>
-        <option value="percent">Percent Change</option>
-        <option value="normalDistribution">Normal Distribution</option>
-        </select>
+        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+          <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Expected Annual Income</div>
+          <FormControl fullWidth size="small" sx={{flex: 1}}>
+            <InputLabel>Select an Option</InputLabel>
+            <Select 
+              onChange={(e) => {
+                setAnnualIncomeOption(e.target.value)
+                setError([]);
+              }}
+              value={annualIncomeOption}
+              label="Select Option"
+            >
+            <MenuItem value="fixed">Fixed</MenuItem>
+            <MenuItem value="percent">Percent Change</MenuItem>
+            <MenuItem value="normalDistribution">Normal Distribution</MenuItem>  
+            </Select>
+          </FormControl>
+        </div>
         {annualIncomeOption === "fixed" && 
         <div>
-          <span>Enter Fixed Amount</span>
-          <input type="text" onChange={(e) => setFixedIncomeAmount(e.target.value)}></input>
+          <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+            <div style={{display: 'flex', flex: 1, flexDirection: 'column'}}>
+              <div className='form-text' >Enter Fixed Amount</div>
+              <div className='form-text' >(Annual Income)</div>
+            </div>
+            <TextField 
+              label="Fixed Amount"
+              onChange={(e) => setFixedIncomeAmount(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
+            />
+          </div>
         </div>
         }
         {annualIncomeOption === "percent" && 
         <div>
-          <span>Enter Percent Change</span>
-          <input type="text" onChange={(e) => setPercentIncomeAmount(e.target.value)}></input>
+          <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+            <div style={{display: 'flex', flex: 1, flexDirection: 'column'}}>
+              <div className='form-text' >Enter Percent Change</div>
+              <div className='form-text' >(Annual Income)</div>
+            </div>
+            <TextField 
+              label="Percent Change"
+              onChange={(e) => setPercentIncomeAmount(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
+            />
+          </div>
         </div>
         }
         {annualIncomeOption === "normalDistribution" &&
         <div>
-          <div>
-            <span>Mean</span>
-            <input type="text" onChange={(e) => setIncomeMean(e.target.value)}></input>
+          <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+            <div style={{display: 'flex', flex: 1, flexDirection: 'column'}}>
+              <div className='form-text' >Mean</div>
+              <div className='form-text' >(Annual Income)</div>
+            </div>
+            <TextField 
+              label="Mean"
+              onChange={(e) => setIncomeMean(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
+            />
+          </div>
+          <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+            <div style={{display: 'flex', flex: 1, flexDirection: 'column'}}>
+              <div className='form-text' >Standard Deviation</div>
+              <div className='form-text' >(Annual Income)</div>
+            </div>
+            <TextField 
+              label="Standard Deviation"
+              onChange={(e) => setIncomeDeviation(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
+            />
           </div>
           <div>
-            <span>Standard Deviation</span>
-            <input type="text" onChange={(e) => setIncomeDeivation(e.target.value)}></input>
-          </div>
-
-          <div>
-            <form style={{ display: "inline-block"}}>
-              <span> Sample a fixed or percent </span>
-              <label>
-                <input type="radio" name="sampleStatusIncome" value="fixed" onChange={() => setSampleStatusIncome("percent")}></input>
-                Fixed Amount
-              </label>
-              <label>
-                <input type="radio" name="sampleStatusIncome" value="percent" onChange={() => setSampleStatusIncome("percent")}></input>
-                Percent
-              </label>
-            </form>
+            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+              <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Sample a Fixed Amount or Percent</div>
+              <FormControl>
+                <RadioGroup
+                  row
+                  name="fixedPercent"
+                  value={sampleStatusIncome}
+                  onChange={(e) => setSampleStatusIncome(e.target.value)}
+                >
+                  <FormControlLabel value="fixed" control={<Radio />} label="Fixed"/>
+                  <FormControlLabel value="percent" control={<Radio />} label="Percent"/>
+                </RadioGroup>
+              </FormControl>
+            </div>
           </div>
         </div>
         }
@@ -268,26 +431,30 @@ const InvestmentForm = (props) => {
 
 
       {/* Taxability Form*/}
-      <div>
-        <span>Taxability</span>
-        <form style={{ display: "inline-block"}}>
-          <label>
-            <input type="radio" name="taxStatus" value="taxable" onChange={() => setIsTaxable(true)}></input>
-            Taxable
-          </label>
-          <label>
-            <input type="radio" name="taxStatus" value="taxExempt" onChange={() => setIsTaxable(false)}></input>
-            Tax Exempt
-          </label>
-        </form>
-
+      <div >
+        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+          <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Taxability</div>
+          <FormControl>
+            <RadioGroup
+              row
+              name="isTaxable"
+              value={isTaxable}
+              onChange={(e) => setIsTaxable(e.target.value)}
+              sx={{display: 'flex'}}
+            >
+              <FormControlLabel value="taxable" control={<Radio />} label="Taxable"/>
+              <FormControlLabel value="taxExempt" control={<Radio />} label="Tax Exempt"/>
+            </RadioGroup>
+          </FormControl>
+        </div>
         {error[21] !== "" && <div>{error[21]}</div>}
       </div>
-
+      <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', justifyContent: 'center'}}>
+        <button variant="contained" className='create-button-form' style={{cursor: 'pointer', fontSize: '20px', paddingLeft: '50px', paddingRight: '50px'}}onClick={() => checkFields()}>Create</button>
+      </div>
+      
     </div>
-
-    <button onClick={() => checkFields()}>Submit</button>
-    </div>
+    </div>    
   )
 }
 
