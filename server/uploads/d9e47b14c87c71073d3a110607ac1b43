@@ -46,7 +46,7 @@ investments:
   - investmentType: cash
     value: 100
     taxStatus: non-retirement # "non-retirement", "pre-tax", or "after-tax"
-    id: cash non-retirement
+    id: cash
 
   - investmentType: S&P 500
     value: 10000
@@ -56,12 +56,12 @@ investments:
   - investmentType: tax-exempt bonds
     value: 2000
     taxStatus: non-retirement
-    id: tax-exempt bonds non-retirement
+    id: tax-exempt bonds
 
   - investmentType: S&P 500
     value: 10000
     taxStatus: pre-tax
-    id: S&P 500 pre-tax        
+    id: S&P 500 pre-tax
     
   - investmentType: S&P 500
     value: 2000
