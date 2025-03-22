@@ -14,8 +14,6 @@ const InvestmentModel = require('./models/Investment')
 const UserModel = require('./models/User')
 
 
-
-
 //stuff for importing/exporting
 const fs = require('fs');
 const multer = require('multer');
@@ -27,9 +25,6 @@ const importScenarioFromYAML = require('./importScenario');
 const exportScenarioToYAML= require('./exportScenario'); 
 const importStateTaxBracketsFromYaml = require('./importStateTax');
 const exportStateTaxBracketsToYaml = require('./exportStateTax');
-
-
-
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/flp');
