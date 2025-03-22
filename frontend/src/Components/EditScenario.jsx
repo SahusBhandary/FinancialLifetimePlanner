@@ -2,59 +2,60 @@ import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { StoreContext } from "../store/Store";
 
-const ScenerioForm = (props) => {
+
+const EditScenario = (props) => {
     const { user } = useContext(StoreContext);
-    const [name, setName] = useState("");
-    const [isMarried, setIsMarried] = useState("");
-    const [userBirthYear, setUserBirthYear] = useState("");
-    const [spouseBirthYear, setSpouseBirthYear] = useState("");
-    const [userLifeExpectancyDistribution, setUserLifeExpectancyDistribution] = useState("");
-    const [userLifeExpectancyFixed, setUserLifeExpectancyFixed] = useState("");
-    const [userLifeExpectancyMean, setUserLifeExpectancyMean] = useState("");
-    const [userLifeExpectancyDeviation, setUserLifeExpectancyDeviation] = useState("");
-    const [spouseLifeExpectancyDistribution, setSpouseLifeExpectancyDistribution] = useState("");
-    const [spouseLifeExpectancyFixed, setSpouseLifeExpectancyFixed] = useState("");
-    const [spouseLifeExpectancyMean, setSpouseLifeExpectancyMean] = useState("");
-    const [spouseLifeExpectancyDeviation, setSpouseLifeExpectancyDeviation] = useState("");
+    const [name, setName] = useState(props.scenario.name);
+    const [isMarried, setIsMarried] = useState(props.scenario.maritalStatus === "couple" ? "yes" : "no");
+    const [userBirthYear, setUserBirthYear] = useState(props.scenario.birthYears[0]);
+    const [spouseBirthYear, setSpouseBirthYear] = useState(props.scenario.birthYears.length === 2 ? props.scenario.birthYears[1] : "");
+    const [userLifeExpectancyDistribution, setUserLifeExpectancyDistribution] = useState(props.scenario.lifeExpectancy[0].type);
+    const [userLifeExpectancyFixed, setUserLifeExpectancyFixed] = useState(props.scenario.lifeExpectancy[0].value);
+    const [userLifeExpectancyMean, setUserLifeExpectancyMean] = useState(props.scenario.lifeExpectancy[0].mean);
+    const [userLifeExpectancyDeviation, setUserLifeExpectancyDeviation] = useState(props.scenario.lifeExpectancy[0].stdev);
+    const [spouseLifeExpectancyDistribution, setSpouseLifeExpectancyDistribution] = useState(props.scenario.lifeExpectancy.length === 2 ? props.scenario.lifeExpectancy[1].type : "");
+    const [spouseLifeExpectancyFixed, setSpouseLifeExpectancyFixed] = useState(props.scenario.lifeExpectancy.length === 2 ? props.scenario.lifeExpectancy[1].value : "" );
+    const [spouseLifeExpectancyMean, setSpouseLifeExpectancyMean] = useState(props.scenario.lifeExpectancy.length === 2 ? props.scenario.lifeExpectancy[1].mean : "");
+    const [spouseLifeExpectancyDeviation, setSpouseLifeExpectancyDeviation] = useState(props.scenario.lifeExpectancy.length === 2 ? props.scenario.lifeExpectancy[1].stdev : "");
     const [investments, setInvestments] = useState([]); 
     const [events, setEvents] = useState([]); 
-    const [inflationAssumption, setInflationAssumption] = useState()
-    const [fixedIncomeAmount, setFixedIncomeAmount] = useState()
-    const [incomeMean, setIncomeMean] = useState()
-    const [incomeDeviation, setIncomeDeviation] = useState()
-    const [uniformLower, setUniformLower] = useState()
-    const [uniformUpper, setUniformUpper] = useState()
-    const [limitOnAnnualContributions, setLimitOnAnnualContributions] = useState()
+    const [inflationAssumption, setInflationAssumption] = useState(props.scenario.inflationAssumption.type)
+    const [fixedIncomeAmount, setFixedIncomeAmount] = useState(props.scenario.inflationAssumption.value)
+    const [incomeMean, setIncomeMean] = useState(props.scenario.inflationAssumption.mean)
+    const [incomeDeviation, setIncomeDeviation] = useState(props.scenario.inflationAssumption.stdev)
+    const [uniformLower, setUniformLower] = useState(props.scenario.inflationAssumption.lower)
+    const [uniformUpper, setUniformUpper] = useState(props.scenario.inflationAssumption.upper)
+    const [limitOnAnnualContributions, setLimitOnAnnualContributions] = useState(props.scenario.afterTaxContributionLimit)
     const [spendingStrategy, setSpendingStrategy] = useState()
     const [expenseWithdrawlStrategy, setExpenseWithdrawlStrategy] = useState()
     const [RMDStrategy, setRMDStrategy] = useState()
-    const [rothConversionStrategy, setRothConversionStrategy] = useState()
+    const [rothConversionStrategy, setRothConversionStrategy] = useState(props.scenario.RothConversionOpt ? "yes" : "no")
     const [rothConvesionOptimizerSettings, setRothConversionOptimizerSettings] = useState()
-    const [rothConversionStartYear, setRothConversionStartYear] = useState()
-    const [rothConversionEndYear, setRothConversionEndYear] = useState()
-    const [sharingSettings, setSharingSettings] = useState()
-    const [financialGoal, setFinancialGoal] = useState()
-    const [stateOfResidence, setStateOfResidence] = useState()
-    const [expenseCount, setExpenseCount] = useState(0);
-    const [expenseWithdrawlInvestmentsCount, setExpenseWithdrawlInvestmentsCount] = useState(0);
+    const [rothConversionStartYear, setRothConversionStartYear] = useState(props.scenario.RothConversionStart)
+    const [rothConversionEndYear, setRothConversionEndYear] = useState(props.scenario.RothConversionEnd)
+    const [sharingSettings, setSharingSettings] = useState(props.scenario.sharingSettings)
+    const [financialGoal, setFinancialGoal] = useState(props.scenario.financialGoal)
+    const [stateOfResidence, setStateOfResidence] = useState(props.scenario.residenceState)
+    const [expenseCount, setExpenseCount] = useState(events.filter((event) => event.discretionary === true && props.scenario.eventSeries.includes(event._id)).length);
+    const [expenseWithdrawlInvestmentsCount, setExpenseWithdrawlInvestmentsCount] = useState(props.scenario.expenseWithdrawalStrategy.length);
     const [RMDInvestments, setRMDInvestments] = useState(0);
     const [listofinvestments, setListOfInvestments] = useState([])
     const [selectedExpensesOrder, setSelectedExpensesOrder] = useState([]);
     const [selectedInvestmentsOrder, setSelectedInvestmentsOrder] = useState([]);
     const [selectedRMDInvestmentsOrder, setSelectedRMDInvestmentsOrder] = useState([]);
-    const [rothInvestments, setRothInvestments] = useState([]);
+    const [selectedInvestments, setSelectedInvestments] = useState(props.scenario.investments);
+    const [rothInvestments, setRothInvestments] = useState(props.scenario.RothConversionStrategy);
+    const [selectedInvestmentTypes, setSelectedInvestmentTypes] = useState(props.scenario.investmentTypes);
+    const [selectedEvents, setSelectedEvents] = useState(props.scenario.eventSeries);
 
-    const [selectedInvestments, setSelectedInvestments] = useState([]);
-    const [selectedInvestmentTypes, setSelectedInvestmentTypes] = useState([]);
-    const [selectedEvents, setSelectedEvents] = useState([]);
-
-    
+   
     // states for upload state tax
     const [file, setFile] = useState(null);
     const [stateExists, setStateExists] = useState(null);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [message, setMessage] = useState('');
-    
+
+
     useEffect(() => {
         if (!user) {
             return
@@ -112,7 +113,7 @@ const ScenerioForm = (props) => {
         setSelectedInvestmentsOrder(Array(expenseWithdrawlInvestmentsCount).fill(listofinvestments.length === 0 ? "" : listofinvestments[0].id));
         setSelectedRMDInvestmentsOrder(Array(RMDInvestments).fill(listofinvestments.filter((investment) => investment.taxStatus === 'pre-tax').length === 0 ? "" : listofinvestments.filter((investment) => investment.taxStatus === 'pre-tax')[0].id));
         setSelectedExpensesOrder(Array(expenseCount).fill(events.filter((event) => event.discretionary === true).length === 0 ? "" : events.filter((event) => event.discretionary === true)[0].name));
-    
+
 
     }, [user, expenseWithdrawlInvestmentsCount, RMDInvestments, expenseCount]); 
 
@@ -212,21 +213,23 @@ const ScenerioForm = (props) => {
                 },
                 afterTaxContributionLimit: Number(limitOnAnnualContributions),
                 spendingStrategy: selectedExpensesOrder.map((name) => events.find((event) => event.name === name)._id),
-                expenseWithdrawalStrategy: selectedInvestmentsOrder.map((id) => listofinvestments.find((investment) => investment.id === id)._id),
+                expenseWithdrawalStrategy: selectedInvestmentsOrder,
                 RMDStrategy: selectedRMDInvestmentsOrder.map((id) => listofinvestments.find((investment) => investment.id === id)._id),
                 RothConversionOpt: rothConversionStrategy === "yes" ? true : false,
                 RothConversionStart: Number(rothConversionStartYear),
                 RothConversionEnd: Number(rothConversionEndYear),
-                RothConversionStrategy: rothInvestments.map((id) => listofinvestments.find((investment) => investment.id === id)._id),
+                RothConversionStrategy: rothInvestments,
                 sharingSettings: sharingSettings,
                 financialGoal: Number(financialGoal),
                 residenceState: stateOfResidence,
             }
-            const response = await axios.post('http://localhost:8000/submitScenario', {
-                scenario : scenario, user: user
-            });
+            // const response = await axios.post('http://localhost:8000/submitScenario', {
+            //     scenario : scenario, user: user
+            // });
 
-            window.location.reload();
+            console.log(scenario);
+
+            // window.location.reload();
             
         } catch (error) {
             console.error("Error submitting scenario:", error);
@@ -277,58 +280,59 @@ const ScenerioForm = (props) => {
 
     return (
         <div>
-            <h1>Scenario</h1>
+            <h1>{props.scenario.name}</h1>
 
             <div>
                 <span>Name</span>
-                <input type="text" onChange={(e) => setName(e.target.value)} />
+                <input defaultValue={name} type="text" onChange={(e) => setName(e.target.value)} />
             </div>
 
             <div>
                 <span>Married?</span>
-                <label><input type="radio" name="married" value="yes" onChange={(e) => {setUserLifeExpectancyDistribution("");setSpouseLifeExpectancyDistribution("");setIsMarried(e.target.value);}} />Yes</label>
-                <label><input type="radio" name="married" value="no" onChange={(e) => {setUserLifeExpectancyDistribution("");setSpouseLifeExpectancyDistribution("");setIsMarried(e.target.value);}} />No</label>
+                <label><input checked={isMarried === "yes"}type="radio" name="married" value="yes" onChange={(e) => {setIsMarried(e.target.value);}} />Yes</label>
+                <label><input checked={isMarried === "no"}type="radio" name="married" value="no" onChange={(e) => {setIsMarried(e.target.value);}} />No</label>
             </div>
 
            {isMarried === "yes" && 
                 <div>
                     <div>
                         <span>User Birth Year</span>
-                        <input type="text" onChange={(e) => setUserBirthYear(e.target.value)} />
+                        <input defaultValue={userBirthYear}type="text" onChange={(e) => setUserBirthYear(e.target.value)} />
                     </div>
 
                     <span>Life Expectancy Distribution</span>
-                    <select onChange={(e) => setUserLifeExpectancyDistribution(e.target.value)}>
+                    <select defaultValue={userLifeExpectancyDistribution} value={userLifeExpectancyDistribution}  onChange={(e) => setUserLifeExpectancyDistribution(e.target.value)}>
                     <option value="">Select an option</option>
                     <option value="fixed">Fixed</option>
                     <option value="normalDistribution">Normal Distribution</option>
                     </select>
+
                     {userLifeExpectancyDistribution === "fixed" && 
                     <div>
                         <span>Enter Fixed Amount</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyFixed(e.target.value)}></input>
+                        <input defaultValue={userLifeExpectancyFixed} type="text" onChange={(e) => setUserLifeExpectancyFixed(e.target.value)}></input>
                     </div>
                     }
                     {userLifeExpectancyDistribution === "normalDistribution" &&
                     <div>
                     <div>
                         <span>Mean</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyMean(e.target.value)}></input>
+                        <input defaultValue={userLifeExpectancyMean}type="text" onChange={(e) => setUserLifeExpectancyMean(e.target.value)}></input>
                     </div>
                     <div>
                         <span>Standard Deviation</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyDeviation(e.target.value)}></input>
+                        <input defaultValue={userLifeExpectancyDeviation}type="text" onChange={(e) => setUserLifeExpectancyDeviation(e.target.value)}></input>
                     </div>
                     </div>
                     }
 
                     <div>
                         <span>Spouse Birth Year</span>
-                        <input type="text" onChange={(e) => setSpouseBirthYear(e.target.value)} />
+                        <input defaultValue={spouseBirthYear} type="text" onChange={(e) => setSpouseBirthYear(e.target.value)} />
                     </div>
 
                     <span>Life Expectancy Distribution</span>
-                    <select onChange={(e) => setSpouseLifeExpectancyDistribution(e.target.value)}>
+                    <select defaultValue={spouseLifeExpectancyDistribution} onChange={(e) => setSpouseLifeExpectancyDistribution(e.target.value)}>
                     <option value="">Select an option</option>
                     <option value="fixed">Fixed</option>
                     <option value="normalDistribution">Normal Distribution</option>
@@ -336,18 +340,19 @@ const ScenerioForm = (props) => {
                     {spouseLifeExpectancyDistribution === "fixed" && 
                     <div>
                         <span>Enter Fixed Amount</span>
-                        <input type="text" onChange={(e) => setSpouseLifeExpectancyFixed(e.target.value)}></input>
+                        {console.log(spouseLifeExpectancyFixed)}
+                        <input defaultValue={spouseLifeExpectancyFixed}type="text" onChange={(e) => setSpouseLifeExpectancyFixed(e.target.value)}></input>
                     </div>
                     }
                     {spouseLifeExpectancyDistribution === "normalDistribution" &&
                     <div>
                     <div>
                         <span>Mean</span>
-                        <input type="text" onChange={(e) => setSpouseLifeExpectancyMean(e.target.value)}></input>
+                        <input defaultValue={spouseLifeExpectancyMean} type="text" onChange={(e) => setSpouseLifeExpectancyMean(e.target.value)}></input>
                     </div>
                     <div>
                         <span>Standard Deviation</span>
-                        <input type="text" onChange={(e) => setSpouseLifeExpectancyDeviation(e.target.value)}></input>
+                        <input defaultValue={spouseLifeExpectancyDeviation} type="text" onChange={(e) => setSpouseLifeExpectancyDeviation(e.target.value)}></input>
                     </div>
                     </div>
                     }
@@ -359,11 +364,11 @@ const ScenerioForm = (props) => {
                 <div>
                     <div>
                         <span>User Birth Year</span>
-                        <input type="text" onChange={(e) => setUserBirthYear(e.target.value)} />
+                        <input defaultValue={userBirthYear} type="text" onChange={(e) => setUserBirthYear(e.target.value)} />
                     </div>
 
                     <span>Life Expectancy Distribution</span>
-                    <select onChange={(e) => setUserLifeExpectancyDistribution(e.target.value)}>
+                    <select defaultValue={userLifeExpectancyDistribution} onChange={(e) => setUserLifeExpectancyDistribution(e.target.value)}>
                     <option value="">Select an option</option>
                     <option value="fixed">Fixed</option>
                     <option value="normalDistribution">Normal Distribution</option>
@@ -371,18 +376,18 @@ const ScenerioForm = (props) => {
                     {userLifeExpectancyDistribution === "fixed" && 
                     <div>
                         <span>Enter Fixed Amount</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyFixed(e.target.value)}></input>
+                        <input defaultValue={userLifeExpectancyFixed}type="text" onChange={(e) => setUserLifeExpectancyFixed(e.target.value)}></input>
                     </div>
                     }
                     {userLifeExpectancyDistribution === "normalDistribution" &&
                     <div>
                     <div>
                         <span>Mean</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyMean(e.target.value)}></input>
+                        <input defaultValue={userLifeExpectancyMean}type="text" onChange={(e) => setUserLifeExpectancyMean(e.target.value)}></input>
                     </div>
                     <div>
                         <span>Standard Deviation</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyDeviation(e.target.value)}></input>
+                        <input defaultValue={userLifeExpectancyDeviation} type="text" onChange={(e) => setUserLifeExpectancyDeviation(e.target.value)}></input>
                     </div>
                     </div>
                     }
@@ -396,7 +401,7 @@ const ScenerioForm = (props) => {
                     <ul>
                         {investments.map((investment) => (
                             <div>
-                                <label><input onChange={() => handleInvestmentTypeCheckbox(investment)} type="checkbox" />{investment.name}</label>
+                                <label><input checked={selectedInvestmentTypes.includes(investment._id) }onChange={() => handleInvestmentTypeCheckbox(investment)} type="checkbox" />{investment.name}</label>
                                 
                             </div>
                         ))}
@@ -412,7 +417,7 @@ const ScenerioForm = (props) => {
                     <ul>
                         {events.map((event) => (
                             <div>
-                                <label><input onChange={() => handleEventCheckbox(event)}type="checkbox" />{event.name}</label>
+                                <label><input checked={selectedEvents.includes(event._id)}onChange={() => handleEventCheckbox(event)}type="checkbox" />{event.name}</label>
                             </div>
                         ))}
                     </ul>
@@ -427,7 +432,7 @@ const ScenerioForm = (props) => {
                     <ul>
                         {listofinvestments.map((investment) => (
                             <div>
-                                <label><input onChange={() => handleInvestmentCheckbox(investment)}type="checkbox" />{investment.id}</label>
+                                <label><input checked={selectedInvestments.includes(investment._id)}onChange={() => handleInvestmentCheckbox(investment)}type="checkbox" />{investment.id}</label>
                             </div>
                         ))}
                     </ul>
@@ -438,7 +443,7 @@ const ScenerioForm = (props) => {
 
             <div>
                 <span>Inflation Assumption</span>
-                <select onChange={(e) => setInflationAssumption(e.target.value)}>
+                <select defaultValue={inflationAssumption}onChange={(e) => setInflationAssumption(e.target.value)}>
                     <option value="">Select an option</option>
                     <option value="fixed">Fixed percentage</option>
                     <option value="normalDistribution">Normal Distribution</option>
@@ -447,18 +452,18 @@ const ScenerioForm = (props) => {
                 {inflationAssumption === "fixed" && 
                     <div>
                         <span>Enter Fixed Amount</span>
-                        <input type="text" onChange={(e) => setFixedIncomeAmount(e.target.value)}></input>
+                        <input defaultValue={fixedIncomeAmount} type="text" onChange={(e) => setFixedIncomeAmount(e.target.value)}></input>
                     </div>
                 }
                 {inflationAssumption === "normalDistribution" &&
                 <div>
                 <div>
                     <span>Mean</span>
-                    <input type="text" onChange={(e) => setIncomeMean(e.target.value)}></input>
+                    <input defaultValue={incomeMean} type="text" onChange={(e) => setIncomeMean(e.target.value)}></input>
                 </div>
                 <div>
                     <span>Standard Deviation</span>
-                    <input type="text" onChange={(e) => setIncomeDeviation(e.target.value)}></input>
+                    <input defaultValue={incomeDeviation} type="text" onChange={(e) => setIncomeDeviation(e.target.value)}></input>
                 </div>
                 </div>
                 }
@@ -466,11 +471,11 @@ const ScenerioForm = (props) => {
                 <div>
                 <div>
                     <span>Upper</span>
-                    <input type="text" onChange={(e) => setUniformLower(e.target.value)}></input>
+                    <input defaultValue={uniformUpper} type="text" onChange={(e) => setUniformLower(e.target.value)}></input>
                 </div>
                 <div>
                     <span>Lower</span>
-                    <input type="text" onChange={(e) => setUniformUpper(e.target.value)}></input>
+                    <input defaultValue={uniformLower} type="text" onChange={(e) => setUniformUpper(e.target.value)}></input>
                 </div>
                 </div>
                 }
@@ -478,7 +483,7 @@ const ScenerioForm = (props) => {
 
             <div>
                 <span>Initial Limit on Annual Contributions to After-tax Retirement Accounts</span>
-                <input type="text" onChange={(e) => setLimitOnAnnualContributions(e.target.value)} />
+                <input defaultValue={limitOnAnnualContributions} type="text" onChange={(e) => setLimitOnAnnualContributions(e.target.value)} />
             </div>
 
             <div>
@@ -489,6 +494,7 @@ const ScenerioForm = (props) => {
                     type="number"
                     min="0"
                     value={expenseCount}
+                    defaultValue={expenseCount}
                     onChange={(e) => setExpenseCount(Number(e.target.value) || 0)}
                 />
                 <ul>
@@ -514,6 +520,7 @@ const ScenerioForm = (props) => {
                     type="number"
                     min="0"
                     value={expenseWithdrawlInvestmentsCount}
+                    defaultValue={expenseWithdrawlInvestmentsCount}
                     onChange={(e) => setExpenseWithdrawlInvestmentsCount(Number(e.target.value) || 0)}
                 />
                 <ul>
@@ -521,8 +528,9 @@ const ScenerioForm = (props) => {
                         <div>
                             <h3>{i + 1}</h3>
                             <select onChange={(e) => selectedInvestmentsOrder[i] = e.target.value}>
+                                <option> Please select an option </option>
                                 {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment) => (
-                                    <option>{investment.id}</option>
+                                    <option value={investment._id}>{investment.id}</option>
                                 ))}
                             </select>
                         </div>
@@ -559,20 +567,20 @@ const ScenerioForm = (props) => {
 
             <div>
                 <span>Roth conversion Strategy</span>
-                <label><input type="radio" name="rothconversionstrategy" value="yes" onChange={(e) => setRothConversionStrategy(e.target.value)} />On</label>
-                <label><input type="radio" name="rothconversionstrategy" value="no" onChange={(e) => setRothConversionStrategy(e.target.value)} />Off</label>
+                <label><input checked={rothConversionStrategy === "yes"} type="radio" name="rothconversionstrategy" value="yes" onChange={(e) => setRothConversionStrategy(e.target.value)} />On</label>
+                <label><input checked={rothConversionStrategy === "no"} type="radio" name="rothconversionstrategy" value="no" onChange={(e) => setRothConversionStrategy(e.target.value)} />Off</label>
             </div>
 
             {rothConversionStrategy === "yes" && 
             <div>
                 <div>
                     <span>Start year</span>
-                    <input type="text" onChange={(e) => setRothConversionStartYear(e.target.value)} />
+                    <input defaultValue={rothConversionStartYear} type="text" onChange={(e) => setRothConversionStartYear(e.target.value)} />
                 </div>
 
                 <div>
                     <span>End year</span>
-                    <input type="text" onChange={(e) => setRothConversionEndYear(e.target.value)} />
+                    <input defaultValue={rothConversionEndYear} type="text" onChange={(e) => setRothConversionEndYear(e.target.value)} />
                 </div>
 
                 <div>
@@ -581,7 +589,7 @@ const ScenerioForm = (props) => {
                 {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
                     investment.taxStatus === 'pre-tax' && (
                         <div>
-                        <label key={index}><input type="checkbox" onChange={() => handleCheckboxChange(investment.id)}/>{investment.id}</label>
+                        <label key={index}><input checked={rothInvestments.includes(investment._id)} type="checkbox" onChange={() => handleCheckboxChange(investment._id)}/>{investment.id}</label>
                         <br></br>
                         </div>
                     )
@@ -596,24 +604,25 @@ const ScenerioForm = (props) => {
 
             <div>
                 <span>Sharing settings</span>
-                <label><input type="radio" name="sharingsettings" value="read-only" onChange={(e) => setSharingSettings(e.target.value)}/>Read-only</label>
-                <label><input type="radio" name="sharingsettings" value="read-write"onChange={(e) => setSharingSettings(e.target.value)} />Read-write</label>
+                <label><input checked={sharingSettings === "read-only"}type="radio" name="sharingsettings" value="read-only" onChange={(e) => setSharingSettings(e.target.value)}/>Read-only</label>
+                <label><input checked={sharingSettings === "read-write"}type="radio" name="sharingsettings" value="read-write"onChange={(e) => setSharingSettings(e.target.value)} />Read-write</label>
                 
             </div>
 
             <div>
                 <span>Financial Goal</span>
-                <input type="text" onChange={(e) => setFinancialGoal(e.target.value)} />
+                <input defaultValue={financialGoal}type="text" onChange={(e) => setFinancialGoal(e.target.value)} />
             </div>
 
             <div>
                 <span>State of residence</span>
-                <input type="text" onChange={(e) => setStateOfResidence(e.target.value)} />
+                <input defaultValue={stateOfResidence}type="text" onChange={(e) => setStateOfResidence(e.target.value)} />
             </div>
 
             <div>
                 <button onClick={handleCheckState}>Submit</button>
             </div>
+            <button onClick={() => props.setIsEditPage(false)}> Back </button>
             {showUploadModal && (
         <div style={{ border: '1px solid #ccc', padding: '10px', marginTop: '10px' }}>
           <h3>State Not Found</h3>
@@ -633,4 +642,4 @@ const ScenerioForm = (props) => {
     );
 };
 
-export default ScenerioForm;
+export default EditScenario;

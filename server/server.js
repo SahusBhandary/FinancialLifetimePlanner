@@ -53,18 +53,14 @@ app.post("/submitEvent", async (req, res) => {
         const userObj = await UserModel.findOne({
             googleID: user.googleID
         })
-        console.log(userObj)
         userObj.events.push(eventObj._id);
         userObj.save();
-
-        console.log(eventObj);
-        console.log(userObj);
 
         res.status(200).send({message: "Event submitted successfully!"});
 
     } catch (error) {
-        console.error("Error retrieving events.", error);
-        res.status(500).send({ message: "Error retrieving events." });
+        console.error("Error submitting event.", error);
+        res.status(500).send({ message: "Error submitting event." });
     }
 })
 
@@ -116,23 +112,33 @@ app.post("/getInvestmentList", async (req, res) => {
 });
 
 app.post("/submitInvestmentType", async (req, res) => {
-    try {
-        const form = req.body.form;
+  try {
+      const { form, user } = req.body;
 
-        const existingType = await InvestmentTypeModel.findOne({ name: form.name });
+      const existingUser = await UserModel.findOne({ googleID: user.googleID }).populate('investmentTypes');
 
-        if (existingType) {
-            return res.status(400).send({ message: "Investment type already exists.." });
-        }
+      const hasInvestmentType = existingUser.investmentTypes.some(type => type.name === form.name);
 
-        const newInvestmentType = new InvestmentTypeModel(form);
-        await newInvestmentType.save();
+      if (hasInvestmentType) {
+          return res.status(400).send({ message: "Investment type already exists for this user." });
+      }
 
-        res.send({ message: "Investment type successfully added.." });
-    } catch (error) {
-        console.error("Error submitting investment type.", error);
-        res.status(500).send({ message: "Error submitting investment type" });
-    }
+      let existingType = await InvestmentTypeModel.findOne({ name: form.name });
+
+      if (!existingType) {
+          existingType = new InvestmentTypeModel(form);
+          await existingType.save();
+      }
+
+      existingUser.investmentTypes.push(existingType._id);
+      await existingUser.save();
+
+      res.send({ message: "Investment type successfully added to user." });
+
+  } catch (error) {
+      console.error("Error submitting investment type.", error);
+      res.status(500).send({ message: "Error submitting investment type" });
+  }
 });
 
 
@@ -168,6 +174,27 @@ app.post("/getEvents", async (req, res) => {
         res.status(500).send({ message: "Error retrieving events." });
     }
 });
+
+app.post("/submitScenario", async (req, res) => {
+  try {
+      const { scenario, user } = req.body;
+
+      const scenarioObj = new ScenarioModel(scenario);
+      await scenarioObj.save();
+      const userObj = await UserModel.findOne({
+          googleID: user.googleID
+      })
+
+      userObj.scenarios.push(scenarioObj._id);
+      userObj.save();
+
+      res.status(200).send({message: "Scenario submitted successfully!"});
+
+  } catch (error) {
+      console.error("Error submitting scenario.", error);
+      res.status(500).send({ message: "Error submitting scenario." });
+  }
+})
 
 
 
