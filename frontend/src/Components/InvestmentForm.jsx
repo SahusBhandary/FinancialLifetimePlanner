@@ -128,8 +128,8 @@ const InvestmentForm = (props) => {
       incomeDistribution: incomeDistribution,
       taxability: isTaxable === "taxable" ? true : false
     }
-  
     axios.post('http://localhost:8000/submitInvestmentType', {form: form, user: user})
+    window.location.reload()
   }
 
 
@@ -423,6 +423,7 @@ const InvestmentForm = (props) => {
                 </RadioGroup>
               </FormControl>
             </div>
+
           </div>
         </div>
         }

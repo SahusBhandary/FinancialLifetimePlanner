@@ -106,6 +106,14 @@ async function importScenarioFromYAML(fileContent, userId) {
       }
     });
 
+    // add investments onto the user
+    investments.forEach((inv) => {
+      if (!user.investments.includes(inv._id)) {
+        user.investments.push(inv._id);
+      }
+    });
+
+
     // save the user
     await user.save();
 
