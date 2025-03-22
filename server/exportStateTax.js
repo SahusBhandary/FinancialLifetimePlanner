@@ -2,19 +2,14 @@
 // The function takes a list of state initial strings, and based on those, it will populate the yaml and write it out to a file path
 // In the future, it will send this file back to the frontend(?) and download it for the user.
 
-const mongoose = require('mongoose');
 const yaml = require('js-yaml');
-const fs = require('fs');
-const StateTax = require('./models/StateTax'); 
-const TaxBracket = require('./models/TaxBracket'); 
+const StateTax = require('./models/StateTax');
+const TaxBracket = require('./models/TaxBracket');
 
-async function exportStateTaxBracketsToYaml(statesToExport) {
+async function exportStateTaxBracketsToYaml(stateTaxFile) {
   try {
-    // connect to database (FOR TESTING)
-    await mongoose.connect('mongodb://localhost:27017/flp');
-
-    // fetch the brackets and populate it
-    const stateTaxData = await StateTax.find({ state: { $in: statesToExport } })
+    // fetch the StateTax documents referenced in the StateTaxFile
+    const stateTaxData = await StateTax.find({ _id: { $in: stateTaxFile.stateTaxes } })
       .populate('singleIncomeTaxBrackets marriedIncomeTaxBrackets')
       .exec();
 
@@ -35,22 +30,15 @@ async function exportStateTaxBracketsToYaml(statesToExport) {
       })),
     }));
 
-    // dump to yaml
+    // convert the data to YAML
     const stateTaxYaml = yaml.dump(simplifiedData);
 
-    // write to a filepath (TESTING)
-    fs.writeFileSync('stateTaxBrackets.yaml', stateTaxYaml);
-
-    console.log('State tax brackets exported successfully.');
-
+    // return the YAML data
+    return stateTaxYaml;
   } catch (error) {
     console.error('Error exporting state tax brackets:', error);
-  } finally {
-    // close connection for TESTING
-    await mongoose.connection.close();
+    throw error; 
   }
 }
 
-// testing with states
-const statesToExport = ['NY', 'CT', 'NJ'];
-exportStateTaxBracketsToYaml(statesToExport);
+module.exports = exportStateTaxBracketsToYaml;

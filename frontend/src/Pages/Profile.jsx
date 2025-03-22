@@ -6,11 +6,17 @@ import axios from "axios";
 import "../css/profile.css";
 
 const Profile = () => {
-  const { user } = useContext(StoreContext);
+  const { user, refreshUser } = useContext(StoreContext);
+
+  //refresh user data
+  useEffect(() => async() => {
+    refreshUser()
+  }, [])
 
   const [scenarios, setScenarios] = useState([]); // state to store fetched scenarios
+  const [files, setFiles] = useState([]); // state to store the fetched state tax files
 
-  // Fetch scenarios when the user changes
+  // fetch scenarios when the user changes
   useEffect(() => {
     const fetchScenarios = async () => {
       if (user?.scenarios?.length > 0) {
@@ -32,6 +38,24 @@ const Profile = () => {
     fetchScenarios();
   }, [user]); //when user gets changed, this will be run to refetch scenarios
 
+  useEffect(() => {
+    const fetchFiles = async () => {
+      try {
+        if (user?.uploadedFiles?.length > 0) {
+          const response = await axios.get(`http://localhost:8000/user/files?userId=${user._id}`);
+          
+          setFiles(response.data.files);
+        }
+      } catch (error) {
+        console.error('Error fetching files:', error);
+        alert('Failed to fetch files');
+      }
+    };
+  
+    fetchFiles();
+  }, [user]);
+
+
   const handleExportScenario = async (scenarioId) => {
     try {
       const response = await axios.get(`http://localhost:8000/export-scenario/${scenarioId}`, {
@@ -51,6 +75,53 @@ const Profile = () => {
       alert('Failed to export scenario.');
     }
   };
+
+  const handleDelete = async (fileId) => {
+    try {
+      const userId = user._id; 
+      const response = await axios.delete('http://localhost:8000/user/deleteFile', {
+        params: { userId, fileId }, 
+      });
+  
+      if (response.data.success) {
+        alert('File and associated data deleted successfully.');
+        
+        setFiles((prevFiles) => prevFiles.filter((file) => file._id !== fileId));
+      } else {
+        throw new Error(response.data.message || 'Failed to delete file');
+      }
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      alert('Failed to delete file. Please try again later.');
+    }
+  };
+
+  const handleDownload = async (fileId) => {
+    try {
+      const userId = user._id; 
+      const response = await axios.get('http://localhost:8000/user/downloadFile', {
+        params: { userId, fileId },
+        responseType: 'blob', 
+      });
+  
+      const contentDisposition = response.headers['content-disposition'];
+      const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"/);
+      const fileName = fileNameMatch ? fileNameMatch[1] : 'state_tax_data.yaml';
+  
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName); // set file name
+      document.body.appendChild(link);
+      link.click(); // trigger the download
+      link.remove(); // clean up the link 
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      alert('Failed to download file. Please try again later.');
+    }
+  };
+  
+
 
   if (!user) {
     return (
@@ -79,17 +150,19 @@ const Profile = () => {
 
           {/* Right Column: Tax Files */}
           <div className="tax-files">
-            <h3>State Tax Rate Files (FAKE DATA)</h3>
+            <h3>State Tax Rate Files</h3>
             <ul>
-              <li>
-                <a href="#">STATE_INCOME_TAX_NY_2025.YAML</a>
-                <button className="delete-btn">Delete</button>
-              </li>
+              {files.map((file) => (
+                <li key={file._id}>
+                  <a href="#" onClick={() => handleDownload(file._id)}>
+                    {file.fileName || `File_${file._id}`}
+                  </a>
+                  <button className="delete-btn" onClick={() => handleDelete(file._id)}>
+                    Delete
+                  </button>
+                </li>
+              ))}
             </ul>
-            <div className="file-buttons">
-              <button className="download-btn">Download All</button>
-              <button className="delete-all-btn">Delete All</button>
-            </div>
           </div>
         </div>
 

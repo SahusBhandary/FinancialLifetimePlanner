@@ -49,7 +49,11 @@ const ScenerioForm = (props) => {
     const [selectedEvents, setSelectedEvents] = useState([]);
 
     
-    
+    // states for upload state tax
+    const [file, setFile] = useState(null);
+    const [stateExists, setStateExists] = useState(null);
+    const [showUploadModal, setShowUploadModal] = useState(false);
+    const [message, setMessage] = useState('');
     
     useEffect(() => {
         if (!user) {
@@ -220,6 +224,48 @@ const ScenerioForm = (props) => {
             
         } catch (error) {
             console.error("Error submitting scenerio:", error);
+        }
+    };
+    const handleCheckState = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/checkState', {
+                params: { state: stateOfResidence.trim().toUpperCase(), userId: user._id }, 
+              });
+          if (response.data.exists) {
+            setStateExists(true);
+            setMessage('State tax information found in database. Proceeding with save...');
+            handleSubmit();
+          } else {
+            setStateExists(false);
+            setShowUploadModal(true); 
+          }
+        } catch (error) {
+          console.error('Error checking state:', error);
+        }
+      };
+    
+      const handleFileUpload = async () => {
+        if (!file) {
+            setMessage('Please select a file to upload.');
+            return;
+        }
+    
+        const formData = new FormData();
+        formData.append('file', file);
+    
+        try {
+            const response = await axios.post('http://localhost:8000/uploadStateTax', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                params: { userId: user._id } 
+            });
+    
+            setMessage('State tax data uploaded successfully, continuing with save');
+            setStateExists(true);
+            setShowUploadModal(false);
+            handleSubmit();
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            setMessage('Failed to upload file.');
         }
     };
 
@@ -560,8 +606,23 @@ const ScenerioForm = (props) => {
             </div>
 
             <div>
-                <button onClick={handleSubmit}>Submit</button>
+                <button onClick={handleCheckState}>Submit</button>
             </div>
+            {showUploadModal && (
+        <div style={{ border: '1px solid #ccc', padding: '10px', marginTop: '10px' }}>
+          <h3>State Not Found</h3>
+          <p>Please upload a YAML file with tax information for {stateOfResidence}.</p>
+          <input
+            type="file"
+            accept=".yaml,.yml"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
+          <button onClick={handleFileUpload}>Upload YAML</button>
+          <button onClick={() => setShowUploadModal(false)}>Cancel</button>
+        </div>
+      )}
+
+      {message && <p style={{ color: message.includes('success') ? 'green' : 'red' }}>{message}</p>}
         </div>
     );
 };
