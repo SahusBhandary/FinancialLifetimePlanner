@@ -315,19 +315,40 @@ app.post('/import-scenario', upload.single('scenarioFile'), async (req, res) => 
 
   // used to check whether or not the state of residence entered by the user is in the database already
   app.get('/checkState', async (req, res) => {
-    const { state, userId } = req.query; // get the state and user ID from the query parameters
+    const { state, userId } = req.query; 
   
     try {
-      // check if the state tax data exists and is linked to the user
-      const stateTax = await StateTax.findOne({ state, uploadedBy: userId })
-        .populate('singleIncomeTaxBrackets marriedIncomeTaxBrackets');
+      // find the user and populate their files
+      const user = await User.findById(userId).populate({
+        path: 'uploadedFiles',
+        populate: {
+          path: 'stateTaxes',
+          match: { state }, 
+          populate: [
+            { path: 'singleIncomeTaxBrackets' },
+            { path: 'marriedIncomeTaxBrackets' },
+          ],
+        },
+      });
   
-      if (stateTax) {
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+  
+      // check if any StateTaxFile contains a statetax document for the specified state
+      const stateTaxFile = user.uploadedFiles.find((file) =>
+        file.stateTaxes.some((stateTax) => stateTax.state === state)
+      );
+  
+      if (stateTaxFile) {
+        // find the StateTax document for the specified state
+        const stateTax = stateTaxFile.stateTaxes.find((stateTax) => stateTax.state === state);
         res.json({ exists: true, stateTax });
       } else {
         res.json({ exists: false });
       }
     } catch (error) {
+      console.error('Error checking state:', error);
       res.status(500).json({ error: 'Failed to check state' });
     }
   });
