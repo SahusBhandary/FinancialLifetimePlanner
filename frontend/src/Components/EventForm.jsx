@@ -316,8 +316,6 @@ const EventForm = (props) => {
         const response = await axios.post('http://localhost:8000/submitEvent', {user: user, event: event});
         window.location.reload();
     }
-
-    
     
 
     return (
@@ -1095,22 +1093,31 @@ const EventForm = (props) => {
                         </div>
                         {/* Invest - Fixed Allocation Case */}
                         {(assetAllocationType === "fixed") &&
-                        
                         <div>
                             {listOfInvestments.filter(inv => inv.taxStatus !== "pre-tax").map((investment, index) => {
-                                console.log(index);
-                                return (<div>
-                                    <div>{investment.id}</div>
-                                        <label>
-                                        <input onChange={(e) => {
-                                            let investmentIDFormat = {
-                                                [investment.id] : e.target.value
-                                            };
-                                            assetAllocationData[index] = investmentIDFormat;
-                                            
-                                        }}type="text" placeholder="Percent Allocation"></input>
-                                        </label>
-                                    </div>);
+                                return (
+                                <div>
+                                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>{investment.id}</div>
+                                        <TextField 
+                                            label="Percent Allocation"
+                                            onChange={(e) => {
+                                                let investmentIDFormat = {
+                                                    [investment.id] : e.target.value
+                                                };
+                                                assetAllocationData[index] = investmentIDFormat;
+                                            }}
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: '12px',
+                                            },
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                                );
                             })}
                         </div>
                         }
@@ -1119,19 +1126,43 @@ const EventForm = (props) => {
                         {assetAllocationType === "glidePath" &&
                         <div>
                             {listOfInvestments.filter(inv => inv.taxStatus !== "pre-tax").map((investment, index) => {
-                                return (<div>
-                                    <div>{investment.id}</div>
-                                        <input onChange={(e) => {
-                                            let investmentIDFormat = {
-                                                [investment.id] : e.target.value
-                                            };
-                                            glidePathAllocationBefore[index] = investmentIDFormat}} type="text" placeholder="Percent Allocation Before"></input>
-                                        <input onChange={(e) => {
-                                            let investmentIDFormat = {
-                                                [investment.id] : e.target.value
-                                            };
-                                            glidePathAllocationAfter[index] = investmentIDFormat}} type="text" placeholder="Percent Allocation After"></input>
-                                </div>);
+                                return (
+                                <div>
+                                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>{investment.id}</div>
+                                        <TextField 
+                                            label="Percent Allocation Before"
+                                            onChange={(e) => {
+                                                let investmentIDFormat = {
+                                                    [investment.id] : e.target.value
+                                                };
+                                            glidePathAllocationBefore[index] = investmentIDFormat}}
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: '12px',
+                                            },
+                                            }}
+                                        />
+                                        <TextField 
+                                            label="Percent Allocation After"
+                                            onChange={(e) => {
+                                                let investmentIDFormat = {
+                                                    [investment.id] : e.target.value
+                                                };
+                                                glidePathAllocationAfter[index] = investmentIDFormat}}
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: '12px',
+                                            },
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                                );
                             })}
                         </div>
                         }
@@ -1182,17 +1213,29 @@ const EventForm = (props) => {
                         {taxStatusReblanaceOption === "non-retirement" &&
                             <div>
                                 {listOfInvestments.filter(inv => inv.taxStatus === "non-retirement").map((investment, index) => {
-                                return (<div>
-                                    <div>{investment.id}</div>
-                                        <label>
-                                        <input onChange={(e) => {
-                                            let investmentIDFormat = {
-                                                [investment.id] : e.target.value
-                                            };
-                                            assetAllocationDataNonRetirement[index] = investmentIDFormat;
-                                        }}type="text" placeholder="Percent Allocation"></input>
-                                        </label>
-                                    </div>);
+                                return (
+                                <div key={investment.id}>
+                                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>{investment.id}</div>
+                                        <TextField 
+                                            label="Percent Allocation"
+                                            onChange={(e) => {
+                                                let investmentIDFormat = {
+                                                    [investment.id] : e.target.value
+                                                };
+                                                assetAllocationDataNonRetirement[index] = investmentIDFormat;
+                                            }}
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: '12px',
+                                            },
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                                );
                                 })}
                             </div>
                         }
@@ -1202,16 +1245,26 @@ const EventForm = (props) => {
                         {taxStatusReblanaceOption === "pre-tax" &&
                             <div>
                                 {listOfInvestments.filter(inv => inv.taxStatus === "pre-tax").map((investment, index) => {
-                                return (<div>
-                                    <div>{investment.id}</div>
-                                        <label>
-                                        <input onChange={(e) => {
-                                            let investmentIDFormat = {
-                                                [investment.id] : e.target.value
-                                            };
-                                            assetAllocationDataPreTax[index] = investmentIDFormat;
-                                        }}type="text" placeholder="Percent Allocation"></input>
-                                        </label>
+                                return (<div key={investment.id}>
+                                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>{investment.id}</div>
+                                        <TextField 
+                                            label="Percent Allocation"
+                                            onChange={(e) => {
+                                                let investmentIDFormat = {
+                                                    [investment.id] : e.target.value
+                                                };
+                                                assetAllocationDataPreTax[index] = investmentIDFormat;
+                                            }}
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: '12px',
+                                            },
+                                            }}
+                                        />
+                                    </div>
                                     </div>);
                                 })}
                             </div>
@@ -1221,16 +1274,26 @@ const EventForm = (props) => {
                         {taxStatusReblanaceOption === "after-tax" &&
                             <div>
                                 {listOfInvestments.filter(inv => inv.taxStatus === "after-tax").map((investment, index) => {
-                                return (<div>
-                                    <div>{investment.id}</div>
-                                        <label>
-                                        <input onChange={(e) => {
-                                            let investmentIDFormat = {
-                                                [investment.id] : e.target.value
-                                            };
-                                            assetAllocationDataAfterTax[index] = investmentIDFormat;
-                                        }}type="text" placeholder="Percent Allocation"></input>
-                                        </label>
+                                return (<div key={investment.id}>
+                                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>{investment.id}</div>
+                                        <TextField 
+                                            label="Percent Allocation"
+                                            onChange={(e) => {
+                                                let investmentIDFormat = {
+                                                    [investment.id] : e.target.value
+                                                };
+                                                assetAllocationDataAfterTax[index] = investmentIDFormat;
+                                            }}
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: '12px',
+                                            },
+                                            }}
+                                        />
+                                    </div>
                                     </div>);
                                 })}
                             </div>
