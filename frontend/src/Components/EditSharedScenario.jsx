@@ -119,9 +119,47 @@ const EditSharedScenario = (props) => {
         fetchInvestmentType();
         fetchInvestments();
         fetchEvents();
-        setSelectedInvestmentsOrder(Array(expenseWithdrawlInvestmentsCount).fill(listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).length === 0 ? "" : listofinvestments.filter((investment) => selectedInvestments.includes(investment._id))[0]._id));
-        setSelectedRMDInvestmentsOrder(Array(RMDInvestments).fill(listofinvestments.filter((investment) => investment.taxStatus === 'pre-tax').length === 0 ? "" : listofinvestments.filter((investment) => investment.taxStatus === 'pre-tax')[0].id));
-        setSelectedExpensesOrder(Array(expenseCount).fill(events.filter((event) => event.discretionary === true).length === 0 ? "" : events.filter((event) => event.discretionary === true)[0].name));
+        setSelectedInvestmentsOrder((prev) => {
+            const updatedOrder = [
+                ...selectedInvestmentsOrder,                     
+                ...prev.slice(expenseWithdrawlInvestmentsCount)   
+            ];
+            return updatedOrder;
+        });
+        while(selectedInvestmentsOrder.length > expenseWithdrawlInvestmentsCount) {
+            selectedInvestmentsOrder.pop()
+        }
+        if (selectedInvestmentsOrder.length < expenseWithdrawlInvestmentsCount) {
+            selectedInvestmentsOrder.push('')
+        }
+
+        setSelectedRMDInvestmentsOrder((prev) => {
+            const updatedOrder = [
+                ...selectedRMDInvestmentsOrder,                     
+                ...prev.slice(RMDInvestments)   
+            ];
+            return updatedOrder;
+        });
+        while(selectedRMDInvestmentsOrder.length > RMDInvestments) {
+            selectedRMDInvestmentsOrder.pop()
+        }
+        if (selectedRMDInvestmentsOrder.length < RMDInvestments) {
+            selectedRMDInvestmentsOrder.push('')
+        }
+       
+        setSelectedExpensesOrder((prev) => {
+            const updatedOrder = [
+                ...selectedExpensesOrder,                     
+                ...prev.slice(expenseCount)   
+            ];
+            return updatedOrder;
+        });
+        while(selectedExpensesOrder.length > expenseCount) {
+            selectedExpensesOrder.pop()
+        }
+        if (selectedExpensesOrder.length < expenseCount) {
+            selectedExpensesOrder.push('')
+        } 
     }, [user, expenseWithdrawlInvestmentsCount, RMDInvestments, expenseCount, props.scenario]); 
 
     const handleCheckboxChange = (id) => {
@@ -518,6 +556,8 @@ const EditSharedScenario = (props) => {
                         <div>
                             <h3>{i + 1}</h3>
                             <select onChange={(e) => selectedExpensesOrder[i] = e.target.value}>
+                                 <option>Please select an option</option>
+
                                 {events.filter((event) => event.discretionary === true && selectedEvents.includes(event._id)).map((event) => (
                                     <option>{event.name}</option>
                                 ))}
@@ -576,6 +616,8 @@ const EditSharedScenario = (props) => {
                         <div>
                             <h3>{i + 1}</h3>
                             <select onChange={(e) => selectedRMDInvestmentsOrder[i] = e.target.value}>
+                                 <option>Please select an option</option>
+
                                 {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
                                     investment.taxStatus === 'pre-tax' && (
                                         <option key={index}>{investment.id}</option>

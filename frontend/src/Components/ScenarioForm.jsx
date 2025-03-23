@@ -4,6 +4,8 @@ import { StoreContext } from "../store/Store";
 
 const ScenerioForm = (props) => {
     const { user } = useContext(StoreContext);
+    const [ emptyExpenseStrategyError, setEmptyExpenseStrategyError ] = useState()
+
     const [name, setName] = useState("");
     const [isMarried, setIsMarried] = useState("");
     const [userBirthYear, setUserBirthYear] = useState("");
@@ -123,6 +125,7 @@ const ScenerioForm = (props) => {
         if (selectedInvestmentsOrder.length < expenseWithdrawlInvestmentsCount) {
             selectedInvestmentsOrder.push('')
         }
+
         setSelectedRMDInvestmentsOrder((prev) => {
             const updatedOrder = [
                 ...selectedRMDInvestmentsOrder,                     
@@ -136,7 +139,7 @@ const ScenerioForm = (props) => {
         if (selectedRMDInvestmentsOrder.length < RMDInvestments) {
             selectedRMDInvestmentsOrder.push('')
         }
-        console.log(selectedInvestmentsOrder)
+       
         setSelectedExpensesOrder((prev) => {
             const updatedOrder = [
                 ...selectedExpensesOrder,                     
@@ -149,9 +152,7 @@ const ScenerioForm = (props) => {
         }
         if (selectedExpensesOrder.length < expenseCount) {
             selectedExpensesOrder.push('')
-        }
-     
-        
+        }        
 
     }, [user, expenseWithdrawlInvestmentsCount, RMDInvestments, expenseCount]); 
 
@@ -261,7 +262,15 @@ const ScenerioForm = (props) => {
                 financialGoal: Number(financialGoal),
                 residenceState: stateOfResidence,
             }
-            console.log(scenario)
+
+            if (scenario.expenseWithdrawalStrategy !== undefined && scenario.expenseWithdrawalStrategy.includes('')) {
+                setEmptyExpenseStrategyError(<div style={{color: "red"}}>Please select options for all investments!</div>)
+                return
+            }
+            else {
+                setEmptyExpenseStrategyError(<div></div>)
+            }
+
             const response = await axios.post('http://localhost:8000/submitScenario', {
                 scenario : scenario, user: user
             });
@@ -571,6 +580,7 @@ const ScenerioForm = (props) => {
                     
                     ))}
                 </ul>
+                {emptyExpenseStrategyError}
             </div>
             
             <div>
