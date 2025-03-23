@@ -41,7 +41,7 @@ const EditScenario = (props) => {
     const [RMDInvestments, setRMDInvestments] = useState(0);
     const [listofinvestments, setListOfInvestments] = useState([])
     const [selectedExpensesOrder, setSelectedExpensesOrder] = useState([]);
-    const [selectedInvestmentsOrder, setSelectedInvestmentsOrder] = useState([]);
+    let [selectedInvestmentsOrder, setSelectedInvestmentsOrder] = useState(props.scenario.expenseWithdrawalStrategy);
     const [selectedRMDInvestmentsOrder, setSelectedRMDInvestmentsOrder] = useState([]);
     const [selectedInvestments, setSelectedInvestments] = useState(props.scenario.investments);
     const [rothInvestments, setRothInvestments] = useState(props.scenario.RothConversionStrategy);
@@ -110,7 +110,7 @@ const EditScenario = (props) => {
         fetchInvestmentType();
         fetchInvestments();
         fetchEvents();
-        setSelectedInvestmentsOrder(Array(expenseWithdrawlInvestmentsCount).fill(listofinvestments.length === 0 ? "" : listofinvestments[0].id));
+        setSelectedInvestmentsOrder(Array(expenseWithdrawlInvestmentsCount).fill(listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).length === 0 ? "" : listofinvestments.filter((investment) => selectedInvestments.includes(investment._id))[0]._id));
         setSelectedRMDInvestmentsOrder(Array(RMDInvestments).fill(listofinvestments.filter((investment) => investment.taxStatus === 'pre-tax').length === 0 ? "" : listofinvestments.filter((investment) => investment.taxStatus === 'pre-tax')[0].id));
         setSelectedExpensesOrder(Array(expenseCount).fill(events.filter((event) => event.discretionary === true).length === 0 ? "" : events.filter((event) => event.discretionary === true)[0].name));
 
@@ -527,8 +527,13 @@ const EditScenario = (props) => {
                     {Array.from({ length: expenseWithdrawlInvestmentsCount }, (_, i) => (
                         <div>
                             <h3>{i + 1}</h3>
-                            <select onChange={(e) => selectedInvestmentsOrder[i] = e.target.value}>
-                                <option> Please select an option </option>
+                            <select onChange={(e) => {
+                                    const newOrder = [...selectedInvestmentsOrder];  
+                                    newOrder[i] = e.target.value;                  
+                                    setSelectedInvestmentsOrder(newOrder);
+                                    selectedInvestmentsOrder = newOrder;
+                                }}>
+                                <option>Please select an option</option>
                                 {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment) => (
                                     <option value={investment._id}>{investment.id}</option>
                                 ))}
