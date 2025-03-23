@@ -7,6 +7,13 @@ const ViewScenario = (props) => {
   const [investments, setListOfInvestments] = useState(); // investments
   const [investmentTypes, setInvestments] = useState(); // investment types
   const [events, setEvents] = useState();
+
+  const [spendingStrategyList, setSpendingStrategyList] = useState();
+  const [expenseWithdrawalList, setExpenseWithdrawalList] = useState();
+  const [RMDList, setRMDList] = useState();
+
+
+
   
   useEffect(() => {
     const fetchInvestmentType = async () => {
@@ -31,9 +38,7 @@ const ViewScenario = (props) => {
                 });
                 
                 setListOfInvestments(response.data); 
-                for (let i = 0; i < response.data.length; i++) {
-                    investments[i] = response.data[i]
-                }
+            
                 
             } catch (error) {
                 console.error("Error fetching investment details:", error);
@@ -54,18 +59,61 @@ const ViewScenario = (props) => {
             }
         }
     };
+
+    const fetchSpendingStrategy = async () => {
+      if (scenario.spendingStrategy.length > 0) {
+          try {
+              const response = await axios.post('http://localhost:8000/getEvents', {
+                  eventIds: scenario.spendingStrategy
+              });
+
+              setSpendingStrategyList(response.data); 
+          } catch (error) {
+              console.error("Error fetching spending strategy details:", error);
+          }
+      }
+  };
+
+  const fetchExpenseWithdrawalStrategy = async () => {
+    if (scenario.expenseWithdrawalStrategy.length > 0) {
+        try {
+            const response = await axios.post('http://localhost:8000/getInvestmentList', {
+              investmentIds: scenario.expenseWithdrawalStrategy
+            });
+
+            setExpenseWithdrawalList(response.data); 
+            
+        } catch (error) {
+            console.error("Error fetching expense withdrawal strategy details:", error);
+        }
+    }
+};
+
+  const fetchRMDStrategy = async () => {
+    if (scenario.RMDStrategy.length > 0) {
+        try {
+            const response = await axios.post('http://localhost:8000/getInvestmentList', {
+              investmentIds: scenario.RMDStrategy
+            });
+
+            setRMDList(response.data); 
+            
+        } catch (error) {
+            console.error("Error fetching RMD strategy details:", error);
+        }
+    }
+  };
     
 
     fetchInvestmentType();
     fetchInvestments();
     fetchEvents();
+    fetchSpendingStrategy();
+    fetchExpenseWithdrawalStrategy();
+    fetchRMDStrategy();
   
 
 }, []); 
-
-console.log(investments);
-console.log(investmentTypes);
-console.log(events);
 
   return (
     <>
@@ -76,6 +124,8 @@ console.log(events);
       <div>
         Martial Status: {scenario.maritalStatus}
       </div>
+
+      <br></br>
 
       <div>
           User Birth Year: {scenario.birthYears[0]}
@@ -94,7 +144,7 @@ console.log(events);
           </div>
           }
       </div>
-
+      <br></br>
       {scenario.maritalStatus === "couple" &&
         <div>
           <div>
@@ -120,16 +170,19 @@ console.log(events);
         </div>
       }
 
-      {console.log(investmentTypes)}
+      <br></br>
 
       {(investmentTypes !== undefined && investmentTypes.length > 0) &&
       <div>
-        Investment Types: {investmentTypes.map((investmentType) => {
+        <h2>Investment Types:</h2> {investmentTypes.map((investmentType) => {
           return (
           <div>
             Name: {investmentType.name}
+            <br></br>
             Description: {investmentType.description}
+            <br></br>
             Annual Return Amount or Percent: {investmentType.returnAmtOrPct}
+            <br></br>
             Return Distribution: {investmentType.returnDistribution.type}
 
             {investmentType.returnDistribution.type === "fixed" ? 
@@ -144,7 +197,10 @@ console.log(events);
             }
 
             Expense Ratio: {investmentType.expenseRatio}
+            <br></br>
             Income Amount or Percent: {investmentType.incomeAmtOrPct}
+            <br></br>
+
             Income Distribution:{investmentType.incomeDistribution.type }
 
             {investmentType.incomeDistribution.type === "fixed" ? 
@@ -159,21 +215,25 @@ console.log(events);
             }
             Taxability: {investmentType.taxability ? "Taxable" : "Tax-Exempt"}
             <br></br>
+            <br></br>
           </div>
           );
         })}
       </div>
       }
 
-
+    <br></br>
     {(investments !== undefined && investments.length > 0) &&
           <div>
-            Investments: {investments.map((investment) => {
+            <h2>Investments: </h2>{investments.map((investment) => {
               return (
               <div>
                 Name: {investment.id}
+                <br></br>
                 Tax Status: {investment.taxStatus}
+                <br></br>
                 Value: {investment.value}
+                <br></br>
                 <br></br>
               </div>
               );
@@ -181,14 +241,17 @@ console.log(events);
           </div>
       }
 
-      
+    <br></br> 
       {(events !== undefined && events.length > 0) &&
                 <div>
-                  Events: {events.map((event) => {
+                  <h2>Events</h2> {events.map((event) => {
                     return (
                     <div>
                       Name: {event.name}
+                      <br></br>
                       Description: {event.description}
+                      <br></br>
+
                       Start Year Distribution: {event.start.type}
                       
                       {/* Start Year Conditional Rendering */}
@@ -243,8 +306,14 @@ console.log(events);
                       {(event.type === "income" || event.type === "expense") && 
                       <div>
                          Initial Amount: {event.initialAmount}
+                         <br></br>
+
                          Annual Change Amount Or Percent: {event.changeAmtOrPct}
+                        <br></br>
+
                          Inflation Adjusted: {event.inflationAdjusted ? "On" : "Off"}
+                        <br></br>
+
                          Amount Associated With User : {event.userFraction}
                       </div>
                       }
@@ -296,13 +365,13 @@ console.log(events);
                           Max Cash: {event.maxCash}
                           </div>
                         }
-                      
+                      <br></br>
                     </div>
                     );
                   })}
                 </div>
-            }
-
+        }
+    <br></br>
       <div>
         Inflation Assumption Distribution: {scenario.inflationAssumption.type}
 
@@ -329,17 +398,64 @@ console.log(events);
         Annual After Tax Contribution Limit: {scenario.afterTaxContributionLimit}
       </div>
 
-      {/* <div>
-        Spending Strategy: {scenario.spendingStrategy}
-      </div>
+      <br></br>
 
-      <div>
-        Expense Withdrawal Strategy: {scenario.expenseWithdrawalStrategy}
-      </div>
+      {(spendingStrategyList !== undefined && spendingStrategyList.length > 0) && 
+        <div>
+        <h2>Spending Strategy</h2> {spendingStrategyList.map((event, i) => (
+            <div>
+              Rank {i + 1} : {event.name}
+            </div>
+        ))}
+       </div>
+      }
 
-      <div>
-        RMD Strategy: {scenario.RMDStrategy}
-      </div> */}
+      {(spendingStrategyList === undefined || spendingStrategyList.length === 0) && 
+          <div>
+            <h2>Spending Strategy</h2> 
+            <p>None listed</p>
+          </div>
+        }
+
+      <br></br>
+      {(expenseWithdrawalList !== undefined && expenseWithdrawalList.length > 0) && 
+        <div>
+        <h2>Expense Withdrawal Strategy:</h2> {expenseWithdrawalList.map((investment, i) => (
+            <div>
+              Rank {i + 1} : {investment.id}
+            </div>
+        ))}
+       </div>
+      }
+
+    {(expenseWithdrawalList === undefined || expenseWithdrawalList.length === 0) && 
+        <div>
+        <h2>Expense Strategy</h2>
+        <p>None listed</p>
+
+       </div>
+      }
+
+      <br></br>
+
+      {(RMDList !== undefined && RMDList.length > 0) && 
+        <div>
+        <h2>RMD Strategy:</h2> {RMDList.map((investment, i) => (
+            <div>
+              Rank {i + 1} : {investment.id}
+            </div>
+        ))}
+       </div>
+      }
+
+    {(RMDList === undefined || RMDList.length === 0) && 
+        <div>
+        <h2>RMD Strategy</h2>
+        <p>None listed</p>
+
+       </div>
+      }
+      <br></br>
 
 
       <div>
@@ -357,6 +473,8 @@ console.log(events);
       <div>
         Residence State: {scenario.residenceState}
       </div>
+
+      <button onClick={() => props.setIsViewPage(false)}>Back</button>
 
     </>
   );

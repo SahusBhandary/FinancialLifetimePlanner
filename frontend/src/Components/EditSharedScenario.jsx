@@ -16,7 +16,7 @@ const EditSharedScenario = (props) => {
 
     fetchUser();
   }, [props.tempUser]);
-  console.log("hi")
+    const [ emptyExpenseStrategyError, setEmptyExpenseStrategyError ] = useState()
     const [name, setName] = useState(props.scenario.name);
     const [isMarried, setIsMarried] = useState(props.scenario.maritalStatus === "couple" ? "yes" : "no");
     const [userBirthYear, setUserBirthYear] = useState(props.scenario.birthYears[0]);
@@ -231,12 +231,19 @@ const EditSharedScenario = (props) => {
                 residenceState: stateOfResidence,
             }
 
+            if (scenario.expenseWithdrawalStrategy !== undefined && scenario.expenseWithdrawalStrategy.includes('')) {
+                setEmptyExpenseStrategyError(<div style={{color: "red"}}>Please select options for all investments!</div>)
+                return
+            }
+            else {
+                setEmptyExpenseStrategyError(<div></div>)
+
+            }
+
             const response = await axios.post('http://localhost:8000/editScenario', {
                 scenario : scenario,
                 scenarioID: props.scenario._id
             });
-
-            console.log(scenario);
 
             window.location.reload();
             
@@ -349,7 +356,7 @@ const EditSharedScenario = (props) => {
                     {spouseLifeExpectancyDistribution === "fixed" && 
                     <div>
                         <span>Enter Fixed Amount</span>
-                        {console.log(spouseLifeExpectancyFixed)}
+                    
                         <input defaultValue={spouseLifeExpectancyFixed}type="text" onChange={(e) => setSpouseLifeExpectancyFixed(e.target.value)}></input>
                     </div>
                     }
@@ -551,6 +558,7 @@ const EditSharedScenario = (props) => {
                     
                     ))}
                 </ul>
+                {emptyExpenseStrategyError}
             </div>
             
             <div>

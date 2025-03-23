@@ -6,6 +6,8 @@ import { StoreContext } from "../store/Store";
 const EditScenario = (props) => {
 
     const { user } = useContext(StoreContext)
+    const [ emptyExpenseStrategyError, setEmptyExpenseStrategyError ] = useState()
+
     const [name, setName] = useState(props.scenario.name);
     const [isMarried, setIsMarried] = useState(props.scenario.maritalStatus === "couple" ? "yes" : "no");
     const [userBirthYear, setUserBirthYear] = useState(props.scenario.birthYears[0]);
@@ -218,6 +220,15 @@ const EditScenario = (props) => {
                 sharingSettings: sharingSettings,
                 financialGoal: Number(financialGoal),
                 residenceState: stateOfResidence,
+            }
+
+            if (scenario.expenseWithdrawalStrategy !== undefined && scenario.expenseWithdrawalStrategy.includes('')) {
+                setEmptyExpenseStrategyError(<div style={{color: "red"}}>Please select options for all investments!</div>)
+                return
+            }
+            else {
+                setEmptyExpenseStrategyError(<div></div>)
+
             }
 
             const response = await axios.post('http://localhost:8000/editScenario', {
@@ -542,6 +553,7 @@ const EditScenario = (props) => {
                     
                     ))}
                 </ul>
+                {emptyExpenseStrategyError}
             </div>
             
             <div>
