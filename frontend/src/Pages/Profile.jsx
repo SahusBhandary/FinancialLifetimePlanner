@@ -5,12 +5,24 @@ import { StoreContext } from "../store/Store.jsx";
 import axios from "axios"; 
 import "../css/profile.css";
 import EditScenario from "../Components/EditScenario.jsx";
+import EditSharedScenario from "../Components/EditSharedScenario.jsx";
 
 const Profile = () => {
   const { user, refreshUser } = useContext(StoreContext);
 
   const [isEditPage, setIsEditPage] = useState(false);
+  const [isSharedEditPage, setIsSharedEditPage] = useState(false);
+
   const [selectedScenario, setSelectedScenario] = useState(null);
+
+  const [tempUser, setTempUser] = useState();
+
+  const findTempUser = async (scenario) => {
+    const response = await axios.post('http://localhost:8000/getUserWithScenario', {
+      scenario: scenario
+    });
+    return response.data.user
+  }
 
   //refresh user data
   useEffect(() => async() => {
@@ -18,6 +30,8 @@ const Profile = () => {
   }, [])
 
   const [scenarios, setScenarios] = useState([]); // state to store fetched scenarios
+  const [sharedScenarios, setSharedScenarios] = useState([]); // state to store fetched scenarios
+
   const [files, setFiles] = useState([]); // state to store the fetched state tax files
 
   // fetch scenarios when the user changes
@@ -39,7 +53,25 @@ const Profile = () => {
       }
     };
 
+    const fetchSharedScenarios = async () => {
+      if (user?.sharedScenarios?.length > 0) {
+        try {
+          // fetch scenario data for each scenario ID
+          const scenarioData = await Promise.all(
+            user.sharedScenarios.map(async (scenarioId) => {
+              const response = await axios.get(`http://localhost:8000/getScenario/${scenarioId}`);
+              return response.data;
+            })
+          );
+          setSharedScenarios(scenarioData); // set the fetched scenarios in state
+        } catch (error) {
+          console.error("Error fetching shared scenarios:", error);
+        }
+      }
+    };
+
     fetchScenarios();
+    fetchSharedScenarios();
   }, [user]); //when user gets changed, this will be run to refetch scenarios
 
   useEffect(() => {
@@ -125,6 +157,26 @@ const Profile = () => {
     }
   };
   
+  const handleShareScenario = async (scenario) => {
+    try {
+      const email = prompt("Enter the email to share this scenario:");
+      
+      if (email) {
+        const response = await axios.post('http://localhost:8000/shareScenario', {
+          email: email,
+          scenario: scenario
+         });
+
+        alert(`Scenario '${scenario.name}' shared with ${email}`);
+  
+      } else {
+        alert('No email entered. Sharing cancelled.');
+      }
+    } catch (error) {
+      console.error('Error sharing scenario:', error);
+    }
+  };
+  
 
 
   if (!user) {
@@ -140,13 +192,22 @@ const Profile = () => {
     );
   }
 
-  if (isEditPage === true){
+  if (isEditPage === true && isSharedEditPage === false){
    return (
     <>
     <Navbar/>
-    <EditScenario scenario={selectedScenario} setIsEditPage={setIsEditPage}/>
+    <EditScenario scenario={selectedScenario} tempUser={tempUser} setIsEditPage={setIsEditPage}/>
     </>
    );
+  }
+  if (isSharedEditPage === true) {
+    console.log("hi")
+      return (
+       <>
+       <Navbar/>
+       <EditSharedScenario scenario={selectedScenario} tempUser={tempUser} setIsEditPage={setIsEditPage} setIsSharedEditPage={setIsSharedEditPage}/>
+       </>
+      );
   }
   return (
     <div>
@@ -187,14 +248,40 @@ const Profile = () => {
                 <p><strong>Financial Goal:</strong> {scenario.financialGoal}</p>
                 <div className="scenario-buttons">
                   <button onClick={() => handleExportScenario(scenario._id)} >Export</button>
-                  <button>Share</button>
+                  <button onClick={() => handleShareScenario(scenario)}>Share</button>
                   <button onClick={() => {
                     setIsEditPage(true)
+      
+
                     setSelectedScenario(scenario);
                     }}>Edit</button>
                   <button>Simulate</button>
                   <button className="delete-btn">Delete</button>
                 </div>
+              </div>
+            ))
+          ) : (
+            <p>No scenarios found. Create a new scenario to get started.</p>
+          )}
+        </div>
+
+        <div className="scenarios">
+          <h3>Shared Scenarios</h3>
+          {sharedScenarios.length > 0 ? (
+            sharedScenarios.map((scenario, index) => (
+              <div key={index} className="scenario">
+                <p><strong>Name:</strong> {scenario.name}</p>
+                <p><strong>Financial Goal:</strong> {scenario.financialGoal}</p>
+                <button>View</button>
+                {scenario.sharingSettings === 'read-write' && 
+                <button onClick={async () => {
+                  setIsEditPage(true)
+                  setIsSharedEditPage(true)
+                  setSelectedScenario(scenario);
+                  const tempUserData = await findTempUser(scenario);
+                  setTempUser(tempUserData);
+                  }}>Edit</button>
+                }
               </div>
             ))
           ) : (

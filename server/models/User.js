@@ -33,6 +33,7 @@ const UserSchema = new mongoose.Schema({
   scenarios: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Scenario' }],
   uploadedFiles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'StateTaxFile' }],
   // uploadedStateTaxes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'StateTax' }]
+  sharedScenarios: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Scenario' }]
 
 },
 );
