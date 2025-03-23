@@ -11,7 +11,7 @@ const InitialInvestmentsForm = (props) => {
     const [investments, setInvestments] = useState([]);
     const [taxStatus, setTaxStatus] = useState();
     const [initialValue, setInitialValue] = useState();
-    const [investmentType, setInvestmentType] = useState();
+    const [investmentType, setInvestmentType] = useState('');
 
 
     useEffect(() => {

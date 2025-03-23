@@ -49,14 +49,25 @@ const UploadScenario = () => {
     
     <div>
         <Navbar />
-        <h1>Import Scenario</h1>
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label htmlFor="file">Upload YAML File:</label>
-                <input type="file" id="file" accept=".yaml" onChange={handleFileChange} required />
+        <div>
+          <div style={{display: 'flex', flexDirection: 'column'}}>
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+              <h1>Import Scenario</h1>
             </div>
-            <button type="submit">Import Scenario</button>
-        </form>
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+              <form onSubmit={handleSubmit}>
+                  <div>
+                      <label htmlFor="file">Upload YAML File:</label>
+                      <input type="file" id="file" accept=".yaml" onChange={handleFileChange} required />
+                  </div>
+                  <button type="submit">Import Scenario</button>
+              </form>
+            </div>
+              
+          </div>
+        </div>
+        
+        
     </div>
   );
 };
