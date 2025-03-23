@@ -1,11 +1,22 @@
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { StoreContext } from "../store/Store";
 
+const EditSharedScenario = (props) => {
 
-const EditScenario = (props) => {
+    let [user, setUser] = useState(props.tempUser)
+    useEffect(() => {
+    const fetchUser = async () => {
+      if (props.tempUser instanceof Promise) {
+        const data = await props.tempUser;  // await the Promise
+        setUser(data);
+      } else {
+        setUser(props.tempUser);  // directly set if it's already resolved
+      }
+    };
 
-    const { user } = useContext(StoreContext)
+    fetchUser();
+  }, [props.tempUser]);
+  console.log("hi")
     const [name, setName] = useState(props.scenario.name);
     const [isMarried, setIsMarried] = useState(props.scenario.maritalStatus === "couple" ? "yes" : "no");
     const [userBirthYear, setUserBirthYear] = useState(props.scenario.birthYears[0]);
@@ -625,7 +636,7 @@ const EditScenario = (props) => {
             <div>
                 <button onClick={handleCheckState}>Submit</button>
             </div>
-            <button onClick={() => props.setIsEditPage(false)}> Back </button>
+            <button onClick={() => {props.setIsEditPage(false); props.setIsSharedEditPage(false)}}> Back </button>
             {showUploadModal && (
         <div style={{ border: '1px solid #ccc', padding: '10px', marginTop: '10px' }}>
           <h3>State Not Found</h3>
@@ -645,4 +656,4 @@ const EditScenario = (props) => {
     );
 };
 
-export default EditScenario;
+export default EditSharedScenario;

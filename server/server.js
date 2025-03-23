@@ -12,6 +12,7 @@ const TaxBracket = require('./models/TaxBracket')
 const EventSeriesModel = require('./models/EventSeries')
 const InvestmentModel = require('./models/Investment')
 const UserModel = require('./models/User')
+const { ObjectId } = require("mongodb");
 
 
 //stuff for importing/exporting
@@ -210,6 +211,28 @@ app.post("/shareScenario", async (req, res) => {
     }
   })
 
+  app.post("/editScenario", async (req, res) => {
+    try {
+        const { scenario, scenarioID } = req.body;
+        console.log(scenarioID)
+
+        const scenarioId = new ObjectId(scenarioID);
+
+        const { _id, ...updateFields } = scenario;
+
+        const result = await ScenarioModel.updateOne(
+            { _id: scenarioId },
+            { $set: updateFields }
+        );
+  
+        res.status(200).send({message: "Scenario editted successfully!"});
+  
+    } catch (error) {
+        console.error("Error editting scenario.", error);
+        res.status(500).send({ message: "Error editting scenario." });
+    }
+  })
+
 
 
 app.post('/import-scenario', upload.single('scenarioFile'), async (req, res) => {
@@ -236,6 +259,22 @@ app.post('/import-scenario', upload.single('scenarioFile'), async (req, res) => 
     } catch (error) {
       console.error('Error importing scenario:', error);
       res.status(500).json({ error: 'Failed to import scenario', details: error.message });
+    }
+  });
+
+  app.post('/getUserWithScenario', async (req, res) => {
+    try {
+        const { scenario } = req.body
+
+        const userObj = await UserModel.findOne({
+          scenarios: scenario._id
+        })
+
+        res.status(200).send({user: userObj});
+
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      res.status(500).json({ error: 'Failed to fetch user' });
     }
   });
 

@@ -5,12 +5,24 @@ import { StoreContext } from "../store/Store.jsx";
 import axios from "axios"; 
 import "../css/profile.css";
 import EditScenario from "../Components/EditScenario.jsx";
+import EditSharedScenario from "../Components/EditSharedScenario.jsx";
 
 const Profile = () => {
   const { user, refreshUser } = useContext(StoreContext);
 
   const [isEditPage, setIsEditPage] = useState(false);
+  const [isSharedEditPage, setIsSharedEditPage] = useState(false);
+
   const [selectedScenario, setSelectedScenario] = useState(null);
+
+  const [tempUser, setTempUser] = useState();
+
+  const findTempUser = async (scenario) => {
+    const response = await axios.post('http://localhost:8000/getUserWithScenario', {
+      scenario: scenario
+    });
+    return response.data.user
+  }
 
   //refresh user data
   useEffect(() => async() => {
@@ -180,13 +192,22 @@ const Profile = () => {
     );
   }
 
-  if (isEditPage === true){
+  if (isEditPage === true && isSharedEditPage === false){
    return (
     <>
     <Navbar/>
-    <EditScenario scenario={selectedScenario} setIsEditPage={setIsEditPage}/>
+    <EditScenario scenario={selectedScenario} tempUser={tempUser} setIsEditPage={setIsEditPage}/>
     </>
    );
+  }
+  if (isSharedEditPage === true) {
+    console.log("hi")
+      return (
+       <>
+       <Navbar/>
+       <EditSharedScenario scenario={selectedScenario} tempUser={tempUser} setIsEditPage={setIsEditPage} setIsSharedEditPage={setIsSharedEditPage}/>
+       </>
+      );
   }
   return (
     <div>
@@ -230,6 +251,8 @@ const Profile = () => {
                   <button onClick={() => handleShareScenario(scenario)}>Share</button>
                   <button onClick={() => {
                     setIsEditPage(true)
+      
+
                     setSelectedScenario(scenario);
                     }}>Edit</button>
                   <button>Simulate</button>
@@ -251,9 +274,12 @@ const Profile = () => {
                 <p><strong>Financial Goal:</strong> {scenario.financialGoal}</p>
                 <button>View</button>
                 {scenario.sharingSettings === 'read-write' && 
-                <button onClick={() => {
+                <button onClick={async () => {
                   setIsEditPage(true)
+                  setIsSharedEditPage(true)
                   setSelectedScenario(scenario);
+                  const tempUserData = await findTempUser(scenario);
+                  setTempUser(tempUserData);
                   }}>Edit</button>
                 }
               </div>
