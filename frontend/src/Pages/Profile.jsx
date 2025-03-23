@@ -249,6 +249,13 @@ const Profile = () => {
               <div key={index} className="scenario">
                 <p><strong>Name:</strong> {scenario.name}</p>
                 <p><strong>Financial Goal:</strong> {scenario.financialGoal}</p>
+                <button>View</button>
+                {scenario.sharingSettings === 'read-write' && 
+                <button onClick={() => {
+                  setIsEditPage(true)
+                  setSelectedScenario(scenario);
+                  }}>Edit</button>
+                }
               </div>
             ))
           ) : (
