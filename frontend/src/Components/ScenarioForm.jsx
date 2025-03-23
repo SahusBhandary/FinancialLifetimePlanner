@@ -4,6 +4,8 @@ import { StoreContext } from "../store/Store";
 
 const ScenerioForm = (props) => {
     const { user } = useContext(StoreContext);
+    const [ emptyExpenseStrategyError, setEmptyExpenseStrategyError ] = useState()
+
     const [name, setName] = useState("");
     const [isMarried, setIsMarried] = useState("");
     const [userBirthYear, setUserBirthYear] = useState("");
@@ -94,6 +96,7 @@ const ScenerioForm = (props) => {
         const fetchEvents = async () => {
             if (user.events.length > 0) {
                 try {
+                    
                     const response = await axios.post('http://localhost:8000/getEvents', {
                         eventIds: user.events
                     });
@@ -109,10 +112,47 @@ const ScenerioForm = (props) => {
         fetchInvestmentType();
         fetchInvestments();
         fetchEvents();
-        setSelectedInvestmentsOrder(Array(expenseWithdrawlInvestmentsCount).fill(listofinvestments.length === 0 ? "" : listofinvestments[0].id));
-        setSelectedRMDInvestmentsOrder(Array(RMDInvestments).fill(listofinvestments.filter((investment) => investment.taxStatus === 'pre-tax').length === 0 ? "" : listofinvestments.filter((investment) => investment.taxStatus === 'pre-tax')[0].id));
-        setSelectedExpensesOrder(Array(expenseCount).fill(events.filter((event) => event.discretionary === true).length === 0 ? "" : events.filter((event) => event.discretionary === true)[0].name));
-    
+        setSelectedInvestmentsOrder((prev) => {
+            const updatedOrder = [
+                ...selectedInvestmentsOrder,                     
+                ...prev.slice(expenseWithdrawlInvestmentsCount)   
+            ];
+            return updatedOrder;
+        });
+        while(selectedInvestmentsOrder.length > expenseWithdrawlInvestmentsCount) {
+            selectedInvestmentsOrder.pop()
+        }
+        if (selectedInvestmentsOrder.length < expenseWithdrawlInvestmentsCount) {
+            selectedInvestmentsOrder.push('')
+        }
+
+        setSelectedRMDInvestmentsOrder((prev) => {
+            const updatedOrder = [
+                ...selectedRMDInvestmentsOrder,                     
+                ...prev.slice(RMDInvestments)   
+            ];
+            return updatedOrder;
+        });
+        while(selectedRMDInvestmentsOrder.length > RMDInvestments) {
+            selectedRMDInvestmentsOrder.pop()
+        }
+        if (selectedRMDInvestmentsOrder.length < RMDInvestments) {
+            selectedRMDInvestmentsOrder.push('')
+        }
+       
+        setSelectedExpensesOrder((prev) => {
+            const updatedOrder = [
+                ...selectedExpensesOrder,                     
+                ...prev.slice(expenseCount)   
+            ];
+            return updatedOrder;
+        });
+        while(selectedExpensesOrder.length > expenseCount) {
+            selectedExpensesOrder.pop()
+        }
+        if (selectedExpensesOrder.length < expenseCount) {
+            selectedExpensesOrder.push('')
+        }        
 
     }, [user, expenseWithdrawlInvestmentsCount, RMDInvestments, expenseCount]); 
 
@@ -222,6 +262,15 @@ const ScenerioForm = (props) => {
                 financialGoal: Number(financialGoal),
                 residenceState: stateOfResidence,
             }
+
+            if (scenario.expenseWithdrawalStrategy !== undefined && scenario.expenseWithdrawalStrategy.includes('')) {
+                setEmptyExpenseStrategyError(<div style={{color: "red"}}>Please select options for all investments!</div>)
+                return
+            }
+            else {
+                setEmptyExpenseStrategyError(<div></div>)
+            }
+
             const response = await axios.post('http://localhost:8000/submitScenario', {
                 scenario : scenario, user: user
             });
@@ -496,6 +545,7 @@ const ScenerioForm = (props) => {
                         <div>
                             <h3>{i + 1}</h3>
                             <select onChange={(e) => selectedExpensesOrder[i] = e.target.value}>
+                                <option>Please select an option</option>
                                 {events.filter((event) => event.discretionary === true && selectedEvents.includes(event._id)).map((event) => (
                                     <option>{event.name}</option>
                                 ))}
@@ -520,7 +570,8 @@ const ScenerioForm = (props) => {
                     {Array.from({ length: expenseWithdrawlInvestmentsCount }, (_, i) => (
                         <div>
                             <h3>{i + 1}</h3>
-                            <select onChange={(e) => selectedInvestmentsOrder[i] = e.target.value}>
+                            <select onChange={(e) => {selectedInvestmentsOrder[i] = e.target.value; console.log(selectedInvestmentsOrder)}}>
+                                <option>Please select an option</option>
                                 {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment) => (
                                     <option>{investment.id}</option>
                                 ))}
@@ -529,6 +580,7 @@ const ScenerioForm = (props) => {
                     
                     ))}
                 </ul>
+                {emptyExpenseStrategyError}
             </div>
             
             <div>
@@ -545,8 +597,10 @@ const ScenerioForm = (props) => {
                     {Array.from({ length: RMDInvestments }, (_, i) => (
                         <div>
                             <h3>{i + 1}</h3>
-                            <select onChange={(e) => selectedRMDInvestmentsOrder[i] = e.target.value}>
+                            <select onChange={(e) => {selectedRMDInvestmentsOrder[i] = e.target.value;}}>
+                                <option>Please select an option</option>
                                 {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
+                                    
                                     investment.taxStatus === 'pre-tax' && (
                                         <option key={index}>{investment.id}</option>
                                     )

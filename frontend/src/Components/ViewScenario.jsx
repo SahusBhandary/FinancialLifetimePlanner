@@ -12,8 +12,6 @@ const ViewScenario = (props) => {
   const [expenseWithdrawalList, setExpenseWithdrawalList] = useState();
   const [RMDList, setRMDList] = useState();
 
-
-
   
   useEffect(() => {
     const fetchInvestmentType = async () => {
@@ -92,11 +90,13 @@ const ViewScenario = (props) => {
   const fetchRMDStrategy = async () => {
     if (scenario.RMDStrategy.length > 0) {
         try {
+        
             const response = await axios.post('http://localhost:8000/getInvestmentList', {
               investmentIds: scenario.RMDStrategy
             });
 
             setRMDList(response.data); 
+            console.log(response.data)
             
         } catch (error) {
             console.error("Error fetching RMD strategy details:", error);
