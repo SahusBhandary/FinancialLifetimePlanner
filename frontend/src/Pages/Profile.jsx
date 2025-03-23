@@ -4,9 +4,13 @@ import Navbar from '../Components/Navbar.jsx';
 import { StoreContext } from "../store/Store.jsx";
 import axios from "axios"; 
 import "../css/profile.css";
+import EditScenario from "../Components/EditScenario.jsx";
 
 const Profile = () => {
   const { user, refreshUser } = useContext(StoreContext);
+
+  const [isEditPage, setIsEditPage] = useState(false);
+  const [selectedScenario, setSelectedScenario] = useState(null);
 
   //refresh user data
   useEffect(() => async() => {
@@ -136,6 +140,14 @@ const Profile = () => {
     );
   }
 
+  if (isEditPage === true){
+   return (
+    <>
+    <Navbar/>
+    <EditScenario scenario={selectedScenario} setIsEditPage={setIsEditPage}/>
+    </>
+   );
+  }
   return (
     <div>
       <Navbar />
@@ -176,7 +188,10 @@ const Profile = () => {
                 <div className="scenario-buttons">
                   <button onClick={() => handleExportScenario(scenario._id)} >Export</button>
                   <button>Share</button>
-                  <button>Edit</button>
+                  <button onClick={() => {
+                    setIsEditPage(true)
+                    setSelectedScenario(scenario);
+                    }}>Edit</button>
                   <button>Simulate</button>
                   <button className="delete-btn">Delete</button>
                 </div>

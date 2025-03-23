@@ -14,8 +14,6 @@ const InvestmentModel = require('./models/Investment')
 const UserModel = require('./models/User')
 
 
-
-
 //stuff for importing/exporting
 const fs = require('fs');
 const multer = require('multer');
@@ -27,9 +25,6 @@ const importScenarioFromYAML = require('./importScenario');
 const exportScenarioToYAML= require('./exportScenario'); 
 const importStateTaxBracketsFromYaml = require('./importStateTax');
 const exportStateTaxBracketsToYaml = require('./exportStateTax');
-
-
-
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/flp');
@@ -53,18 +48,14 @@ app.post("/submitEvent", async (req, res) => {
         const userObj = await UserModel.findOne({
             googleID: user.googleID
         })
-        console.log(userObj)
         userObj.events.push(eventObj._id);
         userObj.save();
-
-        console.log(eventObj);
-        console.log(userObj);
 
         res.status(200).send({message: "Event submitted successfully!"});
 
     } catch (error) {
-        console.error("Error retrieving events.", error);
-        res.status(500).send({ message: "Error retrieving events." });
+        console.error("Error submitting event.", error);
+        res.status(500).send({ message: "Error submitting event." });
     }
 })
 
@@ -116,23 +107,33 @@ app.post("/getInvestmentList", async (req, res) => {
 });
 
 app.post("/submitInvestmentType", async (req, res) => {
-    try {
-        const form = req.body.form;
+  try {
+      const { form, user } = req.body;
 
-        const existingType = await InvestmentTypeModel.findOne({ name: form.name });
+      const existingUser = await UserModel.findOne({ googleID: user.googleID }).populate('investmentTypes');
 
-        if (existingType) {
-            return res.status(400).send({ message: "Investment type already exists.." });
-        }
+      const hasInvestmentType = existingUser.investmentTypes.some(type => type.name === form.name);
 
-        const newInvestmentType = new InvestmentTypeModel(form);
-        await newInvestmentType.save();
+      if (hasInvestmentType) {
+          return res.status(400).send({ message: "Investment type already exists for this user." });
+      }
 
-        res.send({ message: "Investment type successfully added.." });
-    } catch (error) {
-        console.error("Error submitting investment type.", error);
-        res.status(500).send({ message: "Error submitting investment type" });
-    }
+      let existingType = await InvestmentTypeModel.findOne({ name: form.name });
+
+      if (!existingType) {
+          existingType = new InvestmentTypeModel(form);
+          await existingType.save();
+      }
+
+      existingUser.investmentTypes.push(existingType._id);
+      await existingUser.save();
+
+      res.send({ message: "Investment type successfully added to user." });
+
+  } catch (error) {
+      console.error("Error submitting investment type.", error);
+      res.status(500).send({ message: "Error submitting investment type" });
+  }
 });
 
 
@@ -169,40 +170,56 @@ app.post("/getEvents", async (req, res) => {
     }
 });
 
+app.post("/submitScenario", async (req, res) => {
+  try {
+      const { scenario, user } = req.body;
+
+      const scenarioObj = new ScenarioModel(scenario);
+      await scenarioObj.save();
+      const userObj = await UserModel.findOne({
+          googleID: user.googleID
+      })
+
+      userObj.scenarios.push(scenarioObj._id);
+      userObj.save();
+
+      res.status(200).send({message: "Scenario submitted successfully!"});
+
+  } catch (error) {
+      console.error("Error submitting scenario.", error);
+      res.status(500).send({ message: "Error submitting scenario." });
+  }
+})
+
 
 
 app.post('/import-scenario', upload.single('scenarioFile'), async (req, res) => {
     try {
-      const { userId } = req.body; // get user id from the request
+      const { userId } = req.body;
   
-      // validate the user id
+      // Validate the user ID
       if (!mongoose.isValidObjectId(userId)) {
         return res.status(400).json({ error: 'Invalid user ID' });
       }
   
-      // check if a file was uploaded
+      // Check if a file was uploaded
       if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
       }
   
-      // read the file content
-      const filePath = req.file.path;
-      const fileContent = fs.readFileSync(filePath, 'utf8');
+      // Access the file content from the buffer
+      const fileContent = req.file.buffer.toString('utf8');
   
-      // import scenario from the yaml
+      // Import scenario from the YAML
       const scenario = await importScenarioFromYAML(fileContent, userId);
   
       res.status(201).json({ message: 'Scenario imported successfully', scenario });
     } catch (error) {
       console.error('Error importing scenario:', error);
       res.status(500).json({ error: 'Failed to import scenario', details: error.message });
-    } finally {
-      // delete the file we dont need it anymore
-      if (req.file) {
-        fs.unlinkSync(req.file.path);
-      }
     }
   });
+
 
   // gets the scenarios 
   app.get('/getScenario/:scenarioId', async (req, res) => {

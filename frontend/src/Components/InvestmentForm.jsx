@@ -135,9 +135,9 @@ const InvestmentForm = (props) => {
 
 
   return (
-    <div>
+    <div style={{width: '100%', marginLeft: '75px', marginRight: '75px',}}>
     {/* Investment Type Section */}
-    <div className="form-div" style={{display: 'flex', alignContent: 'center', flexDirection: 'column', marginLeft: '150px', marginRight: '150px', marginTop: '30px'}}>
+    <div className="form-div" style={{display: 'flex', alignContent: 'center', flexDirection: 'column',  marginTop: '30px'}}>
         <div>
           <h1 className='form-title'>Investment Type</h1>
         </div>
@@ -424,7 +424,6 @@ const InvestmentForm = (props) => {
                 </RadioGroup>
               </FormControl>
             </div>
-
           </div>
         </div>
         }

@@ -4,6 +4,8 @@ import UniformDistributionForm from './UniformDistributionForm.jsx';
 import AssetAllocationForm from "./AssetAllocationForm.jsx"
 import { useContext } from "react";
 import { StoreContext } from "../store/Store";
+import TextField from '@mui/material/TextField';
+import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel, FormLabel } from '@mui/material';
 import axios from 'axios'
 
 const EventForm = (props) => {
@@ -314,517 +316,938 @@ const EventForm = (props) => {
         const response = await axios.post('http://localhost:8000/submitEvent', {user: user, event: event});
         window.location.reload();
     }
+
+    
     
 
     return (
        <>
        {/* Events Section */}
-        <div>
-        <h1>Events</h1>
-        
-        {/* Name Form */}
-        <div>
-            <span>Name</span>
-            <input onChange={(e) => setName(e.target.value)} type="text"></input>
-        </div>
-        
-        {/* Description Form */}
-        <div>
-            <span>Description</span>
-            <input onChange={(e) => setDescription(e.target.value)} type="text"></input>
-        </div>
-        
-        {/* Start Year Form */}
-        <div>
-            <span> Start Year </span>
-            <select onChange={(e) => setStartYearOption(e.target.value)}>
-            <option value="">Select an option</option>
-            <option value="fixed">Fixed</option>
-            <option value="normal">Normal Distribution</option>
-            <option value="uniform">Uniform Distribution</option>
-            <option value="startWith"> Start Year of Specified Event Series </option>
-            <option value="endWith"> End Year of Specified Event Series </option>
-            </select>
-
-            {/* Start Year Different Options */}
-            {startYearOption === "fixed" && 
+        <div style={{width: '100%', marginLeft: '75px', marginRight: '75px',}}>
+            <div className="form-div" style={{display: 'flex', alignContent: 'center', flexDirection: 'column',  marginTop: '30px'}}>
             <div>
-            <span>Enter Start Year</span>
-            <input onChange={(e) => setFixedStartYear(e.target.value)}type="text"></input>
+                <h1 className='form-title'>Events</h1>
             </div>
-            }
-
-            {startYearOption === "normal" && 
+            {/* Name Form */}
             <div>
-                <div>
-                <span>Mean</span>
-                <input onChange={(e) => setStartYearMean(e.target.value)}type="text"></input>
-                </div>
-                <div>
-                <span>Standard Deviation</span>
-                <input onChange={(e) => setStartYearDeviation(e.target.value)} type="text"></input>
+                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Name</div>
+                    <TextField 
+                    label="Name"
+                    onChange={(e) => setName(e.target.value)}
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                        borderRadius: '12px',
+                        },
+                        width: '40%'
+                    }}
+                    />
                 </div>
             </div>
-            }
-
-            {startYearOption === "uniform" && 
-            <div>
-                <div>
-                <span>Upper Bound</span>
-                <input onChange={(e) => setStartYearUpper(e.target.value)} type="text"></input>
-                </div>
-                <div>
-                <span>Lower Bound</span>
-                <input onChange={(e) => setStartYearLower(e.target.value)}type="text"></input>
-                </div>
+            {/* Description Form */}
+            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Description</div>
+                    <TextField 
+                    label="Description"
+                    onChange={(e) => setDescription(e.target.value)}
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                        borderRadius: '12px',
+                        },
+                        width: '60%'
+                    }}
+                    />
             </div>
-            }
-
-            {startYearOption === "startWith" && 
+            {/* Start Year Form */}
             <div>
-                <span>Name of Event</span>
-                <input onChange={(e) => setStartYearEventName(e.target.value)}  type="text"></input>
-             </div>
-            }
-
-            {startYearOption === "endWith" && 
-            <div>
-                <span>Name of Event</span>
-                <input onChange={(e) => setEndYearEventName(e.target.value)} type="text"></input>
-            </div>
-            }
-        </div>
-
-
-        {/* Duration Form */}
-        <div>
-            <span>Duration</span>
-            <select onChange={(e) => setDurationOption(e.target.value)}>
-            <option value="">Select an option</option>
-            <option value="fixed">Fixed</option>
-            <option value="normal">Normal Distribution</option>
-            <option value="uniform">Uniform Distribution</option>
-            </select>
-
-            {/* Duration Different Options */}
-            {durationOption === "fixed" &&
-            <div>
-            <span>Enter Duration</span>
-            <input onChange={(e) => setFixedDuration(e.target.value)} type="text"></input>
-            </div>
-            }
-
-            {durationOption === "normal" &&
-            <div>
-                <div>
-                <span>Mean</span>
-                <input onChange={(e) => setDurationMean(e.target.value)}type="text"></input>
+                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Start Year</div>
+                    <FormControl fullWidth size="small" sx={{flex: 1}}>
+                        <InputLabel>Select an Option</InputLabel>
+                        <Select 
+                        onChange={(e) => {setStartYearOption(e.target.value)}}
+                        value={startYearOption}
+                        label="Select Option"
+                        >
+                        <MenuItem value="fixed">Fixed</MenuItem>
+                        <MenuItem value="normal">Normal Distribution</MenuItem>
+                        <MenuItem value="uniform">Uniform Distribution</MenuItem>  
+                        <MenuItem value="startWith">Start Year of Specified Event Series</MenuItem>  
+                        <MenuItem value="endWith">End Year of Specified Event Series</MenuItem> 
+                        </Select>
+                    </FormControl>
                 </div>
+                {/* Start Year Different Options */}
+                {startYearOption === "fixed" && 
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Enter Start Year</div>
+                        <TextField 
+                            label="Start Year"
+                            onChange={(e) => setFixedStartYear(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                            },
+                            }}
+                        />
+                    </div>
+                }
+                {startYearOption === "normal" && 
                 <div>
-                <span>Standard Deviation</span>
-                <input onChange={(e) => setDurationDeviation(e.target.value)}type="text"></input>
-                </div>
-            </div>
-            }
-
-            {durationOption === "uniform" &&
-            <div>
-                <div>
-                <span>Upper Bound</span>
-                <input onChange={(e) => setDurationUpper(e.target.value)}type="text"></input>
-                </div>
-                <div>
-                <span>Lower Bound</span>
-                <input onChange={(e) => setDurationLower(e.target.value)}type="text"></input>
-                </div>
-            </div>
-            }
-        </div>
-        
-
-        {/* Event Type Section: Income, Expense, Invest, Rebalance */}
-        <div>
-            <span>Event Type</span>
-            <select onChange={(e) => setEventType(e.target.value)}>
-            <option value="">Select an option</option>
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
-            <option value="invest">Invest</option>
-            <option value="rebalance">Rebalance</option>
-            </select>
-
-            {/* Income Case */}
-            { eventType === "income" &&
-
-            <div>
-                <div>
-                <span>Initial Amount</span>
-                <input onChange={(e) => setInitialAmountIncome(e.target.value)} type="text"></input>
-                </div>
-                <div>
-                <span>Expected Annual Change</span>
-                <select onChange={(e) => setAnnualChangeIncomeOption(e.target.value)}>
-                    <option value="">Select an option</option>
-                    <option value="amount">Fixed</option>
-                    <option value="percent">Percent Change</option>
-                    <option value="normal">Normal Distribution</option>
-                    <option value="uniform">Uniform Distribution</option>
-                </select>
-
-                {/* Different Options for Annual Change  */}
-                {annualChangeIncomeOption === "amount" &&
-                <div>
-                    <span>Enter Fixed Amount</span>
-                    <input onChange={(e) => setFixedAnnualChangeIncome(e.target.value)} type="text"></input>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Mean</div>
+                        <TextField 
+                            label="Mean"
+                            onChange={(e) => setStartYearMean(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                            },
+                            }}
+                        />
+                    </div>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Standard Deviation</div>
+                        <TextField 
+                            label="Standard Deviation"
+                            onChange={(e) => setStartYearDeviation(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                            },
+                            }}
+                        />
+                    </div>
                 </div>
                 }
-                {annualChangeIncomeOption === "percent" &&
+                {startYearOption === "uniform" && 
                 <div>
-                    <span>Enter Percent Change</span>
-                    <input onChange={(e) => setPercentAnnualChangeIncome(e.target.value)} type="text"></input>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Upper Bound</div>
+                        <TextField 
+                            label="Upper Bound"
+                            onChange={(e) => setStartYearUpper(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                            },
+                            }}
+                        />
+                    </div>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Lower Bound</div>
+                        <TextField 
+                            label="Lower Bound"
+                            onChange={(e) => setStartYearLower(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                            },
+                            }}
+                        />
+                    </div>
                 </div>
                 }
-                {annualChangeIncomeOption === "normal" &&
-                <div>
-                 <div>
-                   <span>Mean</span>
-                   <input onChange={(e) => setIncomeMean(e.target.value)}type="text"></input>
-                   </div>
-                   <div>
-                   <span>Standard Deviation</span>
-                   <input onChange={(e) => setIncomeDeviation(e.target.value)} type="text"></input>
-                 </div>
-                 <form style={{ display: "inline-block"}}>
-                        <span> Sample a fixed or percent </span>
-                        <label>
-                        <input type="radio" name="sampleStatusReturn" value="fixed" onChange={() => setSampleStatusAnnualChangeIncome("amount")}></input>
-                        Fixed Amount
-                        </label>
-                        <label>
-                        <input type="radio" name="sampleStatusReturn" value="percent" onChange={() => setSampleStatusAnnualChangeIncome("percent")}></input>
-                        Percent
-                        </label>
-                    </form>
+                {startYearOption === "startWith" && 
+                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Name of Event</div>
+                    <TextField 
+                        label="Name of Event"
+                        onChange={(e) => setStartYearEventName(e.target.value)}
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: '12px',
+                        },
+                        }}
+                    />
                 </div>
                 }
-                {annualChangeIncomeOption === "uniform" &&
+                {startYearOption === "endWith" &&
+                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Name of Event</div>
+                    <TextField 
+                        label="Name of Event"
+                        onChange={(e) => setEndYearEventName(e.target.value)}
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: '12px',
+                        },
+                        }}
+                    />
+                </div> 
+                }
+            </div>
+            {/* Duration Form */}
+            <div>
+                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Duration</div>
+                    <FormControl fullWidth size="small" sx={{flex: 1}}>
+                        <InputLabel>Select an Option</InputLabel>
+                        <Select 
+                        onChange={(e) => setDurationOption(e.target.value)}
+                        value={durationOption}
+                        label="Select Option"
+                        >
+                        <MenuItem value="fixed">Fixed</MenuItem>
+                        <MenuItem value="normal">Normal Distribution</MenuItem>
+                        <MenuItem value="uniform">Uniform Distribution</MenuItem>  
+                        </Select>
+                    </FormControl>
+                </div>
+                {/* Duration Different Options */}
+                {durationOption === "fixed" &&
+                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Enter Duration</div>
+                    <TextField 
+                        label="Duration"
+                        onChange={(e) => setFixedDuration(e.target.value)}
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: '12px',
+                        },
+                        }}
+                    />
+                </div> 
+                }
+                {durationOption === "normal" &&
+                <div>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Mean</div>
+                        <TextField 
+                            label="Mean"
+                            onChange={(e) => setDurationMean(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                            },
+                            }}
+                        />
+                    </div>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Standard Deviation</div>
+                        <TextField 
+                            label="Standard Deviation"
+                            onChange={(e) => setDurationDeviation(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                            },
+                            }}
+                        />
+                    </div>
+                </div>
+                }
+                {durationOption === "uniform" &&
+                <div>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Upper Bound</div>
+                        <TextField 
+                            label="Upper Bound"
+                            onChange={(e) => setDurationUpper(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                            },
+                            }}
+                        />
+                    </div>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Lower Bound</div>
+                        <TextField 
+                            label="Lower Bound"
+                            onChange={(e) => setDurationLower(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                            },
+                            }}
+                        />
+                    </div>
+                </div>
+                }
+            </div>
+            {/* Event Type Section: Income, Expense, Invest, Rebalance */}
+            <div>
+                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Event Type</div>
+                    <FormControl fullWidth size="small" sx={{flex: 1}}>
+                        <InputLabel>Select an Option</InputLabel>
+                        <Select 
+                        onChange={(e) => setEventType(e.target.value)}
+                        value={eventType}
+                        label="Select Option"
+                        >
+                        <MenuItem value="income">Income</MenuItem>
+                        <MenuItem value="expense">Expense</MenuItem>
+                        <MenuItem value="invest">Invest</MenuItem>  
+                        <MenuItem value="rebalance">Rebalance</MenuItem>  
+                        </Select>
+                    </FormControl>
+                </div>
+                {/* Income Case */}
+                { eventType === "income" &&
                 <div>
                     <div>
-                    <span>Upper Bound</span>
-                    <input onChange={(e) => setIncomeUpper(e.target.value)}type="text"></input>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Initial Amount</div>
+                            <TextField 
+                                label="Initial Amount"
+                                onChange={(e) => setInitialAmountIncome(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '12px',
+                                },
+                                }}
+                            />
+                        </div>
                     </div>
                     <div>
-                    <span>Lower Bound</span>
-                    <input onChange={(e) => setIncomeLower(e.target.value)} type="text"></input>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Expected Annual Change</div>
+                        <FormControl fullWidth size="small" sx={{flex: 1}}>
+                            <InputLabel>Select an Option</InputLabel>
+                            <Select 
+                            onChange={(e) => setAnnualChangeIncomeOption(e.target.value)}
+                            value={annualChangeIncomeOption}
+                            label="Select Option"
+                            >
+                            <MenuItem value="amount">Fixed</MenuItem>
+                            <MenuItem value="percent">Percent Change</MenuItem>
+                            <MenuItem value="normal">Normal Distribution</MenuItem>  
+                            <MenuItem value="uniform">Uniform Distribution</MenuItem>  
+                            </Select>
+                        </FormControl>
                     </div>
-                    <form style={{ display: "inline-block"}}>
-                        <span> Sample a fixed or percent </span>
-                        <label>
-                        <input type="radio" name="sampleStatusReturn" value="fixed" onChange={() => setSampleStatusAnnualChangeIncome("amount")}></input>
-                        Fixed Amount
-                        </label>
-                        <label>
-                        <input type="radio" name="sampleStatusReturn" value="percent" onChange={() => setSampleStatusAnnualChangeIncome("percent")}></input>
-                        Percent
-                        </label>
-                    </form>
-                </div>
-                }
-                </div>
-
-                <div>
-                <span>Inflation Adjusted</span>
-                <form style={{ display: "inline-block"}}>
-                    <label>
-                    <input type="radio" name="inflationFlagIncome" value="inflationTrue"onChange={(e) => setIncomeInflationFlag(true)}></input>
-                    Yes
-                    </label>
-                    <label>
-                    <input type="radio" name="inflationFlagIncome" value="inflationFalse" onChange={(e) => setIncomeInflationFlag(false)}></input>
-                    No
-                    </label>
-                </form>
-                </div>
-
-                <div>
-                <span>Percent Associated With User</span>
-                <input onChange={(e) => setIncomePercent(e.target.value)} type="text"></input>
-                </div>
-                
-                <div>
-                <span>Is this income Social Security?</span>
-                <form style={{ display: "inline-block"}}>
-                    <label>
-                    <input type="radio" name="socialSecurityFlag" value="socialSecurityTrue" onChange={(e) => setSocialSecurityFlag(false)}></input>
-                    Yes
-                    </label>
-                    <label>
-                    <input type="radio" name="socialSecurityFlag" value="socialSecurityFalse" onChange={(e) => setSocialSecurityFlag(false)}></input>
-                    No
-                    </label>
-                </form>
-                </div>
-                <button onClick={() => checkFields()}>Submit</button>
-            </div>
-            }
-            
-            {/* Expense Case */}
-            {eventType ==="expense" &&
-            <div>
-
-                <div>
-                <span>Initial Amount</span>
-                <input onChange={(e)=> setInitialAmountExpense(e.target.value)}type="text"></input>
-                </div>
-
-                <div>
-                <span>Expected Annual Change</span>
-                <select onChange={(e) => setAnnualChangeExpenseOption(e.target.value)}>
-                    <option value="">Select an option</option>
-                    <option value="amount">Fixed</option>
-                    <option value="percent">Percent Change</option>
-                    <option value="normal">Normal Distribution</option>
-                    <option value="uniform">Uniform Distribution</option>
-                </select>
-                
-                {/* Different Options for Annual Change for Expense */}
-                {annualChangeExpenseOption === "amount" &&
-                <div>
-                    <span>Enter Fixed Amount</span>
-                    <input onChange={(e) => setFixedAnnualChangeExpense(e.target.value)} type="text"></input>
-                </div>
-                }
-                {annualChangeExpenseOption === "percent" &&
-                <div>
-                    <span>Enter Percent Change</span>
-                    <input onChange={(e) => setPercentAnnualChangeExpense(e.target.value)} type="text"></input>
-                </div>
-                }
-                {annualChangeExpenseOption === "normal" &&
-                <div>
+                    {/* Different Options for Annual Change  */}
+                    {annualChangeIncomeOption === "amount" &&
                     <div>
-                    <span>Mean</span>
-                    <input onChange={(e) => setExpenseMean(e.target.value)}type="text"></input>
-                    </div>
-                    <div>
-                    <span>Standard Deviation</span>
-                    <input onChange={(e) => setExpenseDeviation(e.target.value)} type="text"></input>
-                    </div>
-                    <form style={{ display: "inline-block"}}>
-                        <span> Sample a fixed or percent </span>
-                        <label>
-                        <input type="radio" name="sampleStatusReturn" value="fixed" onChange={() => setSampleStatusAnnualChangeExpense("amount")}></input>
-                        Fixed Amount
-                        </label>
-                        <label>
-                        <input type="radio" name="sampleStatusReturn" value="percent" onChange={() => setSampleStatusAnnualChangeExpense("percent")}></input>
-                        Percent
-                        </label>
-                    </form>
-                </div>
-                }
-                {annualChangeExpenseOption === "uniform" &&
-                <div>
-                    <div>
-                    <span>Upper Bound</span>
-                    <input onChange={(e) => setExpenseUpper(e.target.value)}type="text"></input>
-                    </div>
-                    <div>
-                    <span>Lower Bound</span>
-                    <input onChange={(e) => setExpenseLower(e.target.value)}type="text"></input>
-                    </div>
-
-                    <form style={{ display: "inline-block"}}>
-                        <span> Sample a fixed or percent </span>
-                        <label>
-                        <input type="radio" name="sampleStatusReturn" value="fixed" onChange={() => setSampleStatusAnnualChangeExpense("amount")}></input>
-                        Fixed Amount
-                        </label>
-                        <label>
-                        <input type="radio" name="sampleStatusReturn" value="percent" onChange={() => setSampleStatusAnnualChangeExpense("percent")}></input>
-                        Percent
-                        </label>
-                    </form>
-                </div>
-                }
-                </div>
-
-                <div>
-                <span>Inflation Adjusted</span>
-                <form style={{ display: "inline-block"}}>
-                    <label>
-                    <input type="radio" name="inflationFlagExpense" value="inflationTrue" onChange={(e) => setExpenseInflationFlag(true)}></input>
-                    Yes
-                    </label>
-                    <label>
-                    <input type="radio" name="inflationFlagExpense" value="inflationFalse" onChange={(e) => setExpenseInflationFlag(false)}></input>
-                    No
-                    </label>
-                </form>
-                </div>
-
-                <div>
-                <span>Percent Associated With User</span>
-                <input onChange={(e) => setExpensePercent(e.target.value)} type="text"></input>
-                </div>
-
-                <div>
-                <span>Is the expense discretionary?</span>
-                <form style={{ display: "inline-block"}}>
-                    <label>
-                    <input onChange={(e) => setDiscretionaryFlag(true)} type="radio" name="discretionaryFlag" value="discretionaryFalse"></input>
-                    Yes
-                    </label>
-                    <label>
-                    <input onChange={(e) => setDiscretionaryFlag(false)} type="radio" name="discretionaryFlag" value="discretionaryTrue"></input>
-                    No
-                    </label>
-                </form>
-                </div>
-
-                <button onClick={() => checkFields()}>Submit</button>
-            </div>
-            }
-            
-
-            {/* Invest Case */}
-            { eventType === "invest" &&
-            <div>
-                <div>
-                    <span>Enter type of asset allocation</span>
-                    <select onChange={(e) => setAssetAllocationType(e.target.value)}>
-                    <option value="">Select an option</option>
-                    <option value="fixed">Fixed</option>
-                    <option value="glidePath">Glide Path</option>
-                    </select>
-
-                    {/* Invest - Fixed Allocation Case */}
-                    {(assetAllocationType === "fixed") &&
-                    <div>
-                        {listOfInvestments.filter(inv => inv.taxStatus !== "pre-tax").map((investment, index) => {
-                            console.log(index);
-                            return (<div>
-                                <div>{investment.id}</div>
-                                    <label>
-                                    <input onChange={(e) => {
-                                        let investmentIDFormat = {
-                                            [investment.id] : e.target.value
-                                        };
-                                        assetAllocationData[index] = investmentIDFormat;
-                                        
-                                    }}type="text" placeholder="Percent Allocation"></input>
-                                    </label>
-                                </div>);
-                        })}
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Enter Fixed Amount</div>
+                            <TextField 
+                                label="Fixed Amount"
+                                onChange={(e) => setFixedAnnualChangeIncome(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '12px',
+                                },
+                                }}
+                            />
+                        </div>
                     </div>
                     }
-
-                    {/* Invest - Glide Path Case */}
-                    {assetAllocationType === "glidePath" &&
+                    {annualChangeIncomeOption === "percent" &&
                     <div>
-                        {listOfInvestments.filter(inv => inv.taxStatus !== "pre-tax").map((investment, index) => {
-                            return (<div>
-                                <div>{investment.id}</div>
-                                    <input onChange={(e) => {
-                                        let investmentIDFormat = {
-                                            [investment.id] : e.target.value
-                                        };
-                                        glidePathAllocationBefore[index] = investmentIDFormat}} type="text" placeholder="Percent Allocation Before"></input>
-                                    <input onChange={(e) => {
-                                        let investmentIDFormat = {
-                                            [investment.id] : e.target.value
-                                        };
-                                        glidePathAllocationAfter[index] = investmentIDFormat}} type="text" placeholder="Percent Allocation After"></input>
-                            </div>);
-                        })}
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Enter Percent Change</div>
+                            <TextField 
+                                label="Percent Change"
+                                onChange={(e) => setPercentAnnualChangeIncome(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '12px',
+                                },
+                                }}
+                            />
+                        </div>
                     </div>
                     }
-                </div>
-                <div>
-                <span>Max Cash</span>
-                <input onChange={(e) => setMaxCash(e.target.value)}type="text"></input>
-                </div>
-                <button onClick={() => checkFields()}>Submit</button>
-            </div>
-            }
-
-            {/* Rebalance Case */}
-            { eventType === "rebalance" &&
-            <div>
-                <div>
-                    <span>Select your tax status account</span>
-                    <select onChange={(e) => setTaxStatusRebalanceOption(e.target.value)}>
-                        <option value="">Select an option</option>
-                        <option value="non-retirement">Non-Retirement</option>
-                        <option value="pre-tax">Pre-Tax</option>
-                        <option value="after-tax">After-Tax</option>
-                    </select>
-
-
-                    {/* Rebalance - Non-Retirement Case */}
-                    {taxStatusReblanaceOption === "non-retirement" &&
+                    {annualChangeIncomeOption === "normal" &&
+                    <div>
                         <div>
-                            {listOfInvestments.filter(inv => inv.taxStatus === "non-retirement").map((investment, index) => {
-                            return (<div>
-                                <div>{investment.id}</div>
-                                    <label>
-                                    <input onChange={(e) => {
-                                        let investmentIDFormat = {
-                                            [investment.id] : e.target.value
-                                        };
-                                        assetAllocationDataNonRetirement[index] = investmentIDFormat;
-                                    }}type="text" placeholder="Percent Allocation"></input>
-                                    </label>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Mean</div>
+                                <TextField 
+                                    label="Mean"
+                                    onChange={(e) => setIncomeMean(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Standard Deviation</div>
+                                <TextField 
+                                    label="Standard Deviation"
+                                    onChange={(e) => setIncomeDeviation(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Sample a Fixed Amount or Percent</div>
+                                <FormControl>
+                                    <RadioGroup
+                                    row
+                                    name="fixedPercent"
+                                    value={sampleStatusAnnualChangeIncome}
+                                    onChange={(e) => setSampleStatusAnnualChangeIncome(e.target.value)}
+                                    >
+                                    <FormControlLabel value="fixed" control={<Radio />} label="Fixed"/>
+                                    <FormControlLabel value="percent" control={<Radio />} label="Percent"/>
+                                    </RadioGroup>
+                                </FormControl>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    {annualChangeIncomeOption === "uniform" &&
+                    <div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Upper Bound</div>
+                                <TextField 
+                                    label="Upper Bound"
+                                    onChange={(e) => setIncomeUpper(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Lower Bound</div>
+                                <TextField 
+                                    label="Lower Bound"
+                                    onChange={(e) => setIncomeLower(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Sample a Fixed Amount or Percent</div>
+                                <FormControl>
+                                    <RadioGroup
+                                    row
+                                    name="fixedPercent"
+                                    value={sampleStatusAnnualChangeIncome}
+                                    onChange={(e) => setSampleStatusAnnualChangeIncome(e.target.value)}
+                                    >
+                                    <FormControlLabel value="amount" control={<Radio />} label="Fixed"/>
+                                    <FormControlLabel value="percent" control={<Radio />} label="Percent"/>
+                                    </RadioGroup>
+                                </FormControl>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+                <div>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Inflation Adjustment</div>
+                        <FormControl>
+                            <RadioGroup
+                            row
+                            name="fixedPercent"
+                            value={incomeInflationFlag}
+                            onChange={(e) => setIncomeInflationFlag(e.target.value)}
+                            >
+                            <FormControlLabel name="inflationFlagIncome" value={true} control={<Radio />} label="Yes"/>
+                            <FormControlLabel name="inflationFlagIncome" value={false} control={<Radio />} label="No"/>
+                            </RadioGroup>
+                        </FormControl>
+                    </div>
+                </div>
+                <div>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Percent Associated With User</div>
+                        <TextField 
+                            label="Percent"
+                            onChange={(e) => setIncomePercent(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                            },
+                            }}
+                        />
+                    </div>
+                </div>
+                <div>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                        <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Is This Income Social Security?</div>
+                        <FormControl>
+                            <RadioGroup
+                            row
+                            name="socialSecurity"
+                            value={socialSecurityFlag}
+                            onChange={(e) => setSocialSecurityFlag(e.target.value)}
+                            >
+                            <FormControlLabel name="socialSecurityFlag" value={true} control={<Radio />} label="Yes"/>
+                            <FormControlLabel name="socialSecurityFlag" value={false} control={<Radio />} label="No"/>
+                            </RadioGroup>
+                        </FormControl>
+                    </div>
+                </div>
+                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', justifyContent: 'center'}}>
+                    <button variant="contained" className='create-button-form' style={{cursor: 'pointer', fontSize: '20px', paddingLeft: '50px', paddingRight: '50px'}}onClick={() => checkFields()}>Create</button>
+                </div>
+                </div>
+                }
+                {/* Expense Case */}
+                {eventType ==="expense" &&
+                <div>
+                    <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Initial Amount</div>
+                            <TextField 
+                                label="Initial Amount"
+                                onChange={(e) => setInitialAmountIncome(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '12px',
+                                },
+                                }}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Expected Annual Change</div>
+                            <FormControl fullWidth size="small" sx={{flex: 1}}>
+                                <InputLabel>Select an Option</InputLabel>
+                                <Select 
+                                onChange={(e) => setAnnualChangeExpenseOption(e.target.value)}
+                                value={annualChangeExpenseOption}
+                                label="Select Option"
+                                >
+                                <MenuItem value="amount">Fixed</MenuItem>
+                                <MenuItem value="percent">Percent Change</MenuItem>
+                                <MenuItem value="normal">Normal Distribution</MenuItem>  
+                                <MenuItem value="uniform">Uniform Distribution</MenuItem>  
+                                </Select>
+                            </FormControl>
+                        </div>
+                    
+                        {/* Different Options for Annual Change for Expense */}
+                        {annualChangeExpenseOption === "amount" &&
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Enter Fixed Amount</div>
+                                <TextField 
+                                    label="Fixed Amount"
+                                    onChange={(e) => setFixedAnnualChangeExpense(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        }
+                        {annualChangeExpenseOption === "percent" &&
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Enter Percent Change</div>
+                                <TextField 
+                                    label="Percent Change"
+                                    onChange={(e) => setPercentAnnualChangeExpense(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        }
+                        {annualChangeExpenseOption === "normal" &&
+                        <div>
+                            <div>
+                                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Mean</div>
+                                    <TextField 
+                                        label="Mean"
+                                        onChange={(e) => setExpenseMean(e.target.value)}
+                                        variant="outlined"
+                                        size="small"
+                                        sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: '12px',
+                                        },
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Standard Deviation</div>
+                                    <TextField 
+                                        label="Standard Deviation"
+                                        onChange={(e) => setExpenseDeviation(e.target.value)}
+                                        variant="outlined"
+                                        size="small"
+                                        sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: '12px',
+                                        },
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Sample a Fixed or Percent</div>
+                                    <FormControl>
+                                        <RadioGroup
+                                        row
+                                        name="fixedPercent"
+                                        value={sampleStatusAnnualChangeExpense}
+                                        onChange={(e) => setSampleStatusAnnualChangeExpense(e.target.value)}
+                                        >
+                                        <FormControlLabel name="sampleStatusReturn" value="fixed" control={<Radio />} label="Fixed"/>
+                                        <FormControlLabel name="sampleStatusReturn" value="percent" control={<Radio />} label="Percent"/>
+                                        </RadioGroup>
+                                    </FormControl>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                        {annualChangeExpenseOption === "uniform" &&
+                        <div>
+                            <div>
+                                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Upper Bound</div>
+                                    <TextField 
+                                        label="UpperBound"
+                                        onChange={(e) => setExpenseUpper(e.target.value)}
+                                        variant="outlined"
+                                        size="small"
+                                        sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: '12px',
+                                        },
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Lower Bound</div>
+                                    <TextField 
+                                        label="LowerBound"
+                                        onChange={(e) => setExpenseLower(e.target.value)}
+                                        variant="outlined"
+                                        size="small"
+                                        sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: '12px',
+                                        },
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Sample a Fixed or Percent</div>
+                                    <FormControl>
+                                        <RadioGroup
+                                        row
+                                        name="fixedPercent"
+                                        value={sampleStatusAnnualChangeExpense}
+                                        onChange={(e) => setSampleStatusAnnualChangeExpense(e.target.value)}
+                                        >
+                                        <FormControlLabel name="sampleStatusReturn" value="fixed" control={<Radio />} label="Fixed"/>
+                                        <FormControlLabel name="sampleStatusReturn" value="percent" control={<Radio />} label="Percent"/>
+                                        </RadioGroup>
+                                    </FormControl>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Inflation Adjustment</div>
+                            <FormControl>
+                                <RadioGroup
+                                row
+                                name="fixedPercent"
+                                value={sampleStatusAnnualChangeExpense}
+                                onChange={(e) => setExpenseInflationFlag(e.target.value)}
+                                >
+                                <FormControlLabel name="sampleStatusReturn" value={true} control={<Radio />} label="Yes"/>
+                                <FormControlLabel name="sampleStatusReturn" value={false} control={<Radio />} label="No"/>
+                                </RadioGroup>
+                            </FormControl>
+                        </div>
+                    </div>
+                    <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Percent Associated With User</div>
+                            <TextField 
+                                label="Percent"
+                                onChange={(e) => setExpensePercent(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '12px',
+                                },
+                                }}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Is the Expense Discretionary?</div>
+                            <FormControl>
+                                <RadioGroup
+                                row
+                                name="discretionary"
+                                value={discretionaryFlag}
+                                onChange={(e) => setDiscretionaryFlag(e.target.value)}
+                                >
+                                <FormControlLabel name="sampleStatusReturn" value={true} control={<Radio />} label="Yes"/>
+                                <FormControlLabel name="sampleStatusReturn" value={false} control={<Radio />} label="No"/>
+                                </RadioGroup>
+                            </FormControl>
+                        </div>
+                    </div>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', justifyContent: 'center'}}>
+                        <button variant="contained" className='create-button-form' style={{cursor: 'pointer', fontSize: '20px', paddingLeft: '50px', paddingRight: '50px'}}onClick={() => checkFields()}>Create</button>
+                    </div>
+                </div>
+                }
+                {/* Invest Case */}
+                { eventType === "invest" &&
+                <div>
+                    <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Enter Type of Asset Allocation</div>
+                            <FormControl fullWidth size="small" sx={{flex: 1}}>
+                                <InputLabel>Select an Option</InputLabel>
+                                <Select 
+                                onChange={(e) => setAssetAllocationType(e.target.value)}
+                                value={assetAllocationType}
+                                label="Select Option"
+                                >
+                                <MenuItem value="fixed">Fixed</MenuItem>
+                                <MenuItem value="glidePath">Glide Path</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
+                        {/* Invest - Fixed Allocation Case */}
+                        {(assetAllocationType === "fixed") &&
+                        
+                        <div>
+                            {listOfInvestments.filter(inv => inv.taxStatus !== "pre-tax").map((investment, index) => {
+                                console.log(index);
+                                return (<div>
+                                    <div>{investment.id}</div>
+                                        <label>
+                                        <input onChange={(e) => {
+                                            let investmentIDFormat = {
+                                                [investment.id] : e.target.value
+                                            };
+                                            assetAllocationData[index] = investmentIDFormat;
+                                            
+                                        }}type="text" placeholder="Percent Allocation"></input>
+                                        </label>
+                                    </div>);
+                            })}
+                        </div>
+                        }
+
+                        {/* Invest - Glide Path Case */}
+                        {assetAllocationType === "glidePath" &&
+                        <div>
+                            {listOfInvestments.filter(inv => inv.taxStatus !== "pre-tax").map((investment, index) => {
+                                return (<div>
+                                    <div>{investment.id}</div>
+                                        <input onChange={(e) => {
+                                            let investmentIDFormat = {
+                                                [investment.id] : e.target.value
+                                            };
+                                            glidePathAllocationBefore[index] = investmentIDFormat}} type="text" placeholder="Percent Allocation Before"></input>
+                                        <input onChange={(e) => {
+                                            let investmentIDFormat = {
+                                                [investment.id] : e.target.value
+                                            };
+                                            glidePathAllocationAfter[index] = investmentIDFormat}} type="text" placeholder="Percent Allocation After"></input>
                                 </div>);
                             })}
                         </div>
-                    }
-
-
-                    {/* Rebalance - Pre-Tax Case */}
-                    {taxStatusReblanaceOption === "pre-tax" &&
-                        <div>
-                            {listOfInvestments.filter(inv => inv.taxStatus === "pre-tax").map((investment, index) => {
-                            return (<div>
-                                <div>{investment.id}</div>
-                                    <label>
-                                    <input onChange={(e) => {
-                                        let investmentIDFormat = {
-                                            [investment.id] : e.target.value
-                                        };
-                                        assetAllocationDataPreTax[index] = investmentIDFormat;
-                                    }}type="text" placeholder="Percent Allocation"></input>
-                                    </label>
-                                </div>);
-                            })}
+                        }
+                    </div>
+                    <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Max Cash</div>
+                            <TextField 
+                                label="Max Cash"
+                                onChange={(e) => setMaxCash(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '12px',
+                                },
+                                }}
+                            />
                         </div>
-                    }   
-
-                    {/* Rebalance After-Tax Case */}
-                    {taxStatusReblanaceOption === "after-tax" &&
-                        <div>
-                            {listOfInvestments.filter(inv => inv.taxStatus === "after-tax").map((investment, index) => {
-                            return (<div>
-                                <div>{investment.id}</div>
-                                    <label>
-                                    <input onChange={(e) => {
-                                        let investmentIDFormat = {
-                                            [investment.id] : e.target.value
-                                        };
-                                        assetAllocationDataAfterTax[index] = investmentIDFormat;
-                                    }}type="text" placeholder="Percent Allocation"></input>
-                                    </label>
-                                </div>);
-                            })}
-                        </div>
-                    }
+                    </div>
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', justifyContent: 'center'}}>
+                        <button variant="contained" className='create-button-form' style={{cursor: 'pointer', fontSize: '20px', paddingLeft: '50px', paddingRight: '50px'}}onClick={() => checkFields()}>Create</button>
+                    </div>
                 </div>
+                }
+                {/* Rebalance Case */}
+            {eventType === "rebalance" &&
+                <div>
+                    <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Select Your Tax Status Account</div>
+                            <FormControl fullWidth size="small" sx={{flex: 1}}>
+                                <InputLabel>Select an Option</InputLabel>
+                                <Select 
+                                onChange={(e) => setTaxStatusRebalanceOption(e.target.value)}
+                                value={taxStatusReblanaceOption}
+                                label="Select Option"
+                                >
+                                <MenuItem value="non-retirement">Non-Retirement</MenuItem>
+                                <MenuItem value="pre-tax">Pre-Tax</MenuItem>
+                                <MenuItem value="After-Tax">After-Tax</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
 
-                <button onClick={() => checkFields()}>Submit</button>
-            </div>   
+
+                        {/* Rebalance - Non-Retirement Case */}
+                        {taxStatusReblanaceOption === "non-retirement" &&
+                            <div>
+                                {listOfInvestments.filter(inv => inv.taxStatus === "non-retirement").map((investment, index) => {
+                                return (<div>
+                                    <div>{investment.id}</div>
+                                        <label>
+                                        <input onChange={(e) => {
+                                            let investmentIDFormat = {
+                                                [investment.id] : e.target.value
+                                            };
+                                            assetAllocationDataNonRetirement[index] = investmentIDFormat;
+                                        }}type="text" placeholder="Percent Allocation"></input>
+                                        </label>
+                                    </div>);
+                                })}
+                            </div>
+                        }
+
+
+                        {/* Rebalance - Pre-Tax Case */}
+                        {taxStatusReblanaceOption === "pre-tax" &&
+                            <div>
+                                {listOfInvestments.filter(inv => inv.taxStatus === "pre-tax").map((investment, index) => {
+                                return (<div>
+                                    <div>{investment.id}</div>
+                                        <label>
+                                        <input onChange={(e) => {
+                                            let investmentIDFormat = {
+                                                [investment.id] : e.target.value
+                                            };
+                                            assetAllocationDataPreTax[index] = investmentIDFormat;
+                                        }}type="text" placeholder="Percent Allocation"></input>
+                                        </label>
+                                    </div>);
+                                })}
+                            </div>
+                        }   
+
+                        {/* Rebalance After-Tax Case */}
+                        {taxStatusReblanaceOption === "after-tax" &&
+                            <div>
+                                {listOfInvestments.filter(inv => inv.taxStatus === "after-tax").map((investment, index) => {
+                                return (<div>
+                                    <div>{investment.id}</div>
+                                        <label>
+                                        <input onChange={(e) => {
+                                            let investmentIDFormat = {
+                                                [investment.id] : e.target.value
+                                            };
+                                            assetAllocationDataAfterTax[index] = investmentIDFormat;
+                                        }}type="text" placeholder="Percent Allocation"></input>
+                                        </label>
+                                    </div>);
+                                })}
+                            </div>
+                        }
+                    </div>
+
+                    <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', justifyContent: 'center'}}>
+                        <button variant="contained" className='create-button-form' style={{cursor: 'pointer', fontSize: '20px', paddingLeft: '50px', paddingRight: '50px'}}onClick={() => checkFields()}>Create</button>
+                    </div>
+                </div>   
             }
+
+            </div>
         </div>
         </div>
+        
+        
        </>
     
     )
