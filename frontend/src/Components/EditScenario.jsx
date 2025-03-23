@@ -154,7 +154,7 @@ const EditScenario = (props) => {
                 [userLifeExpectancyDistribution === "fixed" ? 
                     {
                         type: "fixed",
-                        value: Number(userLifeExpectancyMean)
+                        value: Number(userLifeExpectancyFixed)
                     } 
                     : 
                     {
@@ -307,6 +307,8 @@ const EditScenario = (props) => {
 
                     {userLifeExpectancyDistribution === "fixed" && 
                     <div>
+                        {console.log(userLifeExpectancyFixed)}
+                        {console.log(props.scenario)}
                         <span>Enter Fixed Amount</span>
                         <input defaultValue={userLifeExpectancyFixed} type="text" onChange={(e) => setUserLifeExpectancyFixed(e.target.value)}></input>
                     </div>
