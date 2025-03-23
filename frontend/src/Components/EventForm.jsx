@@ -153,8 +153,7 @@ const EventForm = (props) => {
         return formattedAllocation
     };
     const checkFields = () => {
-        
-
+    
         handleSubmission();
     }
     const handleSubmission = async () => {
@@ -313,8 +312,8 @@ const EventForm = (props) => {
         }
 
         console.log(event);
-        const response = await axios.post('http://localhost:8000/submitEvent', {user: user, event: event});
-        window.location.reload();
+        // const response = await axios.post('http://localhost:8000/submitEvent', {user: user, event: event});
+        // window.location.reload();
     }
     
 
@@ -849,7 +848,7 @@ const EventForm = (props) => {
                             <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Initial Amount</div>
                             <TextField 
                                 label="Initial Amount"
-                                onChange={(e) => setInitialAmountIncome(e.target.value)}
+                                onChange={(e) => setInitialAmountExpense(e.target.value)}
                                 variant="outlined"
                                 size="small"
                                 sx={{
@@ -1024,10 +1023,11 @@ const EventForm = (props) => {
                         <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
                             <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Inflation Adjustment</div>
                             <FormControl>
+                                {console.log()}
                                 <RadioGroup
                                 row
                                 name="fixedPercent"
-                                value={sampleStatusAnnualChangeExpense}
+                                value={expenseInflationFlag}
                                 onChange={(e) => setExpenseInflationFlag(e.target.value)}
                                 >
                                 <FormControlLabel name="sampleStatusReturn" value={true} control={<Radio />} label="Yes"/>
