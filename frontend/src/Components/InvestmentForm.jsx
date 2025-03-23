@@ -92,7 +92,7 @@ const InvestmentForm = (props) => {
     }
     else{
       returnDistribution['mean'] = returnMean;
-      returnDistribution['deviation'] = returnDeviation;
+      returnDistribution['stdev'] = returnDeviation;
     }
       
     let incomeAmtOrPct = annualIncomeOption;
@@ -112,7 +112,7 @@ const InvestmentForm = (props) => {
     }
     else{
       incomeDistribution['mean'] = incomeMean;
-      incomeDistribution['deviation'] = incomeDeviation;
+      incomeDistribution['stdev'] = incomeDeviation;
     }
 
     if (returnAmtOrPct === "fixed") returnAmtOrPct = "amount";
