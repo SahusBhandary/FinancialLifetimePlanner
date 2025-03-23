@@ -423,7 +423,6 @@ const InvestmentForm = (props) => {
                 </RadioGroup>
               </FormControl>
             </div>
-
           </div>
         </div>
         }
