@@ -11,7 +11,7 @@ const InitialInvestmentsForm = (props) => {
     const [investments, setInvestments] = useState([]);
     const [taxStatus, setTaxStatus] = useState();
     const [initialValue, setInitialValue] = useState();
-    const [investmentType, setInvestmentType] = useState();
+    const [investmentType, setInvestmentType] = useState("");
 
 
     useEffect(() => {
@@ -33,6 +33,29 @@ const InitialInvestmentsForm = (props) => {
         };
         fetchInvestments();
     }, [user]); 
+
+    // For error handling
+    const [error, setError] = useState([]);
+
+    const checkFields = () => {
+        setError([]);
+
+        let newErrors = [];
+        newErrors.push(investmentType === "" ? "Please select an investment type. If there are none on this list, please create one.": "");   
+        newErrors.push(initialValue === undefined || isNaN(initialValue) ? "Initial value must be submitted and must be a number.": ""); 
+        newErrors.push(taxStatus === undefined ? "Please select the tax status of the investment.": "");     
+
+        let errorFlag = false;
+        for (let i = 0 ; i < newErrors.length; i++){
+        if (newErrors[i] !== "")
+            errorFlag = true;
+        }
+
+        setError(newErrors);
+
+        if (errorFlag === false)
+        handleSubmit();
+    }
 
     const handleSubmit = async () => {
         try {
@@ -71,6 +94,7 @@ const InitialInvestmentsForm = (props) => {
                     </Select>
                 </FormControl>
             </div>
+            <div style={{ marginLeft: '30px', marginRight: '50px', marginBottom: '20px', color: 'red', fontSize: '14px' }}>{error[2]}</div>
             
             <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
                 <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Initial Value</div>
@@ -87,6 +111,9 @@ const InitialInvestmentsForm = (props) => {
                 }}
                 />
             </div>
+            <div style={{ marginLeft: '30px', marginRight: '50px', marginBottom: '20px', color: 'red', fontSize: '14px' }}>{error[1]}</div>
+
+
             <div>
                 <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
                     <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Tax Status</div>
@@ -103,10 +130,13 @@ const InitialInvestmentsForm = (props) => {
                         </RadioGroup>
                     </FormControl>
                 </div>
+                <div style={{ marginLeft: '30px', marginRight: '50px', marginBottom: '20px', color: 'red', fontSize: '14px' }}>{error[2]}</div>
+
                 <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', justifyContent: 'center'}}>
-                    <button variant="contained" className='create-button-form' style={{cursor: 'pointer', fontSize: '20px', paddingLeft: '50px', paddingRight: '50px'}}onClick={handleSubmit}>Create</button>
+                    <button variant="contained" className='create-button-form' style={{cursor: 'pointer', fontSize: '20px', paddingLeft: '50px', paddingRight: '50px'}}onClick={checkFields}>Create</button>
                 </div>
-        </div>
+            </div>
+
     </div>
     </div>
             
