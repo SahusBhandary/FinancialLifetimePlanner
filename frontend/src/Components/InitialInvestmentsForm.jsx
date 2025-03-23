@@ -95,7 +95,7 @@ const InitialInvestmentsForm = (props) => {
                     </Select>
                 </FormControl>
             </div>
-            <div style={{ marginLeft: '30px', marginRight: '50px', marginBottom: '20px', color: 'red', fontSize: '14px' }}>{error[2]}</div>
+            <div style={{ marginLeft: '30px', marginRight: '50px', marginBottom: '20px', color: 'red', fontSize: '14px' }}>{error[0]}</div>
             
             <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
                 <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Initial Value</div>
