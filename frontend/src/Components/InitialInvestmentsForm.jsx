@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useContext } from "react";
 import { StoreContext } from "../store/Store";
 import axios from 'axios'
+import TextField from '@mui/material/TextField';
+import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel, FormLabel } from '@mui/material';
 
 const InitialInvestmentsForm = (props) => {
 
@@ -47,27 +49,67 @@ const InitialInvestmentsForm = (props) => {
             console.error("Error submitting investment:", error);
         }
     };
-
+    
     return (
-        <div>
-            <h1>Investment</h1>
-            <span>Investment Type</span>
-            <select onChange={(e) => setInvestmentType(e.target.value)}>
-            <option>Please select an option:</option>
-            {investments.map((investment, index) => (
-                <option>{investment.name}</option>
-            ))}
-            </select>
-            <br></br>
-            <span>Initial Value</span>
-            <input type="text" onChange={(e) => setInitialValue(e.target.value)}></input>
-            <br></br>
-            <span>Tax Status</span>
-            <label><input type="radio" value="non-retirement" onChange={(e) => setTaxStatus(e.target.value)}/>Non-retirement</label>
-            <label><input type="radio" value="pre-tax" onChange={(e) => setTaxStatus(e.target.value)}/>Pre-tax</label>
-            <label><input type="radio" value="after-tax" onChange={(e) => setTaxStatus(e.target.value)}/>After tax</label>
-            <button onClick={handleSubmit}>Submit</button>
+        <div style={{width: '100%', marginLeft: '75px', marginRight: '75px',}}>
+            <div className="form-div" style={{display: 'flex', alignContent: 'center', flexDirection: 'column',  marginTop: '30px'}}>
+            <div>
+                <h1 className='form-title'>Investment Type</h1>
+            </div>
+            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Investment Type</div>
+                <FormControl fullWidth size="small" sx={{flex: 1}}>
+                    <InputLabel>Select an Option</InputLabel>
+                    <Select 
+                    onChange={(e) => setInvestmentType(e.target.value)}
+                    value={investmentType}
+                    label="Select Option"
+                    >
+                    {investments.map((investment, index) => (
+                        <MenuItem key={index} value={investment.name}>{investment.name}</MenuItem>
+                    ))}
+                    </Select>
+                </FormControl>
+            </div>
+            
+            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Initial Value</div>
+                <TextField 
+                label="Initial Value"
+                onChange={(e) => setInitialValue(e.target.value)}
+                variant="outlined"
+                size="small"
+                sx={{
+                    '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
+                    },
+                    width: '40%'
+                }}
+                />
+            </div>
+            <div>
+                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Tax Status</div>
+                    <FormControl>
+                        <RadioGroup
+                            row
+                            name="taxStatus"
+                            value={taxStatus}
+                            onChange={(e) => setTaxStatus(e.target.value)}
+                        >
+                            <FormControlLabel value="non-retirement" control={<Radio />} label="Non-Retirement"/>
+                            <FormControlLabel value="pre-tax" control={<Radio />} label="Pre-Tax"/>
+                            <FormControlLabel value="after-tax" control={<Radio />} label="After-Tax"/>
+                        </RadioGroup>
+                    </FormControl>
+                </div>
+                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', justifyContent: 'center'}}>
+                    <button variant="contained" className='create-button-form' style={{cursor: 'pointer', fontSize: '20px', paddingLeft: '50px', paddingRight: '50px'}}onClick={handleSubmit}>Create</button>
+                </div>
         </div>
+    </div>
+    </div>
+            
     )
 
 }
