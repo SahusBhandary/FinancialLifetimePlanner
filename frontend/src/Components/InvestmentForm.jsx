@@ -128,6 +128,7 @@ const InvestmentForm = (props) => {
       incomeDistribution: incomeDistribution,
       taxability: isTaxable === "taxable" ? true : false
     }
+    // AI generation
     axios.post('http://localhost:8000/submitInvestmentType', {form: form, user: user})
     window.location.reload()
   }
@@ -310,7 +311,7 @@ const InvestmentForm = (props) => {
         </div>
       </div>  
       
-      {/* Expected Annual Income Form*/}
+      {/* Expected Annual Income Form With AI generation*/}
       <div>
         <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
           <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Expected Annual Income</div>
