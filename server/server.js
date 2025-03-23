@@ -191,6 +191,25 @@ app.post("/submitScenario", async (req, res) => {
   }
 })
 
+app.post("/shareScenario", async (req, res) => {
+    try {
+        const { scenario, email } = req.body;
+
+        const userObj = await UserModel.findOne({
+            email: email
+        })
+  
+        userObj.sharedScenarios.push(scenario._id);
+        userObj.save();
+  
+        res.status(200).send({message: "Scenario submitted successfully!"});
+  
+    } catch (error) {
+        console.error("Error submitting scenario.", error);
+        res.status(500).send({ message: "Error submitting scenario." });
+    }
+  })
+
 
 
 app.post('/import-scenario', upload.single('scenarioFile'), async (req, res) => {
