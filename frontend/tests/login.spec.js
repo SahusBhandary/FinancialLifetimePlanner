@@ -4,7 +4,6 @@ const { test, expect } = require('@playwright/test');
 test.describe('Login Page Functionality (Frontend)', () => {
   test('Login button redirects to Google OAuth', async ({ page }) => {
     await page.route('http://localhost:8000/auth/google', (route) => {
-      console.log('Mocking Google OAuth redirect');
       route.fulfill({
         status: 302,
         headers: {
