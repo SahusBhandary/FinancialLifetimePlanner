@@ -18,13 +18,13 @@ const InvestmentForm = (props) => {
   const [returnMean, setReturnMean] = useState("");
   const [returnDeviation, setReturnDeviation] = useState("");
   const [sampleStatusReturn, setSampleStatusReturn] = useState(null);
-  const [expenseRatio, setExpenseRatio] = useState("");
+  const [expenseRatio, setExpenseRatio] = useState(null);
   const [fixedIncomeAmount, setFixedIncomeAmount]  = useState("");
   const [percentIncomeAmount, setPercentIncomeAmount] = useState("");
   const [incomeMean, setIncomeMean] = useState("");
   const [incomeDeviation, setIncomeDeviation] = useState("");
   const [sampleStatusIncome, setSampleStatusIncome] = useState(null);
-  const [isTaxable, setIsTaxable] = useState("");
+  const [isTaxable, setIsTaxable] = useState(null);
 
   const [error, setError] = useState([]);
 
@@ -46,10 +46,10 @@ const InvestmentForm = (props) => {
     newErrors.push(isNaN(returnDeviation) && annualReturnOption === "normalDistribution" ? "Standard Deviation needs to be a number value." : "");
     newErrors.push(sampleStatusReturn === null && annualReturnOption === "normalDistribution" ? "Please choose fixed amount or percent sampling" : "");
 
-    newErrors.push(isNaN(expenseRatio) || expenseRatio > 100 || expenseRatio < 0? "Expense ratio must be a percentage value between 0% and 100%.": "");
+    newErrors.push(expenseRatio === null || isNaN(expenseRatio) || expenseRatio > 100 || expenseRatio < 0? "Expense ratio must be a percentage value between 0% and 100%.": "");
 
     // Error handling for expected annual income section
-    newErrors.push(fixedIncomeAmount.length === 0 && annualIncomeOption === "fixed" ? "Please enter a value for fixed return": "");
+    newErrors.push(fixedIncomeAmount.length === 0 && annualIncomeOption === "fixed" ? "Please enter a value for fixed income amount": "");
     newErrors.push(isNaN(fixedIncomeAmount) && annualIncomeOption === "fixed" ? "Fixed Amount for Expected Annual Income must be a number." : "");
     newErrors.push(percentIncomeAmount.length === 0 && annualIncomeOption === "percent" ? "Please enter a value for percent return" : "");
     newErrors.push((isNaN(percentIncomeAmount) || percentIncomeAmount > 100 || percentIncomeAmount < 0) && annualIncomeOption === "percent" ? "Percent Change for Expected Annual Income must be a percentage value between 0% and 100%." : "");
@@ -156,7 +156,7 @@ const InvestmentForm = (props) => {
               width: '40%'
             }}
           />
-          {error[0] !== "" && <div>{error[0]}</div>}
+          {error[0] !== "" && <div><br/>{error[0]}</div>}
       </div>
     
       {/* Description Form */}
@@ -184,6 +184,7 @@ const InvestmentForm = (props) => {
           <FormControl fullWidth size="small" sx={{flex: 1}}>
             <InputLabel>Select an Option</InputLabel>
             <Select 
+              data-testid="annual-return-select"
               onChange={(e) => {
               setAnnualReturnOption(e.target.value)
               setError([]);}}
@@ -203,6 +204,7 @@ const InvestmentForm = (props) => {
               <div className='form-text' >(Annual Return)</div>
             </div>
             <TextField 
+              data-testid="fixed-return-amount-input"
               label="Fixed Amount"
               onChange={(e) => setFixedReturnAmount(e.target.value)}
               variant="outlined"
@@ -297,6 +299,7 @@ const InvestmentForm = (props) => {
         <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
           <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Expense Ratio</div>
             <TextField 
+            data-testid="expense-ratio-input"
               label="Expense Ratio"
               onChange={(e) => setExpenseRatio(e.target.value)}
               variant="outlined"
@@ -318,6 +321,7 @@ const InvestmentForm = (props) => {
           <FormControl fullWidth size="small" sx={{flex: 1}}>
             <InputLabel>Select an Option</InputLabel>
             <Select 
+              data-testid="annual-income-select"
               onChange={(e) => {
                 setAnnualIncomeOption(e.target.value)
                 setError([]);
@@ -339,6 +343,7 @@ const InvestmentForm = (props) => {
               <div className='form-text' >(Annual Income)</div>
             </div>
             <TextField 
+            data-testid="fixed-income-amount-input"
               label="Fixed Amount"
               onChange={(e) => setFixedIncomeAmount(e.target.value)}
               variant="outlined"
