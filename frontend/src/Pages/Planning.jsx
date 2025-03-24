@@ -7,7 +7,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import InitialInvestmentsForm from '../Components/InitialInvestmentsForm.jsx';
 import { useState } from 'react';
 
-const Planning = (props) => {
+const Planning = () => {
   const [form, setForm] = useState(0);
   const handleRightArrowClick = () => {
     setForm(form + 1)

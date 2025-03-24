@@ -91,18 +91,18 @@ async function exportScenarioToYAML(scenarioId) {
       },
       afterTaxContributionLimit: scenarioObject.afterTaxContributionLimit,
       spendingStrategy: scenarioObject.spendingStrategy,
-      expenseWithdrawalStrategy: scenarioObject.expenseWithdrawalStrategy.map((id) =>
-        scenarioObject.investments.find((inv) => inv._id.equals(id)).id
-      ),
-      RMDStrategy: scenarioObject.RMDStrategy.map((id) =>
-        scenarioObject.investments.find((inv) => inv._id.equals(id)).id
-      ),
+      expenseWithdrawalStrategy: scenarioObject.expenseWithdrawalStrategy
+      .map((id) => scenarioObject.investments.find((inv) => inv._id.equals(id))?.id)
+      .filter((id) => id !== undefined), 
+      RMDStrategy: scenarioObject.RMDStrategy
+      .map((id) => scenarioObject.investments.find((inv) => inv._id.equals(id))?.id)
+      .filter((id) => id !== undefined),
       RothConversionOpt: scenarioObject.RothConversionOpt,
       RothConversionStart: scenarioObject.RothConversionStart,
       RothConversionEnd: scenarioObject.RothConversionEnd,
-      RothConversionStrategy: scenarioObject.RothConversionStrategy.map((id) =>
-        scenarioObject.investments.find((inv) => inv._id.equals(id)).id
-      ),
+      RothConversionStrategy: scenarioObject.RothConversionStrategy
+      .map((id) => scenarioObject.investments.find((inv) => inv._id.equals(id))?.id)
+      .filter((id) => id !== undefined),
       financialGoal: scenarioObject.financialGoal,
       residenceState: scenarioObject.residenceState,
     };

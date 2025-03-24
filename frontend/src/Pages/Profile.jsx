@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom"; 
 import Navbar from '../Components/Navbar.jsx';
 import { StoreContext } from "../store/Store.jsx";
@@ -164,7 +164,7 @@ const Profile = () => {
       const email = prompt("Enter the email to share this scenario:");
       
       if (email) {
-        const response = await axios.post('http://localhost:8000/shareScenario', {
+        await axios.post('http://localhost:8000/shareScenario', {
           email: email,
           scenario: scenario
          });

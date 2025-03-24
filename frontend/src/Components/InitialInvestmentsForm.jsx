@@ -3,9 +3,9 @@ import { useContext } from "react";
 import { StoreContext } from "../store/Store";
 import axios from 'axios'
 import TextField from '@mui/material/TextField';
-import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel, FormLabel } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel } from '@mui/material';
 
-const InitialInvestmentsForm = (props) => {
+const InitialInvestmentsForm = () => {
 
     const { user } = useContext(StoreContext)
     const [investments, setInvestments] = useState([]);
@@ -61,7 +61,7 @@ const InitialInvestmentsForm = (props) => {
     const handleSubmit = async () => {
         try {
             
-            const response = await axios.post("http://localhost:8000/submitInvestment", {
+            await axios.post("http://localhost:8000/submitInvestment", {
                 investmentTypeName: investmentType,
                 taxStatus: taxStatus,
                 initialValue: initialValue,
@@ -95,7 +95,7 @@ const InitialInvestmentsForm = (props) => {
                     </Select>
                 </FormControl>
             </div>
-            <div style={{ marginLeft: '30px', marginRight: '50px', marginBottom: '20px', color: 'red', fontSize: '14px' }}>{error[2]}</div>
+            <div style={{ marginLeft: '30px', marginRight: '50px', marginBottom: '20px', color: 'red', fontSize: '14px' }}>{error[0]}</div>
             
             <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
                 <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Initial Value</div>

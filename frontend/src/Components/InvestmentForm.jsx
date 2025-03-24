@@ -3,10 +3,10 @@ import axios from 'axios'
 import { useContext } from "react";
 import { StoreContext } from "../store/Store";
 import TextField from '@mui/material/TextField';
-import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel, FormLabel } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel } from '@mui/material';
 
 
-const InvestmentForm = (props) => {
+const InvestmentForm = () => {
   const { user } = useContext(StoreContext);
   const [annualReturnOption, setAnnualReturnOption] = useState("");
   const [annualIncomeOption, setAnnualIncomeOption] = useState("");

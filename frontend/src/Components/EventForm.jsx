@@ -1,18 +1,14 @@
 import { useState, useEffect } from 'react'; 
-import NormalDistributionForm from './NormalDistributionForm.jsx';
-import UniformDistributionForm from './UniformDistributionForm.jsx';
-import AssetAllocationForm from "./AssetAllocationForm.jsx"
 import { useContext } from "react";
 import { StoreContext } from "../store/Store";
 import TextField from '@mui/material/TextField';
-import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel, FormLabel } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel } from '@mui/material';
 import axios from 'axios'
 
-const EventForm = (props) => {
+const EventForm = () => {
     const { user } = useContext(StoreContext);
-    const [investments, setInvestments] = useState([]); // User's investment types
+    
     const [listOfInvestments, setListOfInvestments] = useState([]); // User's investments
-    const [events, setEvents] = useState([]); //  User's events
 
 
     const [startYearOption, setStartYearOption]  = useState("");
@@ -84,33 +80,8 @@ const EventForm = (props) => {
         if (!user) {
             return
         }
-        const fetchInvestmentType = async () => {
-            if (user.investmentTypes.length > 0) {
-                try {
-                    const response = await axios.post('http://localhost:8000/getInvestments', {
-                        investmentIds: user.investmentTypes
-                    });
 
-                    setInvestments(response.data); 
-                } catch (error) {
-                    console.error("Error fetching investment details:", error);
-                }
-            } 
-        };
-
-        const fetchEvents = async () => {
-            if (user.events.length > 0) {
-                try {
-                    const response = await axios.post('http://localhost:8000/getEvents', {
-                        eventIds: user.events
-                    });
-
-                    setEvents(response.data); 
-                } catch (error) {
-                    console.error("Error fetching event details:", error);
-                }
-            }
-        };
+        
         const fetchInvestments = async () => {
             if (user.investments.length > 0) {
                 try {
@@ -129,8 +100,6 @@ const EventForm = (props) => {
             }
         };
 
-        fetchInvestmentType();
-        fetchEvents();
         fetchInvestments();
         setAssetAllocationData(Array(listOfInvestments.filter(investment => investment.taxStatus !== "pre-tax").length).fill(""));
         setGlidePathAllocationBefore(Array(listOfInvestments.filter(investment => investment.taxStatus !== "pre-tax").length).fill(""))
@@ -181,6 +150,8 @@ const EventForm = (props) => {
             case 'endWith':
                 start['eventSeries'] = endYearEventName;
                 break;
+            default:
+                break;
         }
 
         let duration = {
@@ -199,6 +170,8 @@ const EventForm = (props) => {
             case 'uniform':
                 duration['lower'] = durationLower;
                 duration['upper'] = durationUpper;
+                break;
+            default:
                 break;
         }
 
@@ -241,6 +214,8 @@ const EventForm = (props) => {
                         changeDistributionIncome['lower'] = incomeLower
                         changeDistributionIncome['upper'] = incomeUpper
                         break;
+                    default:
+                        break;
                 }
                 event['initialAmount'] = initialAmountIncome
                 event['changeAmtOrPct'] = changeAmtOrPctIncome;
@@ -277,6 +252,8 @@ const EventForm = (props) => {
                         changeDistributionExpense['lower'] = expenseLower;
                         changeDistributionExpense['upper'] = expenseUpper;
                         break;
+                    default:
+                        break;
                 }
                 event['initialAmount'] = initialAmountExpense;
                 event['changeAmtOrPct'] = changeAmtOrPctExpense;
@@ -309,9 +286,11 @@ const EventForm = (props) => {
                 else
                     event['assetAllocation'] = assetAllocationFormatting(assetAllocationDataNonRetirement);
                 break;
+            default:
+                break;
         }
 
-        const response = await axios.post('http://localhost:8000/submitEvent', {user: user, event: event});
+        await axios.post('http://localhost:8000/submitEvent', {user: user, event: event});
         window.location.reload();
     }
     

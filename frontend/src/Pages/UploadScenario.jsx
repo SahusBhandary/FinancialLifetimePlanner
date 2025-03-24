@@ -126,51 +126,6 @@ const UploadScenario = () => {
         
     </div>
   );
-  // const [selectedFile, setSelectedFile] = useState(null);
-
-  // // Handle file selection via the file chooser
-  // const handleFileSelect = (event) => {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     setSelectedFile(file);
-  //   }
-  // };
-
-  // // Handle dropping the file onto the drop zone
-  // const handleDrop = (event) => {
-  //   event.preventDefault();
-  //   const file = event.dataTransfer.files[0];
-  //   if (file) {
-  //     setSelectedFile(file);
-  //   }
-  // };
-
-  // // Necessary to allow dropping
-  // const handleDragOver = (event) => {
-  //   event.preventDefault();
-  // };
-
-  // return (
-  //   <Box
-  //     sx={{
-  //       border: '2px dashed gray',
-  //       borderRadius: '8px',
-  //       padding: '20px',
-  //       textAlign: 'center',
-  //       cursor: 'pointer',
-  //     }}
-  //     onDrop={handleDrop}
-  //     onDragOver={handleDragOver}
-  //   >
-  //     <Typography variant="h6" gutterBottom>
-  //       Drag & drop a file here, or click below to choose
-  //     </Typography>
-      
-  
-      
-      
-  //   </Box>
-  // );
 };
 
 export default UploadScenario;

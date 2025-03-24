@@ -1,29 +1,6 @@
 const cheerio = require('cheerio');
-const { parse } = require('dotenv');
 
 const url = 'https://www.irs.gov/publications/p590b#en_US_2023_publink100090310'
-
-function parseAgeDistribution(input) {
-  const regex = /(\d{2})(\d+.\d)/g;
-  const map = new Map();
-  let match;
-
-  while ((match = regex.exec(input)) !== null) {
-      const key = match[1];
-      const value = parseFloat(match[2]);
-      map.set(key, value);
-  }
-
-  const lastIndex = input.lastIndexOf("120 and over");
-  if (lastIndex !== -1) {
-      const valueMatch = input.slice(lastIndex).match(/(\d+.\d)/);
-      if (valueMatch) {
-          map.set("120 and over", parseFloat(valueMatch[1]));
-      }
-  }
-
-  return Object.fromEntries(map);
-}
 
 
 async function getRMDData() {

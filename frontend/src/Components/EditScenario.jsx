@@ -29,11 +29,7 @@ const EditScenario = (props) => {
     const [uniformLower, setUniformLower] = useState(props.scenario.inflationAssumption.lower)
     const [uniformUpper, setUniformUpper] = useState(props.scenario.inflationAssumption.upper)
     const [limitOnAnnualContributions, setLimitOnAnnualContributions] = useState(props.scenario.afterTaxContributionLimit)
-    const [spendingStrategy, setSpendingStrategy] = useState()
-    const [expenseWithdrawlStrategy, setExpenseWithdrawlStrategy] = useState()
-    const [RMDStrategy, setRMDStrategy] = useState()
     const [rothConversionStrategy, setRothConversionStrategy] = useState(props.scenario.RothConversionOpt ? "yes" : "no")
-    const [rothConvesionOptimizerSettings, setRothConversionOptimizerSettings] = useState()
     const [rothConversionStartYear, setRothConversionStartYear] = useState(props.scenario.RothConversionStart)
     const [rothConversionEndYear, setRothConversionEndYear] = useState(props.scenario.RothConversionEnd)
     const [sharingSettings, setSharingSettings] = useState(props.scenario.sharingSettings)
@@ -53,7 +49,6 @@ const EditScenario = (props) => {
     
     // states for upload state tax
     const [file, setFile] = useState(null);
-    const [stateExists, setStateExists] = useState(null);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [message, setMessage] = useState('');
 
@@ -268,7 +263,7 @@ const EditScenario = (props) => {
                 setEmptyExpenseStrategyError(<div></div>)
             }
 
-            const response = await axios.post('http://localhost:8000/editScenario', {
+            await axios.post('http://localhost:8000/editScenario', {
                 scenario : scenario,
                 scenarioID: props.scenario._id
             });
@@ -287,11 +282,11 @@ const EditScenario = (props) => {
                 params: { state: stateOfResidence.trim().toUpperCase(), userId: user._id }, 
               });
           if (response.data.exists) {
-            setStateExists(true);
+  
             setMessage('State tax information found in database. Proceeding with save...');
             handleSubmit();
           } else {
-            setStateExists(false);
+          
             setShowUploadModal(true); 
           }
         } catch (error) {
@@ -309,13 +304,13 @@ const EditScenario = (props) => {
         formData.append('file', file);
     
         try {
-            const response = await axios.post('http://localhost:8000/uploadStateTax', formData, {
+            await axios.post('http://localhost:8000/uploadStateTax', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
                 params: { userId: user._id } 
             });
     
             setMessage('State tax data uploaded successfully, continuing with save');
-            setStateExists(true);
+           
             setShowUploadModal(false);
             handleSubmit();
         } catch (error) {
