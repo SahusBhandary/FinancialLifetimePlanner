@@ -1,4 +1,4 @@
-const NormalDistributionForm = (props) => {
+const NormalDistributionForm = () => {
   return (
     <div>
       <div>

@@ -4,7 +4,6 @@
 
 const yaml = require('js-yaml');
 const StateTax = require('./models/StateTax');
-const TaxBracket = require('./models/TaxBracket');
 
 async function exportStateTaxBracketsToYaml(stateTaxFile) {
   try {

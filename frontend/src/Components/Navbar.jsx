@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 import { useContext } from "react";
 import { StoreContext } from "../store/Store";
 
-const Navbar = (props) => {
+const Navbar = () => {
   const { user } = useContext(StoreContext);
   return (
     <nav className="navbar">

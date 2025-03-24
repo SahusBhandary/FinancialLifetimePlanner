@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const UserModel = require('./models/User');
 const TaxBracketModel = require('./models/TaxBracket');
 const FederalTaxModel = require('./models/FederalTax');
 const StateTaxModel = require('./models/StateTax');
@@ -13,16 +12,6 @@ mongoose.connect(mongoDB);
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-function createUser(userObj) {
-    let newUser = new UserModel({
-        name: userObj.name,
-        email: userObj.email,
-        age: userObj.age,
-        stateOfResidence: userObj.stateOfResidence,
-        googleID: userObj.googleID
-    });
-    return newUser.save();
-}
 
 async function initializeDB() {
     try {

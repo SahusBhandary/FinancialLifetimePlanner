@@ -19,7 +19,7 @@ export const StoreContextProvider = ({ children }) => {
               const userResponse = await axios.get(`http://localhost:8000/getUser/${cookie.googleID}`);
               const user = userResponse.data;
               
-              if (user != ""){
+              if (user !== ""){
                 setUser(user);
               }
             }

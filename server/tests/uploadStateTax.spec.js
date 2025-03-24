@@ -95,7 +95,7 @@ test('Delete State Tax File', async ({ request }) => {
     },
   };
 
-  const uploadResponse = await request.post(`http://localhost:8000/uploadStateTax?userId=${testUser._id.toString()}`, {
+  await request.post(`http://localhost:8000/uploadStateTax?userId=${testUser._id.toString()}`, {
     multipart: formData,
   });
 
