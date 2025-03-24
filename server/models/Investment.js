@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
 const InvestmentSchema = new mongoose.Schema({
     investmentType: { type: mongoose.Schema.Types.ObjectId, ref: 'InvestmentType', required: true },

@@ -1,4 +1,4 @@
-const UniformDistributionForm = (props) => {
+const UniformDistributionForm = () => {
   return (
     <div>
       <div>

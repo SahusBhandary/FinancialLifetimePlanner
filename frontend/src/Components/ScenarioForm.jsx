@@ -2,9 +2,9 @@ import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { StoreContext } from "../store/Store";
 import TextField from '@mui/material/TextField';
-import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel, FormLabel, Checkbox } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel, Checkbox } from '@mui/material';
 
-const ScenerioForm = (props) => {
+const ScenerioForm = () => {
     const { user } = useContext(StoreContext);
     const [ emptyExpenseStrategyError, setEmptyExpenseStrategyError ] = useState()
 
@@ -29,11 +29,7 @@ const ScenerioForm = (props) => {
     const [uniformLower, setUniformLower] = useState("")
     const [uniformUpper, setUniformUpper] = useState("")
     const [limitOnAnnualContributions, setLimitOnAnnualContributions] = useState("")
-    const [spendingStrategy, setSpendingStrategy] = useState("")
-    const [expenseWithdrawlStrategy, setExpenseWithdrawlStrategy] = useState("")
-    const [RMDStrategy, setRMDStrategy] = useState("")
-    const [rothConversionStrategy, setRothConversionStrategy] = useState("")
-    const [rothConvesionOptimizerSettings, setRothConversionOptimizerSettings] = useState("")
+    const [rothConversionStrategy, setRothConversionStrategy] = useState("") 
     const [rothConversionStartYear, setRothConversionStartYear] = useState("")
     const [rothConversionEndYear, setRothConversionEndYear] = useState("")
     const [sharingSettings, setSharingSettings] = useState("")
@@ -55,7 +51,6 @@ const ScenerioForm = (props) => {
     
     // states for upload state tax
     const [file, setFile] = useState(null);
-    const [stateExists, setStateExists] = useState(null);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [message, setMessage] = useState('');
     
@@ -273,7 +268,7 @@ const ScenerioForm = (props) => {
                 setEmptyExpenseStrategyError(<div></div>)
             }
 
-            const response = await axios.post('http://localhost:8000/submitScenario', {
+            await axios.post('http://localhost:8000/submitScenario', {
                 scenario : scenario, user: user
             });
 
@@ -289,11 +284,11 @@ const ScenerioForm = (props) => {
                 params: { state: stateOfResidence.trim().toUpperCase(), userId: user._id }, 
               });
           if (response.data.exists) {
-            setStateExists(true);
+           
             setMessage('State tax information found in database. Proceeding with save...');
             handleSubmit();
           } else {
-            setStateExists(false);
+           
             setShowUploadModal(true); 
           }
         } catch (error) {
@@ -311,13 +306,13 @@ const ScenerioForm = (props) => {
         formData.append('file', file);
     
         try {
-            const response = await axios.post('http://localhost:8000/uploadStateTax', formData, {
+            await axios.post('http://localhost:8000/uploadStateTax', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
                 params: { userId: user._id } 
             });
     
             setMessage('State tax data uploaded successfully, continuing with save');
-            setStateExists(true);
+    
             setShowUploadModal(false);
             handleSubmit();
         } catch (error) {
@@ -932,6 +927,7 @@ const ScenerioForm = (props) => {
                                     
                                     ))}
                                 </ul>
+                                {emptyExpenseStrategyError}
                             </div>
                         </div>
                         {/*RMD Strategy */}

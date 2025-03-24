@@ -3,9 +3,9 @@ import { useContext } from "react";
 import { StoreContext } from "../store/Store";
 import axios from 'axios'
 import TextField from '@mui/material/TextField';
-import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel, FormLabel } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel } from '@mui/material';
 
-const InitialInvestmentsForm = (props) => {
+const InitialInvestmentsForm = () => {
 
     const { user } = useContext(StoreContext)
     const [investments, setInvestments] = useState([]);
@@ -61,7 +61,7 @@ const InitialInvestmentsForm = (props) => {
     const handleSubmit = async () => {
         try {
             
-            const response = await axios.post("http://localhost:8000/submitInvestment", {
+            await axios.post("http://localhost:8000/submitInvestment", {
                 investmentTypeName: investmentType,
                 taxStatus: taxStatus,
                 initialValue: initialValue,

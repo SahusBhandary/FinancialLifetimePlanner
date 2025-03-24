@@ -1,5 +1,4 @@
 const yaml = require('js-yaml');
-const mongoose = require('mongoose');
 
 // import schemas needed to export
 const Scenario = require('./models/Scenario');

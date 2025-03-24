@@ -4,7 +4,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 axios.defaults.withCredentials = true;
 
 
-const Login = (props) => {
+const Login = () => {
   const handleGoogleLogin = async () => {
     window.location.href = 'http://localhost:8000/auth/google'
   };

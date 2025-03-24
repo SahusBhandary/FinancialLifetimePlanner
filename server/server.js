@@ -16,7 +16,6 @@ const { ObjectId } = require("mongodb");
 
 
 //stuff for importing/exporting
-const fs = require('fs');
 const multer = require('multer');
 const upload = multer({
     storage: multer.memoryStorage(), 
@@ -221,8 +220,9 @@ app.post("/shareScenario", async (req, res) => {
         const scenarioId = new ObjectId(scenarioID);
 
         const { _id, ...updateFields } = scenario;
+        console.log(_id);
 
-        const result = await ScenarioModel.updateOne(
+        await ScenarioModel.updateOne(
             { _id: scenarioId },
             { $set: updateFields }
         );
@@ -474,9 +474,9 @@ app.post('/import-scenario', upload.single('scenarioFile'), async (req, res) => 
         }
       });
 
-const server = app.listen(8000, () => {console.log("Server listening on port 8000...");});
+app.listen(8000, () => {console.log("Server listening on port 8000...");});
 const passport = require('passport');
-const jwt = require('jsonwebtoken');
+
 const authRoutes = require('./routes/auth');
 const User = require('./models/User');
 
