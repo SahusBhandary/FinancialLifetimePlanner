@@ -1,6 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { StoreContext } from "../store/Store";
+import TextField from '@mui/material/TextField';
+import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel, FormLabel, Checkbox } from '@mui/material';
 
 const ScenerioForm = (props) => {
     const { user } = useContext(StoreContext);
@@ -18,23 +20,23 @@ const ScenerioForm = (props) => {
     const [spouseLifeExpectancyDeviation, setSpouseLifeExpectancyDeviation] = useState("");
     const [investments, setInvestments] = useState([]); 
     const [events, setEvents] = useState([]); 
-    const [inflationAssumption, setInflationAssumption] = useState()
-    const [fixedIncomeAmount, setFixedIncomeAmount] = useState()
-    const [incomeMean, setIncomeMean] = useState()
-    const [incomeDeviation, setIncomeDeviation] = useState()
-    const [uniformLower, setUniformLower] = useState()
-    const [uniformUpper, setUniformUpper] = useState()
-    const [limitOnAnnualContributions, setLimitOnAnnualContributions] = useState()
-    const [spendingStrategy, setSpendingStrategy] = useState()
-    const [expenseWithdrawlStrategy, setExpenseWithdrawlStrategy] = useState()
-    const [RMDStrategy, setRMDStrategy] = useState()
-    const [rothConversionStrategy, setRothConversionStrategy] = useState()
-    const [rothConvesionOptimizerSettings, setRothConversionOptimizerSettings] = useState()
-    const [rothConversionStartYear, setRothConversionStartYear] = useState()
-    const [rothConversionEndYear, setRothConversionEndYear] = useState()
-    const [sharingSettings, setSharingSettings] = useState()
-    const [financialGoal, setFinancialGoal] = useState()
-    const [stateOfResidence, setStateOfResidence] = useState()
+    const [inflationAssumption, setInflationAssumption] = useState("")
+    const [fixedIncomeAmount, setFixedIncomeAmount] = useState("")
+    const [incomeMean, setIncomeMean] = useState("")
+    const [incomeDeviation, setIncomeDeviation] = useState("")
+    const [uniformLower, setUniformLower] = useState("")
+    const [uniformUpper, setUniformUpper] = useState("")
+    const [limitOnAnnualContributions, setLimitOnAnnualContributions] = useState("")
+    const [spendingStrategy, setSpendingStrategy] = useState("")
+    const [expenseWithdrawlStrategy, setExpenseWithdrawlStrategy] = useState("")
+    const [RMDStrategy, setRMDStrategy] = useState("")
+    const [rothConversionStrategy, setRothConversionStrategy] = useState("")
+    const [rothConvesionOptimizerSettings, setRothConversionOptimizerSettings] = useState("")
+    const [rothConversionStartYear, setRothConversionStartYear] = useState("")
+    const [rothConversionEndYear, setRothConversionEndYear] = useState("")
+    const [sharingSettings, setSharingSettings] = useState("")
+    const [financialGoal, setFinancialGoal] = useState("")
+    const [stateOfResidence, setStateOfResidence] = useState("")
     const [expenseCount, setExpenseCount] = useState(0);
     const [expenseWithdrawlInvestmentsCount, setExpenseWithdrawlInvestmentsCount] = useState(0);
     const [RMDInvestments, setRMDInvestments] = useState(0);
@@ -277,343 +279,799 @@ const ScenerioForm = (props) => {
 
     return (
         <div>
-            <h1>Scenario</h1>
-
-            <div>
-                <span>Name</span>
-                <input type="text" onChange={(e) => setName(e.target.value)} />
-            </div>
-
-            <div>
-                <span>Married?</span>
-                <label><input type="radio" name="married" value="yes" onChange={(e) => {setUserLifeExpectancyDistribution("");setSpouseLifeExpectancyDistribution("");setIsMarried(e.target.value);}} />Yes</label>
-                <label><input type="radio" name="married" value="no" onChange={(e) => {setUserLifeExpectancyDistribution("");setSpouseLifeExpectancyDistribution("");setIsMarried(e.target.value);}} />No</label>
-            </div>
-
-           {isMarried === "yes" && 
-                <div>
+            <div style={{width: '100%', marginLeft: '75px', marginRight: '75px',}}>
+                <div className="form-div" style={{display: 'flex', alignContent: 'center', flexDirection: 'column',  marginTop: '30px'}}>
                     <div>
-                        <span>User Birth Year</span>
-                        <input type="text" onChange={(e) => setUserBirthYear(e.target.value)} />
+                        <h1 className='form-title'>Scenarios</h1>
+                    </div> 
+                    {/* Name Section */}
+                    <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Name</div>
+                            <TextField 
+                            label="Name"
+                            onChange={(e) => setName(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                },
+                                width: '40%'
+                            }}
+                            />
+                        </div>
                     </div>
-
-                    <span>Life Expectancy Distribution</span>
-                    <select onChange={(e) => setUserLifeExpectancyDistribution(e.target.value)}>
-                    <option value="">Select an option</option>
-                    <option value="fixed">Fixed</option>
-                    <option value="normalDistribution">Normal Distribution</option>
-                    </select>
-                    {userLifeExpectancyDistribution === "fixed" && 
+                    {/* Is Married */} 
                     <div>
-                        <span>Enter Fixed Amount</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyFixed(e.target.value)}></input>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Married</div>
+                            <FormControl>
+                                <RadioGroup
+                                row
+                                name="married?"
+                                value={isMarried}
+                                onChange={(e) => {setUserLifeExpectancyDistribution("");setSpouseLifeExpectancyDistribution("");setIsMarried(e.target.value);}}
+                                >
+                                <FormControlLabel value="yes" control={<Radio />} label="Yes"/>
+                                <FormControlLabel value="no" control={<Radio />} label="No"/>
+                                </RadioGroup>
+                            </FormControl>
+                        </div>
+                    </div> 
+                    {/* Is Married Options */} 
+                    {isMarried === "yes" && 
+                    <div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>User Birth Year</div>
+                                <TextField 
+                                    label="Birth Year"
+                                    onChange={(e) => setUserBirthYear(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Life Expectancy Distribution</div>
+                                <FormControl fullWidth size="small" sx={{flex: 1}}>
+                                    <InputLabel>Select an Option</InputLabel>
+                                    <Select 
+                                    onChange={(e) => setUserLifeExpectancyDistribution(e.target.value)}
+                                    value={userLifeExpectancyDistribution}
+                                    label="Select Option"
+                                    >
+                                    <MenuItem value="fixed">Fixed</MenuItem>
+                                    <MenuItem value="normalDistribution">Normal Distribution</MenuItem>  
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </div>
+                        {userLifeExpectancyDistribution === "fixed" && 
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Enter Fixed Amount</div>
+                                <TextField 
+                                    label="Fixed Amount"
+                                    onChange={(e) => setUserLifeExpectancyFixed(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        }
+                        {userLifeExpectancyDistribution === "normalDistribution" &&
+                        <div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Mean</div>
+                                <TextField 
+                                    label="Mean"
+                                    onChange={(e) => setUserLifeExpectancyMean(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Standard Deviation</div>
+                                <TextField 
+                                    label="Standard Deviation"
+                                    onChange={(e) => setUserLifeExpectancyDeviation(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        </div>
+                        }
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Spouse Birth Year</div>
+                                <TextField 
+                                    label="Birth Year"
+                                    onChange={(e) => setSpouseBirthYear(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Life Expectancy Distribution</div>
+                                <FormControl fullWidth size="small" sx={{flex: 1}}>
+                                    <InputLabel>Select an Option</InputLabel>
+                                    <Select 
+                                    onChange={(e) => setSpouseLifeExpectancyDistribution(e.target.value)}
+                                    value={spouseLifeExpectancyDistribution}
+                                    label="Select Option"
+                                    >
+                                    <MenuItem value="fixed">Fixed</MenuItem>
+                                    <MenuItem value="normalDistribution">Normal Distribution</MenuItem>  
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </div>
+                        {spouseLifeExpectancyDistribution === "fixed" && 
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Enter Fixed Amount</div>
+                                <TextField 
+                                    label="Fixed Amount"
+                                    onChange={(e) => setSpouseLifeExpectancyFixed(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        }
+                        {spouseLifeExpectancyDistribution === "normalDistribution" &&
+                        <div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Mean</div>
+                                <TextField 
+                                    label="Mean"
+                                    onChange={(e) => setSpouseLifeExpectancyMean(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Standard Deviation</div>
+                                <TextField 
+                                    label="Standard Deviation"
+                                    onChange={(e) => setSpouseLifeExpectancyDeviation(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        </div>
+                        }
+                    </div>
+                    
+                    }
+                    {isMarried === "no" && 
+                    <div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>User Birth Year</div>
+                                <TextField 
+                                    label="Birth Year"
+                                    onChange={(e) => setUserBirthYear(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Life Expectancy Distribution</div>
+                                <FormControl fullWidth size="small" sx={{flex: 1}}>
+                                    <InputLabel>Select an Option</InputLabel>
+                                    <Select 
+                                    onChange={(e) => setUserLifeExpectancyDistribution(e.target.value)}
+                                    value={userLifeExpectancyDistribution}
+                                    label="Select Option"
+                                    >
+                                    <MenuItem value="fixed">Fixed</MenuItem>
+                                    <MenuItem value="normalDistribution">Normal Distribution</MenuItem>  
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </div>
+
+                        {userLifeExpectancyDistribution === "fixed" && 
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Enter Fixed Amount</div>
+                                <TextField 
+                                    label="Fixed Amount"
+                                    onChange={(e) => setUserLifeExpectancyFixed(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        }
+                        {userLifeExpectancyDistribution === "normalDistribution" &&
+                        <div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Mean</div>
+                                <TextField 
+                                    label="Mean"
+                                    onChange={(e) => setUserLifeExpectancyMean(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Standard Deviation</div>
+                                <TextField 
+                                    label="Standard Deviation"
+                                    onChange={(e) => setUserLifeExpectancyDeviation(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        </div>
+                        }
                     </div>
                     }
-                    {userLifeExpectancyDistribution === "normalDistribution" &&
+                    {/*User Investment Types*/ }
                     <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>User Investment Types</div>
+                            {investments.length > 0 ? (
+                                <ul>
+                                    {investments.map((investment) => (
+                                        <div key={investment._id}>
+                                            <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                checked={selectedInvestmentTypes.includes(investment._id)}
+                                                onChange={() => handleInvestmentTypeCheckbox(investment)}
+                                                />
+                                            }
+                                            label={investment.name}
+                                            />
+                                        </div>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <div className='form-text' >***No Investment Types Found***</div>
+                            )}
+                        </div>
+                    </div>
+                    {/*User Event Types*/}
                     <div>
-                        <span>Mean</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyMean(e.target.value)}></input>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>User Event Types</div>
+                            {events.length > 0 ? (
+                                <ul>
+                                    {events.map((event) => (
+                                        <div key={event._id}>
+                                            <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                checked={selectedEvents.includes(event._id)}
+                                                onChange={() => handleEventCheckbox(event)}
+                                                />
+                                            }
+                                            label={event.name}
+                                            />
+                                        </div>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <div className='form-text' >***No Events Found***</div>
+                            )}
+                        </div>
                     </div>
+                    {/*User Investments*/}
                     <div>
-                        <span>Standard Deviation</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyDeviation(e.target.value)}></input>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Investments</div>
+                            {listofinvestments.length > 0 ? (
+                                <ul>
+                                    {listofinvestments.map((investment) => (
+                                        <div key={investment._id}>
+                                            <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                checked={selectedInvestments.includes(investment._id)}
+                                                onChange={() => handleInvestmentCheckbox(investment)}
+                                                />
+                                            }
+                                            label={investment.id}
+                                            />
+                                        </div>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <div className='form-text' >***No Investments Found***</div>
+                            )}
+                        </div>
                     </div>
-                    </div>
-                    }
-
+                    {/*Inflation Adjustment*/}
                     <div>
-                        <span>Spouse Birth Year</span>
-                        <input type="text" onChange={(e) => setSpouseBirthYear(e.target.value)} />
-                    </div>
-
-                    <span>Life Expectancy Distribution</span>
-                    <select onChange={(e) => setSpouseLifeExpectancyDistribution(e.target.value)}>
-                    <option value="">Select an option</option>
-                    <option value="fixed">Fixed</option>
-                    <option value="normalDistribution">Normal Distribution</option>
-                    </select>
-                    {spouseLifeExpectancyDistribution === "fixed" && 
-                    <div>
-                        <span>Enter Fixed Amount</span>
-                        <input type="text" onChange={(e) => setSpouseLifeExpectancyFixed(e.target.value)}></input>
-                    </div>
-                    }
-                    {spouseLifeExpectancyDistribution === "normalDistribution" &&
-                    <div>
-                    <div>
-                        <span>Mean</span>
-                        <input type="text" onChange={(e) => setSpouseLifeExpectancyMean(e.target.value)}></input>
-                    </div>
-                    <div>
-                        <span>Standard Deviation</span>
-                        <input type="text" onChange={(e) => setSpouseLifeExpectancyDeviation(e.target.value)}></input>
-                    </div>
-                    </div>
-                    }
-                </div>
-           
-           }
-
-            {isMarried === "no" && 
-                <div>
-                    <div>
-                        <span>User Birth Year</span>
-                        <input type="text" onChange={(e) => setUserBirthYear(e.target.value)} />
-                    </div>
-
-                    <span>Life Expectancy Distribution</span>
-                    <select onChange={(e) => setUserLifeExpectancyDistribution(e.target.value)}>
-                    <option value="">Select an option</option>
-                    <option value="fixed">Fixed</option>
-                    <option value="normalDistribution">Normal Distribution</option>
-                    </select>
-                    {userLifeExpectancyDistribution === "fixed" && 
-                    <div>
-                        <span>Enter Fixed Amount</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyFixed(e.target.value)}></input>
-                    </div>
-                    }
-                    {userLifeExpectancyDistribution === "normalDistribution" &&
-                    <div>
-                    <div>
-                        <span>Mean</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyMean(e.target.value)}></input>
-                    </div>
-                    <div>
-                        <span>Standard Deviation</span>
-                        <input type="text" onChange={(e) => setUserLifeExpectancyDeviation(e.target.value)}></input>
-                    </div>
-                    </div>
-                    }
-                </div>
-           }
-
-
-            <div>
-                <span>User Investment Types:</span>
-                {investments.length > 0 ? (
-                    <ul>
-                        {investments.map((investment) => (
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Inflation Adjustment</div>
+                            <FormControl fullWidth size="small" sx={{flex: 1}}>
+                                <InputLabel>Select an Option</InputLabel>
+                                <Select 
+                                onChange={(e) => setInflationAssumption(e.target.value)}
+                                value={inflationAssumption}
+                                label="Select Option"
+                                >
+                                <MenuItem value="fixed">Fixed</MenuItem>
+                                <MenuItem value="normalDistribution">Normal Distribution</MenuItem>  
+                                <MenuItem value="uniformDistribution">Uniform Distribution</MenuItem>  
+                                </Select>
+                            </FormControl>
+                        </div>
+                        {inflationAssumption === "fixed" && 
                             <div>
-                                <label><input onChange={() => handleInvestmentTypeCheckbox(investment)} type="checkbox" />{investment.name}</label>
+                                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Enter Fixed Amount</div>
+                                    <TextField 
+                                        label="Fixed Amount"
+                                        onChange={(e) => setFixedIncomeAmount(e.target.value)}
+                                        variant="outlined"
+                                        size="small"
+                                        sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: '12px',
+                                        },
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        }
+                        {inflationAssumption === "normalDistribution" &&
+                        <div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Mean</div>
+                                <TextField 
+                                    label="Mean"
+                                    onChange={(e) => setIncomeMean(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Standard Deviation</div>
+                                <TextField 
+                                    label="Standard Deviation"
+                                    onChange={(e) => setIncomeDeviation(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        </div>
+                        }
+                        {inflationAssumption === "uniformDistribution" &&
+                        <div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Upper Limit</div>
+                                <TextField 
+                                    label="Upper Limit"
+                                    onChange={(e) => setUniformLower(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Lower Limit</div>
+                                <TextField 
+                                    label="Lower Limit"
+                                    onChange={(e) => setUniformUpper(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        </div>
+                        }
+                    </div>
+                    {/*Initial Limit on Annual Contribtion*/ }
+                    <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Initial Limit on Annual Contributions to After-tax Retirement Accounts</div>
+                            <TextField 
+                                label="Inital Limit"
+                                onChange={(e) => setLimitOnAnnualContributions(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '12px',
+                                },
+                                }}
+                            />
+                        </div>
+                    </div>
+                    {/*Spending Strategy*/}
+                    <div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Spending Strategy</div>
+                        </div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Number of Expenses</div>
+                            <TextField 
+                                type='number'
+                                value={expenseCount}
+                                onChange={(e) => setExpenseCount(Number(e.target.value) || 0)}
+                                inputProps={{ min: 0 }}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '12px',
+                                },
+                                }}
+                            />
+                            
+                        </div>
+                        <div >
+                            <ul>
+                                {Array.from({ length: expenseCount }, (_, i) => (
+                                    <div key={i}>
+                                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Expense {i+1}</div>
+                                            <FormControl fullWidth size="small" sx={{flex: 1}}>
+                                                <InputLabel>Select an Option</InputLabel>
+                                                <Select 
+                                                onChange={(e) => setInflationAssumption(e.target.value)}
+                                                value={inflationAssumption}
+                                                label="Select Option"
+                                                >
+                                                {events.filter((event) => event.discretionary === true && selectedEvents.includes(event._id)).map((event) => (
+                                                    <MenuItem value={event.name}>{event.name}</MenuItem>
+                                                ))}
+                                                </Select>
+                                            </FormControl>
+                                        </div>
+                                        
+                                    </div>
+                                
+                                ))}
+                            </ul>
+                        </div>
+                        {/*Expense Withdrawl Strategy */}
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Expense Withdrawl Strategy</div>
+                            </div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Number of Investments</div>
+                                <TextField 
+                                    type='number'
+                                    value={expenseWithdrawlInvestmentsCount}
+                                    onChange={(e) => setExpenseWithdrawlInvestmentsCount(Number(e.target.value) || 0)}
+                                    inputProps={{ min: 0 }}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
                                 
                             </div>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>No investments found.</p>
-                )}
-            </div>
-
-            <div>
-                <span>User Event Types:</span>
-                {events.length > 0 ? (
-                    <ul>
-                        {events.map((event) => (
-                            <div>
-                                <label><input onChange={() => handleEventCheckbox(event)}type="checkbox" />{event.name}</label>
+                            <div >
+                                <ul>
+                                    {Array.from({ length: expenseWithdrawlInvestmentsCount }, (_, i) => (
+                                        <div key={i}>
+                                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Investment {i+1}</div>
+                                                <FormControl fullWidth size="small" sx={{flex: 1}}>
+                                                    <InputLabel>Select an Option</InputLabel>
+                                                    <Select 
+                                                    onChange={(e) => selectedInvestmentsOrder[i] = e.target.value}
+                                                    value={selectedInvestmentsOrder[i] || ''}
+                                                    label="Select Option"
+                                                    >
+                                                    {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment) => (
+                                                        <MenuItem value={investment.id} key={investment._id}>{investment.id}</MenuItem>
+                                                    ))}
+                                                    </Select>
+                                                </FormControl>
+                                            </div>
+                                            
+                                        </div>
+                                    
+                                    ))}
+                                </ul>
                             </div>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>No events found.</p>
-                )}
-            </div>
-
-            <div>
-                <span>Investments:</span>
-                {listofinvestments.length > 0 ? (
-                    <ul>
-                        {listofinvestments.map((investment) => (
-                            <div>
-                                <label><input onChange={() => handleInvestmentCheckbox(investment)}type="checkbox" />{investment.id}</label>
+                        </div>
+                        {/*RMD Strategy */}
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>RMD Strategy</div>
                             </div>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>No events found.</p>
-                )}
-            </div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Number of Pre-Tax Investments</div>
+                                <TextField 
+                                    type='number'
+                                    value={RMDInvestments}
+                                    onChange={(e) => setRMDInvestments(Number(e.target.value) || 0)}
+                                    inputProps={{ min: 0 }}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                                
+                            </div>
+                            <div >
+                                <ul>
+                                    {Array.from({ length: RMDInvestments }, (_, i) => (
+                                        <div key={i}>
+                                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Pre-Tax Investment {i+1}</div>
+                                                <FormControl fullWidth size="small" sx={{flex: 1}}>
+                                                    <InputLabel>Select an Option</InputLabel>
+                                                    <Select 
+                                                    onChange={(e) => selectedRMDInvestmentsOrder[i] = e.target.value}
+                                                    value={selectedRMDInvestmentsOrder[i] || ''}
+                                                    label="Select Option"
+                                                    >
+                                                    {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
+                                                        investment.taxStatus === 'pre-tax' && (
+                                                            <MenuItem value={investment.id} key={index}>{investment.id}</MenuItem>
+                                                        )
+                                                    ))}
+                                                    </Select>
+                                                </FormControl>
+                                            </div>
+                                            
+                                        </div>
+                                    
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                        {/*Roth Conversion Strategy */}
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Roth Conversion Strategy</div>
+                                <FormControl>
+                                    <RadioGroup
+                                    row
+                                    name="rothconversionstrategy"
+                                    value={rothConversionStrategy}
+                                    onChange={(e) => setRothConversionStrategy(e.target.value)}
+                                    >
+                                    <FormControlLabel value="yes" control={<Radio />} label="On"/>
+                                    <FormControlLabel value="no" control={<Radio />} label="Off"/>
+                                    </RadioGroup>
+                                </FormControl>
+                            </div>
+                        </div>
+                        {/*Roth Conversion Settings */}
+                        {rothConversionStrategy === "yes" && 
+                        <div>
+                            <div>
+                                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Start Year</div>
+                                    <TextField 
+                                        label="Start Year"
+                                        onChange={(e) => setRothConversionStartYear(e.target.value)} 
+                                        variant="outlined"
+                                        size="small"
+                                        sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: '12px',
+                                        },
+                                        }}
+                                    />
+                                </div>
+                            </div>
 
-            <div>
-                <span>Inflation Assumption</span>
-                <select onChange={(e) => setInflationAssumption(e.target.value)}>
-                    <option value="">Select an option</option>
-                    <option value="fixed">Fixed percentage</option>
-                    <option value="normalDistribution">Normal Distribution</option>
-                    <option value="uniformDistribution">Uniform Distribution</option>
-                </select>
-                {inflationAssumption === "fixed" && 
-                    <div>
-                        <span>Enter Fixed Amount</span>
-                        <input type="text" onChange={(e) => setFixedIncomeAmount(e.target.value)}></input>
+                            <div>
+                                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>End Year</div>
+                                    <TextField 
+                                        label="End Year"
+                                        onChange={(e) => setRothConversionEndYear(e.target.value)}
+                                        variant="outlined"
+                                        size="small"
+                                        sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: '12px',
+                                        },
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                    <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Investments</div>
+                                    {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
+                                        investment.taxStatus === 'pre-tax' && (
+                                            <div key={index}>
+                                                    <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                        checked={rothInvestments.includes(investment._id)}
+                                                        onChange={() => handleCheckboxChange(investment.id)}
+                                                        />
+                                                    }
+                                                    label={investment.name}
+                                                    />
+                                            </div>
+                                        )
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        }
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px', flexDirection: 'row'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Sharing Strategy</div>
+                                <FormControl>
+                                    <RadioGroup
+                                    row
+                                    name="sharingsettings"
+                                    value={sharingSettings}
+                                    onChange={(e) => setSharingSettings(e.target.value)}
+                                    >
+                                    <FormControlLabel value="read-only" control={<Radio />} label="Read-Only"/>
+                                    <FormControlLabel value="read-write" control={<Radio />} label="Read-Write"/>
+                                    </RadioGroup>
+                                </FormControl>
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Financial Goal</div>
+                                <TextField 
+                                    label="Financial Goal"
+                                    onChange={(e) => setFinancialGoal(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
+                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>State of Residence</div>
+                                <TextField 
+                                    label="State"
+                                    onChange={(e) => setStateOfResidence(e.target.value)}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '12px',
+                                    },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', justifyContent: 'center'}}>
+                            <button variant="contained" className='create-button-form' style={{cursor: 'pointer', fontSize: '20px', paddingLeft: '50px', paddingRight: '50px'}}onClick={handleCheckState}>Create</button>
+                        </div>
+                        
                     </div>
-                }
-                {inflationAssumption === "normalDistribution" &&
-                <div>
-                <div>
-                    <span>Mean</span>
-                    <input type="text" onChange={(e) => setIncomeMean(e.target.value)}></input>
+
                 </div>
-                <div>
-                    <span>Standard Deviation</span>
-                    <input type="text" onChange={(e) => setIncomeDeviation(e.target.value)}></input>
-                </div>
-                </div>
-                }
-                {inflationAssumption === "uniformDistribution" &&
-                <div>
-                <div>
-                    <span>Upper</span>
-                    <input type="text" onChange={(e) => setUniformLower(e.target.value)}></input>
-                </div>
-                <div>
-                    <span>Lower</span>
-                    <input type="text" onChange={(e) => setUniformUpper(e.target.value)}></input>
-                </div>
-                </div>
-                }
             </div>
 
-            <div>
-                <span>Initial Limit on Annual Contributions to After-tax Retirement Accounts</span>
-                <input type="text" onChange={(e) => setLimitOnAnnualContributions(e.target.value)} />
-            </div>
 
-            <div>
-                <span>Spending Strategy</span>
-                <br />
-                <span>Number of expenses:</span>
-                <input
-                    type="number"
-                    min="0"
-                    value={expenseCount}
-                    onChange={(e) => setExpenseCount(Number(e.target.value) || 0)}
-                />
-                <ul>
-                    {Array.from({ length: expenseCount }, (_, i) => (
-                        <div>
-                            <h3>{i + 1}</h3>
-                            <select onChange={(e) => selectedExpensesOrder[i] = e.target.value}>
-                                {events.filter((event) => event.discretionary === true && selectedEvents.includes(event._id)).map((event) => (
-                                    <option>{event.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                    
-                    ))}
-                </ul>
-            </div>
-
-            <div>
-                <span>Expense Withdrawl Strategy</span>
-                <br />
-                <span>Number of investments:</span>
-                <input
-                    type="number"
-                    min="0"
-                    value={expenseWithdrawlInvestmentsCount}
-                    onChange={(e) => setExpenseWithdrawlInvestmentsCount(Number(e.target.value) || 0)}
-                />
-                <ul>
-                    {Array.from({ length: expenseWithdrawlInvestmentsCount }, (_, i) => (
-                        <div>
-                            <h3>{i + 1}</h3>
-                            <select onChange={(e) => selectedInvestmentsOrder[i] = e.target.value}>
-                                {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment) => (
-                                    <option>{investment.id}</option>
-                                ))}
-                            </select>
-                        </div>
-                    
-                    ))}
-                </ul>
-            </div>
             
-            <div>
-                <span>RMD Strategy</span>
-                <br />
-                <span>Number of pre-tax investments:</span>
-                <input
-                    type="number"
-                    min="0"
-                    value={RMDInvestments}
-                    onChange={(e) => setRMDInvestments(Number(e.target.value) || 0)}
-                />
-                <ul>
-                    {Array.from({ length: RMDInvestments }, (_, i) => (
-                        <div>
-                            <h3>{i + 1}</h3>
-                            <select onChange={(e) => selectedRMDInvestmentsOrder[i] = e.target.value}>
-                                {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
-                                    investment.taxStatus === 'pre-tax' && (
-                                        <option key={index}>{investment.id}</option>
-                                    )
-                                ))}
-                            </select>
-                        </div>
-                    ))}
-                </ul>
-            </div>
 
-            <div>
-                <span>Roth conversion Strategy</span>
-                <label><input type="radio" name="rothconversionstrategy" value="yes" onChange={(e) => setRothConversionStrategy(e.target.value)} />On</label>
-                <label><input type="radio" name="rothconversionstrategy" value="no" onChange={(e) => setRothConversionStrategy(e.target.value)} />Off</label>
-            </div>
 
-            {rothConversionStrategy === "yes" && 
-            <div>
-                <div>
-                    <span>Start year</span>
-                    <input type="text" onChange={(e) => setRothConversionStartYear(e.target.value)} />
-                </div>
+            
 
-                <div>
-                    <span>End year</span>
-                    <input type="text" onChange={(e) => setRothConversionEndYear(e.target.value)} />
-                </div>
-
-                <div>
-                <span>Investments:</span>
-                <br></br>
-                {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
-                    investment.taxStatus === 'pre-tax' && (
-                        <div>
-                        <label key={index}><input type="checkbox" onChange={() => handleCheckboxChange(investment.id)}/>{investment.id}</label>
-                        <br></br>
-                        </div>
-                    )
-                ))}
-                
-                
-
-                
-            </div>
-            </div>
-            }
-
-            <div>
-                <span>Sharing settings</span>
-                <label><input type="radio" name="sharingsettings" value="read-only" onChange={(e) => setSharingSettings(e.target.value)}/>Read-only</label>
-                <label><input type="radio" name="sharingsettings" value="read-write"onChange={(e) => setSharingSettings(e.target.value)} />Read-write</label>
-                
-            </div>
-
-            <div>
-                <span>Financial Goal</span>
-                <input type="text" onChange={(e) => setFinancialGoal(e.target.value)} />
-            </div>
-
-            <div>
-                <span>State of residence</span>
-                <input type="text" onChange={(e) => setStateOfResidence(e.target.value)} />
-            </div>
-
-            <div>
-                <button onClick={handleCheckState}>Submit</button>
-            </div>
             {showUploadModal && (
         <div style={{ border: '1px solid #ccc', padding: '10px', marginTop: '10px' }}>
           <h3>State Not Found</h3>

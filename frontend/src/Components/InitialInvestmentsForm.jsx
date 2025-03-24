@@ -54,7 +54,7 @@ const InitialInvestmentsForm = (props) => {
         <div style={{width: '100%', marginLeft: '75px', marginRight: '75px',}}>
             <div className="form-div" style={{display: 'flex', alignContent: 'center', flexDirection: 'column',  marginTop: '30px'}}>
             <div>
-                <h1 className='form-title'>Investment Type</h1>
+                <h1 className='form-title'>Investment</h1>
             </div>
             <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
                 <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Investment Type</div>
