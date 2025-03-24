@@ -47,7 +47,6 @@ const ScenerioForm = () => {
     const [selectedInvestments, setSelectedInvestments] = useState([]);
     const [selectedInvestmentTypes, setSelectedInvestmentTypes] = useState([]);
     const [selectedEvents, setSelectedEvents] = useState([]);
-
     
     // states for upload state tax
     const [file, setFile] = useState(null);
@@ -259,7 +258,7 @@ const ScenerioForm = () => {
                 financialGoal: Number(financialGoal),
                 residenceState: stateOfResidence,
             }
-
+            console.log("hi")
             if (scenario.expenseWithdrawalStrategy !== undefined && scenario.expenseWithdrawalStrategy.includes('')) {
                 setEmptyExpenseStrategyError(<div style={{color: "red"}}>Please select options for all investments!</div>)
                 return
@@ -267,10 +266,12 @@ const ScenerioForm = () => {
             else {
                 setEmptyExpenseStrategyError(<div></div>)
             }
+            console.log("bye")
 
             await axios.post('http://localhost:8000/submitScenario', {
                 scenario : scenario, user: user
             });
+            console.log('1')
 
             window.location.reload();
             
@@ -857,25 +858,15 @@ const ScenerioForm = () => {
                         <div >
                             <ul>
                                 {Array.from({ length: expenseCount }, (_, i) => (
-                                    <div key={i}>
-                                        <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
-                                            <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Expense {i+1}</div>
-                                            <FormControl fullWidth size="small" sx={{flex: 1}}>
-                                                <InputLabel>Select an Option</InputLabel>
-                                                <Select 
-                                                onChange={(e) => setInflationAssumption(e.target.value)}
-                                                value={inflationAssumption}
-                                                label="Select Option"
-                                                >
-                                                <MenuItem>Please Select an Option</MenuItem>
-                                                {events.filter((event) => event.discretionary === true && selectedEvents.includes(event._id)).map((event) => (
-                                                    <MenuItem value={event.name}>{event.name}</MenuItem>
-                                                ))}
-                                                </Select>
-                                            </FormControl>
-                                        </div>
-                                        
-                                    </div>
+                                    <div>
+                                    <h3>{i + 1}</h3>
+                                    <select onChange={(e) => selectedExpensesOrder[i] = e.target.value}>
+                                        <option>Please select an option</option>
+                                        {events.filter((event) => event.discretionary === true && selectedEvents.includes(event._id)).map((event) => (
+                                            <option>{event.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
                                 
                                 ))}
                             </ul>
@@ -905,25 +896,15 @@ const ScenerioForm = () => {
                             <div >
                                 <ul>
                                     {Array.from({ length: expenseWithdrawlInvestmentsCount }, (_, i) => (
-                                        <div key={i}>
-                                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
-                                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Investment {i+1}</div>
-                                                <FormControl fullWidth size="small" sx={{flex: 1}}>
-                                                    <InputLabel>Select an Option</InputLabel>
-                                                    <Select 
-                                                    onChange={(e) => selectedInvestmentsOrder[i] = e.target.value}
-                                                    value={selectedInvestmentsOrder[i] || ''}
-                                                    label="Select Option"
-                                                    >
-                                                    <MenuItem>Please Select an Option</MenuItem>
-                                                    {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment) => (
-                                                        <MenuItem value={investment.id} key={investment._id}>{investment.id}</MenuItem>
-                                                    ))}
-                                                    </Select>
-                                                </FormControl>
-                                            </div>
-                                            
-                                        </div>
+                                        <div>
+                                        <h3>{i + 1}</h3>
+                                        <select onChange={(e) => {selectedInvestmentsOrder[i] = e.target.value; console.log(selectedInvestmentsOrder)}}>
+                                            <option>Please select an option</option>
+                                            {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment) => (
+                                                <option>{investment.id}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                     
                                     ))}
                                 </ul>
@@ -955,27 +936,18 @@ const ScenerioForm = () => {
                             <div >
                                 <ul>
                                     {Array.from({ length: RMDInvestments }, (_, i) => (
-                                        <div key={i}>
-                                            <div style={{display: 'flex', marginLeft: '30px', marginRight: '50px', marginBottom: '20px'}}>
-                                                <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Pre-Tax Investment {i+1}</div>
-                                                <FormControl fullWidth size="small" sx={{flex: 1}}>
-                                                    <InputLabel>Select an Option</InputLabel>
-                                                    <Select 
-                                                    onChange={(e) => selectedRMDInvestmentsOrder[i] = e.target.value}
-                                                    value={selectedRMDInvestmentsOrder[i] || ''}
-                                                    label="Select Option"
-                                                    >
-                                                    <MenuItem>Please Select an Option</MenuItem>  
-                                                    {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
-                                                        investment.taxStatus === 'pre-tax' && (
-                                                            <MenuItem value={investment.id} key={index}>{investment.id}</MenuItem>
-                                                        )
-                                                    ))}
-                                                    </Select>
-                                                </FormControl>
-                                            </div>
-                                            
-                                        </div>
+                                       <div>
+                                       <h3>{i + 1}</h3>
+                                       <select onChange={(e) => {selectedRMDInvestmentsOrder[i] = e.target.value;}}>
+                                           <option>Please select an option</option>
+                                           {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
+           
+                                               investment.taxStatus === 'pre-tax' && (
+                                                   <option key={index}>{investment.id}</option>
+                                               )
+                                           ))}
+                                       </select>
+                                   </div>
                                     
                                     ))}
                                 </ul>
@@ -1040,16 +1012,9 @@ const ScenerioForm = () => {
                                     <div className='form-text' style={{display: 'flex', alignItems: 'center', flex: 1}}>Investments</div>
                                     {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
                                         investment.taxStatus === 'pre-tax' && (
-                                            <div key={index}>
-                                                    <FormControlLabel
-                                                    control={
-                                                        <Checkbox
-                                                        checked={rothInvestments.includes(investment._id)}
-                                                        onChange={() => handleCheckboxChange(investment.id)}
-                                                        />
-                                                    }
-                                                    label={investment.id}
-                                                    />
+                                            <div>
+                                            <label key={index}><input type="checkbox" onChange={() => handleCheckboxChange(investment.id)}/>{investment.id}</label>
+                                            <br></br>
                                             </div>
                                         )
                                     ))}

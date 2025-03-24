@@ -1,9 +1,9 @@
-import React, { useState, useContext, useRef } from 'react';
+import { useState, useContext, useRef } from 'react';
 import axios from 'axios';
 import { StoreContext } from '../store/Store'; 
 import Navbar from '../Components/Navbar';
 import UploadIcon from '@mui/icons-material/Upload';
-import { Box, Button, Typography, Link } from '@mui/material';
+import { Box, Typography, Link } from '@mui/material';
 
 const UploadScenario = () => {
   const { user } = useContext(StoreContext);

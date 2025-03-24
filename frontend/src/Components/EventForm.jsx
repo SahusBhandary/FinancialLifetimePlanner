@@ -936,7 +936,7 @@ const EventForm = () => {
                                         value={sampleStatusAnnualChangeExpense}
                                         onChange={(e) => setSampleStatusAnnualChangeExpense(e.target.value)}
                                         >
-                                        <FormControlLabel name="sampleStatusReturn" value="fixed" control={<Radio />} label="Fixed"/>
+                                        <FormControlLabel name="sampleStatusReturn" value="amount" control={<Radio />} label="Fixed"/>
                                         <FormControlLabel name="sampleStatusReturn" value="percent" control={<Radio />} label="Percent"/>
                                         </RadioGroup>
                                     </FormControl>
@@ -988,7 +988,7 @@ const EventForm = () => {
                                         value={sampleStatusAnnualChangeExpense}
                                         onChange={(e) => setSampleStatusAnnualChangeExpense(e.target.value)}
                                         >
-                                        <FormControlLabel name="sampleStatusReturn" value="fixed" control={<Radio />} label="Fixed"/>
+                                        <FormControlLabel name="sampleStatusReturn" value="amount" control={<Radio />} label="Fixed"/>
                                         <FormControlLabel name="sampleStatusReturn" value="percent" control={<Radio />} label="Percent"/>
                                         </RadioGroup>
                                     </FormControl>
@@ -1181,7 +1181,7 @@ const EventForm = () => {
                                 >
                                 <MenuItem value="non-retirement">Non-Retirement</MenuItem>
                                 <MenuItem value="pre-tax">Pre-Tax</MenuItem>
-                                <MenuItem value="After-Tax">After-Tax</MenuItem>
+                                <MenuItem value="after-tax">After-Tax</MenuItem>
                                 </Select>
                             </FormControl>
                         </div>
