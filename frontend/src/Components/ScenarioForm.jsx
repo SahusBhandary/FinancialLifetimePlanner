@@ -1052,7 +1052,7 @@ const ScenerioForm = (props) => {
                                                         onChange={() => handleCheckboxChange(investment.id)}
                                                         />
                                                     }
-                                                    label={investment.name}
+                                                    label={investment.id}
                                                     />
                                             </div>
                                         )
