@@ -311,9 +311,8 @@ const EventForm = (props) => {
                 break;
         }
 
-        console.log(event);
-        // const response = await axios.post('http://localhost:8000/submitEvent', {user: user, event: event});
-        // window.location.reload();
+        const response = await axios.post('http://localhost:8000/submitEvent', {user: user, event: event});
+        window.location.reload();
     }
     
 

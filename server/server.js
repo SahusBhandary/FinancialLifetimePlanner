@@ -98,6 +98,8 @@ app.post("/getInvestmentList", async (req, res) => {
         const investments = await InvestmentModel.find({
             _id: { $in: investmentIds }
         });
+        console.log(investmentIds)
+        console.log(investments)
 
         res.status(200).send(investments);
 
