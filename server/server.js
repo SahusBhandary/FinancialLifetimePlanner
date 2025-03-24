@@ -12,6 +12,7 @@ const TaxBracket = require('./models/TaxBracket')
 const EventSeriesModel = require('./models/EventSeries')
 const InvestmentModel = require('./models/Investment')
 const UserModel = require('./models/User')
+const { ObjectId } = require("mongodb");
 
 
 //stuff for importing/exporting
@@ -97,6 +98,8 @@ app.post("/getInvestmentList", async (req, res) => {
         const investments = await InvestmentModel.find({
             _id: { $in: investmentIds }
         });
+        console.log(investmentIds)
+        console.log(investments)
 
         res.status(200).send(investments);
 
@@ -191,6 +194,47 @@ app.post("/submitScenario", async (req, res) => {
   }
 })
 
+app.post("/shareScenario", async (req, res) => {
+    try {
+        const { scenario, email } = req.body;
+
+        const userObj = await UserModel.findOne({
+            email: email
+        })
+  
+        userObj.sharedScenarios.push(scenario._id);
+        userObj.save();
+  
+        res.status(200).send({message: "Scenario submitted successfully!"});
+  
+    } catch (error) {
+        console.error("Error submitting scenario.", error);
+        res.status(500).send({ message: "Error submitting scenario." });
+    }
+  })
+
+  app.post("/editScenario", async (req, res) => {
+    try {
+        const { scenario, scenarioID } = req.body;
+        console.log(scenarioID)
+
+        const scenarioId = new ObjectId(scenarioID);
+
+        const { _id, ...updateFields } = scenario;
+
+        const result = await ScenarioModel.updateOne(
+            { _id: scenarioId },
+            { $set: updateFields }
+        );
+  
+        res.status(200).send({message: "Scenario editted successfully!"});
+  
+    } catch (error) {
+        console.error("Error editting scenario.", error);
+        res.status(500).send({ message: "Error editting scenario." });
+    }
+  })
+
 
 
 app.post('/import-scenario', upload.single('scenarioFile'), async (req, res) => {
@@ -217,6 +261,22 @@ app.post('/import-scenario', upload.single('scenarioFile'), async (req, res) => 
     } catch (error) {
       console.error('Error importing scenario:', error);
       res.status(500).json({ error: 'Failed to import scenario', details: error.message });
+    }
+  });
+
+  app.post('/getUserWithScenario', async (req, res) => {
+    try {
+        const { scenario } = req.body
+
+        const userObj = await UserModel.findOne({
+          scenarios: scenario._id
+        })
+
+        res.status(200).send({user: userObj});
+
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      res.status(500).json({ error: 'Failed to fetch user' });
     }
   });
 
@@ -257,19 +317,40 @@ app.post('/import-scenario', upload.single('scenarioFile'), async (req, res) => 
 
   // used to check whether or not the state of residence entered by the user is in the database already
   app.get('/checkState', async (req, res) => {
-    const { state, userId } = req.query; // get the state and user ID from the query parameters
+    const { state, userId } = req.query; 
   
     try {
-      // check if the state tax data exists and is linked to the user
-      const stateTax = await StateTax.findOne({ state, uploadedBy: userId })
-        .populate('singleIncomeTaxBrackets marriedIncomeTaxBrackets');
+      // find the user and populate their files
+      const user = await User.findById(userId).populate({
+        path: 'uploadedFiles',
+        populate: {
+          path: 'stateTaxes',
+          match: { state }, 
+          populate: [
+            { path: 'singleIncomeTaxBrackets' },
+            { path: 'marriedIncomeTaxBrackets' },
+          ],
+        },
+      });
   
-      if (stateTax) {
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+  
+      // check if any StateTaxFile contains a statetax document for the specified state
+      const stateTaxFile = user.uploadedFiles.find((file) =>
+        file.stateTaxes.some((stateTax) => stateTax.state === state)
+      );
+  
+      if (stateTaxFile) {
+        // find the StateTax document for the specified state
+        const stateTax = stateTaxFile.stateTaxes.find((stateTax) => stateTax.state === state);
         res.json({ exists: true, stateTax });
       } else {
         res.json({ exists: false });
       }
     } catch (error) {
+      console.error('Error checking state:', error);
       res.status(500).json({ error: 'Failed to check state' });
     }
   });
