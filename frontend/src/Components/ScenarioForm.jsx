@@ -6,6 +6,8 @@ import { Select, MenuItem, FormControl, InputLabel, RadioGroup, Radio, FormContr
 
 const ScenerioForm = (props) => {
     const { user } = useContext(StoreContext);
+    const [ emptyExpenseStrategyError, setEmptyExpenseStrategyError ] = useState()
+
     const [name, setName] = useState("");
     const [isMarried, setIsMarried] = useState("");
     const [userBirthYear, setUserBirthYear] = useState("");
@@ -96,6 +98,7 @@ const ScenerioForm = (props) => {
         const fetchEvents = async () => {
             if (user.events.length > 0) {
                 try {
+                    
                     const response = await axios.post('http://localhost:8000/getEvents', {
                         eventIds: user.events
                     });
@@ -111,10 +114,47 @@ const ScenerioForm = (props) => {
         fetchInvestmentType();
         fetchInvestments();
         fetchEvents();
-        setSelectedInvestmentsOrder(Array(expenseWithdrawlInvestmentsCount).fill(listofinvestments.length === 0 ? "" : listofinvestments[0].id));
-        setSelectedRMDInvestmentsOrder(Array(RMDInvestments).fill(listofinvestments.filter((investment) => investment.taxStatus === 'pre-tax').length === 0 ? "" : listofinvestments.filter((investment) => investment.taxStatus === 'pre-tax')[0].id));
-        setSelectedExpensesOrder(Array(expenseCount).fill(events.filter((event) => event.discretionary === true).length === 0 ? "" : events.filter((event) => event.discretionary === true)[0].name));
-    
+        setSelectedInvestmentsOrder((prev) => {
+            const updatedOrder = [
+                ...selectedInvestmentsOrder,                     
+                ...prev.slice(expenseWithdrawlInvestmentsCount)   
+            ];
+            return updatedOrder;
+        });
+        while(selectedInvestmentsOrder.length > expenseWithdrawlInvestmentsCount) {
+            selectedInvestmentsOrder.pop()
+        }
+        if (selectedInvestmentsOrder.length < expenseWithdrawlInvestmentsCount) {
+            selectedInvestmentsOrder.push('')
+        }
+
+        setSelectedRMDInvestmentsOrder((prev) => {
+            const updatedOrder = [
+                ...selectedRMDInvestmentsOrder,                     
+                ...prev.slice(RMDInvestments)   
+            ];
+            return updatedOrder;
+        });
+        while(selectedRMDInvestmentsOrder.length > RMDInvestments) {
+            selectedRMDInvestmentsOrder.pop()
+        }
+        if (selectedRMDInvestmentsOrder.length < RMDInvestments) {
+            selectedRMDInvestmentsOrder.push('')
+        }
+       
+        setSelectedExpensesOrder((prev) => {
+            const updatedOrder = [
+                ...selectedExpensesOrder,                     
+                ...prev.slice(expenseCount)   
+            ];
+            return updatedOrder;
+        });
+        while(selectedExpensesOrder.length > expenseCount) {
+            selectedExpensesOrder.pop()
+        }
+        if (selectedExpensesOrder.length < expenseCount) {
+            selectedExpensesOrder.push('')
+        }        
 
     }, [user, expenseWithdrawlInvestmentsCount, RMDInvestments, expenseCount]); 
 
@@ -224,6 +264,15 @@ const ScenerioForm = (props) => {
                 financialGoal: Number(financialGoal),
                 residenceState: stateOfResidence,
             }
+
+            if (scenario.expenseWithdrawalStrategy !== undefined && scenario.expenseWithdrawalStrategy.includes('')) {
+                setEmptyExpenseStrategyError(<div style={{color: "red"}}>Please select options for all investments!</div>)
+                return
+            }
+            else {
+                setEmptyExpenseStrategyError(<div></div>)
+            }
+
             const response = await axios.post('http://localhost:8000/submitScenario', {
                 scenario : scenario, user: user
             });
@@ -823,6 +872,7 @@ const ScenerioForm = (props) => {
                                                 value={inflationAssumption}
                                                 label="Select Option"
                                                 >
+                                                <MenuItem>Please Select an Option</MenuItem>
                                                 {events.filter((event) => event.discretionary === true && selectedEvents.includes(event._id)).map((event) => (
                                                     <MenuItem value={event.name}>{event.name}</MenuItem>
                                                 ))}
@@ -870,6 +920,7 @@ const ScenerioForm = (props) => {
                                                     value={selectedInvestmentsOrder[i] || ''}
                                                     label="Select Option"
                                                     >
+                                                    <MenuItem>Please Select an Option</MenuItem>
                                                     {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment) => (
                                                         <MenuItem value={investment.id} key={investment._id}>{investment.id}</MenuItem>
                                                     ))}
@@ -918,6 +969,7 @@ const ScenerioForm = (props) => {
                                                     value={selectedRMDInvestmentsOrder[i] || ''}
                                                     label="Select Option"
                                                     >
+                                                    <MenuItem>Please Select an Option</MenuItem>  
                                                     {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
                                                         investment.taxStatus === 'pre-tax' && (
                                                             <MenuItem value={investment.id} key={index}>{investment.id}</MenuItem>
@@ -1007,6 +1059,7 @@ const ScenerioForm = (props) => {
                                     ))}
                                 </div>
                             </div>
+
                         </div>
                         }
                         <div>

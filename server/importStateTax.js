@@ -10,7 +10,7 @@ async function importStateTaxBracketsFromYaml(file, userId) {
       throw new Error('Invalid file object. File buffer is missing.');
     }
 
-    // Read and parse the YAML file
+    // read and parse the YAML file
     const fileContents = file.buffer.toString('utf8');
     const stateTaxData = yaml.load(fileContents);
 

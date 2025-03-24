@@ -1,13 +1,22 @@
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { StoreContext } from "../store/Store";
 
+const EditSharedScenario = (props) => {
 
-const EditScenario = (props) => {
+    let [user, setUser] = useState(props.tempUser)
+    useEffect(() => {
+    const fetchUser = async () => {
+      if (props.tempUser instanceof Promise) {
+        const data = await props.tempUser;  // await the Promise
+        setUser(data);
+      } else {
+        setUser(props.tempUser);  // directly set if it's already resolved
+      }
+    };
 
-    const { user } = useContext(StoreContext)
+    fetchUser();
+  }, [props.tempUser]);
     const [ emptyExpenseStrategyError, setEmptyExpenseStrategyError ] = useState()
-
     const [name, setName] = useState(props.scenario.name);
     const [isMarried, setIsMarried] = useState(props.scenario.maritalStatus === "couple" ? "yes" : "no");
     const [userBirthYear, setUserBirthYear] = useState(props.scenario.birthYears[0]);
@@ -194,7 +203,7 @@ const EditScenario = (props) => {
                 [userLifeExpectancyDistribution === "fixed" ? 
                     {
                         type: "fixed",
-                        value: Number(userLifeExpectancyFixed)
+                        value: Number(userLifeExpectancyMean)
                     } 
                     : 
                     {
@@ -266,14 +275,13 @@ const EditScenario = (props) => {
             }
             else {
                 setEmptyExpenseStrategyError(<div></div>)
+
             }
 
             const response = await axios.post('http://localhost:8000/editScenario', {
                 scenario : scenario,
                 scenarioID: props.scenario._id
             });
-
-            console.log(scenario);
 
             window.location.reload();
             
@@ -355,8 +363,6 @@ const EditScenario = (props) => {
 
                     {userLifeExpectancyDistribution === "fixed" && 
                     <div>
-                        {console.log(userLifeExpectancyFixed)}
-                        {console.log(props.scenario)}
                         <span>Enter Fixed Amount</span>
                         <input defaultValue={userLifeExpectancyFixed} type="text" onChange={(e) => setUserLifeExpectancyFixed(e.target.value)}></input>
                     </div>
@@ -388,7 +394,7 @@ const EditScenario = (props) => {
                     {spouseLifeExpectancyDistribution === "fixed" && 
                     <div>
                         <span>Enter Fixed Amount</span>
-                        {console.log(spouseLifeExpectancyFixed)}
+                    
                         <input defaultValue={spouseLifeExpectancyFixed}type="text" onChange={(e) => setSpouseLifeExpectancyFixed(e.target.value)}></input>
                     </div>
                     }
@@ -550,7 +556,8 @@ const EditScenario = (props) => {
                         <div>
                             <h3>{i + 1}</h3>
                             <select onChange={(e) => selectedExpensesOrder[i] = e.target.value}>
-                                <option>Please select an option</option>
+                                 <option>Please select an option</option>
+
                                 {events.filter((event) => event.discretionary === true && selectedEvents.includes(event._id)).map((event) => (
                                     <option>{event.name}</option>
                                 ))}
@@ -609,7 +616,8 @@ const EditScenario = (props) => {
                         <div>
                             <h3>{i + 1}</h3>
                             <select onChange={(e) => selectedRMDInvestmentsOrder[i] = e.target.value}>
-                                <option>Please select an option</option>
+                                 <option>Please select an option</option>
+
                                 {listofinvestments.filter((investment) => selectedInvestments.includes(investment._id)).map((investment, index) => (
                                     investment.taxStatus === 'pre-tax' && (
                                         <option key={index}>{investment.id}</option>
@@ -678,7 +686,7 @@ const EditScenario = (props) => {
             <div>
                 <button onClick={handleCheckState}>Submit</button>
             </div>
-            <button onClick={() => props.setIsEditPage(false)}> Back </button>
+            <button onClick={() => {props.setIsEditPage(false); props.setIsSharedEditPage(false)}}> Back </button>
             {showUploadModal && (
         <div style={{ border: '1px solid #ccc', padding: '10px', marginTop: '10px' }}>
           <h3>State Not Found</h3>
@@ -698,4 +706,4 @@ const EditScenario = (props) => {
     );
 };
 
-export default EditScenario;
+export default EditSharedScenario;
