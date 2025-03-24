@@ -279,7 +279,7 @@ const ScenerioForm = (props) => {
 
     return (
         <div>
-            <div style={{width: '100%', marginLeft: '75px', marginRight: '75px',}}>
+            <div style={{ marginLeft: '75px', marginRight: '75px',}}>
                 <div className="form-div" style={{display: 'flex', alignContent: 'center', flexDirection: 'column',  marginTop: '30px'}}>
                     <div>
                         <h1 className='form-title'>Scenarios</h1>
@@ -1072,7 +1072,7 @@ const ScenerioForm = (props) => {
 
             
 
-            {showUploadModal && (
+        {showUploadModal && (
         <div style={{ border: '1px solid #ccc', padding: '10px', marginTop: '10px' }}>
           <h3>State Not Found</h3>
           <p>Please upload a YAML file with tax information for {stateOfResidence}.</p>
