@@ -15,14 +15,26 @@ const UserSchema = new mongoose.Schema({
   },
   age: {
     type: Number,
-    required: true,
+    required: false,
     min: 0
   },
   stateOfResidence: {
     type: String,
-    required: true,
+    required: false,
     trim: true
-  }
+  },
+  googleID: {
+    type: String,
+    required: true,
+  },
+  investmentTypes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'InvestmentType' }],
+  events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'EventSeries' }],
+  investments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Investment' }],
+  scenarios: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Scenario' }],
+  uploadedFiles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'StateTaxFile' }],
+  // uploadedStateTaxes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'StateTax' }]
+  sharedScenarios: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Scenario' }]
+
 },
 );
 

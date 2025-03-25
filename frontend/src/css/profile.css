@@ -1,0 +1,88 @@
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 20px;
+}
+
+.profile-content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1100px; 
+    gap: 30px;
+}
+
+.profile-card {
+    flex: 1;
+    min-height: 300px; 
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    font-size: 18px; 
+}
+
+.tax-files {
+    flex: 1;
+    min-height: 300px; 
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    font-size: 18px;
+}
+
+.scenarios {
+    width: 100%;
+    max-width: 1100px;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.scenario {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.scenario-buttons button {
+    margin-left: 12px;
+    font-size: 16px;
+}
+
+.delete-btn {
+    background: red;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.delete-btn:hover {
+    background: darkred;
+}
+
+.login-btn {
+    display: inline-block;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .login-btn:hover {
+    background: #0056b3;
+  }
+  
