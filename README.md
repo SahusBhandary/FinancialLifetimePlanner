@@ -173,15 +173,6 @@ FinancialLifetimePlanner/
 - Tax file upload and processing
 - Scenario file download capabilities
 
-## Development Team
-
-**Team 416NotFound**  
-CSE416 Section 4, Spring 2025
-
-## License
-
-This project is part of an academic course and is intended for educational purposes.
-
 ## Support
 
 For questions, issues, or feature requests, please contact the development team or create an issue in the repository.
