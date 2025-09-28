@@ -1,4 +1,4 @@
-# Financial Lifetime Planner - Brighthouse
+# Financial Lifetime Planner
 
 A comprehensive web application for financial planning and lifetime scenario modeling, developed by Team 416NotFound for CSE416 Section 4, Spring 2025.
 
