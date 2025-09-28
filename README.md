@@ -172,7 +172,3 @@ FinancialLifetimePlanner/
 ### File Management
 - Tax file upload and processing
 - Scenario file download capabilities
-
-## Support
-
-For questions, issues, or feature requests, please contact the development team or create an issue in the repository.
